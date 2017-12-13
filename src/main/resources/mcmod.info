@@ -1,7 +1,7 @@
 [
 {
-  "modid": "needtobreath",
-  "name": "NeedToBreath",
+  "modid": "needtobreathe",
+  "name": "NeedToBreathe",
   "description": "There is no air! What are you going to do about it?",
   "version": "${version}",
   "mcversion": "${mcversion}",

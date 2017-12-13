@@ -57,7 +57,7 @@ if (ENV.DRONE_BUILD_NUMBER) {
     version += ".n" + ENV.DRONE_BUILD_NUMBER
 }
 group= "com.github.mcjty" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "needtobreath"
+archivesBaseName = "needtobreathe"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -93,7 +93,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'FMLAT': 'needtobreath_at.cfg'
+        attributes 'FMLAT': 'needtobreathe_at.cfg'
     }
 }
 
@@ -132,7 +132,7 @@ task("uploadJars", dependsOn: "reobf") {
                         project {
                             name project.archivesBaseName
                             packaging 'jar'
-                            description 'NeedToBreath'
+                            description 'NeedToBreathe'
                             scm {
                                 url 'https://github.com/McJty/needtobreath'
                                 connection 'scm:git:git@github.com:McJty/needtobreath.git'
