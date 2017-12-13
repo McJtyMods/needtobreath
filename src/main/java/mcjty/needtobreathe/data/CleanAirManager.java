@@ -74,7 +74,7 @@ public class CleanAirManager extends WorldSavedData {
             int air = getAir(pos);
 
             // We distribute 'air' to all adjacent spaces (and this one)
-            int toDistribute = air / 10;        // We move 1 tenth of the air to adjacent tiles (if possible)
+            int toDistribute = air / 7;        // We move 1 tenth of the air to adjacent tiles (if possible)
             if (toDistribute > 0) {
                 for (EnumFacing facing : EnumFacing.VALUES) {
                     long adjacent = LongPos.offset(pos, facing);
