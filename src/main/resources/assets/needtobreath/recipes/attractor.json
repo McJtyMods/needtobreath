@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "restrictions:attractor"
+  },
+  "pattern": [
+    "srs",
+    "rPr",
+    "srs"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:sticky_piston"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "s": {
+      "item": "minecraft:feather"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[
+{
+  "modid": "needtobreath",
+  "name": "NeedToBreath",
+  "description": "There is no air! What are you going to do about it?",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["McJty"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

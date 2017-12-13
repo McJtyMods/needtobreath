@@ -1,0 +1,5 @@
+tile.restrictions.pusher.name=Pusher
+item.restrictions.glassboots.name=Glass Boots
+
+itemGroup.needtobreath=NeedToBreath
+
