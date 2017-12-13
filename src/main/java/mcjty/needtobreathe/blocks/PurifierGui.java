@@ -8,7 +8,9 @@ import mcjty.lib.gui.widgets.EnergyBar;
 import mcjty.lib.gui.widgets.Panel;
 import mcjty.lib.gui.widgets.Widget;
 import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.network.NTBMessages;
+import mcjty.needtobreathe.network.PacketRequestIntegersFromServer;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
@@ -18,6 +20,7 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
     public static final int PURIFIER_HEIGHT = 152;
 
     private EnergyBar energyBar;
+    private EnergyBar coalBar;
 
     private static final ResourceLocation iconLocation = new ResourceLocation(NeedToBreathe.MODID, "textures/gui/purifier.png");
 //    private static final ResourceLocation iconGuiElements = new ResourceLocation(NeedToBreathe.MODID, "textures/gui/guielements.png");
@@ -38,13 +41,22 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
         energyBar = new EnergyBar(mc, this).setVertical().setMaxValue(maxEnergyStored).setLayoutHint(new PositionalLayout.PositionalHint(10, 7, 8, 54)).setShowText(false);
         energyBar.setValue(GenericEnergyStorageTileEntity.getCurrentRF());
 
+        coalBar = new EnergyBar(mc, this).setVertical().setMaxValue(tileEntity.getMaxCoalTicks())
+                .setLayoutHint(new PositionalLayout.PositionalHint(20, 7, 8, 54))
+                .setEnergyOnColor(0xffaaaaaa)
+                .setEnergyOffColor(0xff444444)
+                .setShowText(false);
+        coalBar.setValue((int) tileEntity.getCoalticks());
+
 
         Widget toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
-                .addChild(energyBar);
+                .addChild(energyBar)
+                .addChild(coalBar);
         toplevel.setBounds(new Rectangle(guiLeft, guiTop, xSize, ySize));
 
         window = new Window(this, toplevel);
-        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
+        NTBMessages.INSTANCE.sendToServer(new PacketRequestIntegersFromServer(tileEntity.getPos()));
+//        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 
 
@@ -52,8 +64,11 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
     protected void drawGuiContainerBackgroundLayer(float v, int i, int i2) {
         drawWindow();
 
-        energyBar.setValue(GenericEnergyStorageTileEntity.getCurrentRF());
+        energyBar.setValue(tileEntity.getEnergyStored());
+        coalBar.setMaxValue(tileEntity.getMaxCoalTicks());
+        coalBar.setValue(tileEntity.getCoalticks());
 
-        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
+        NTBMessages.INSTANCE.sendToServer(new PacketRequestIntegersFromServer(tileEntity.getPos()));
+//        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }

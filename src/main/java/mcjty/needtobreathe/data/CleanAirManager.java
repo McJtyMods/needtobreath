@@ -9,10 +9,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CleanAirManager extends WorldSavedData {
 
@@ -51,6 +48,10 @@ public class CleanAirManager extends WorldSavedData {
         }
     }
 
+    public int getAir(BlockPos pos) {
+        return getAir(pos.toLong());
+    }
+
     private int getAir(long p) {
         if (cleanAir.containsKey(p)) {
             return cleanAir.get(p) & 0xff;
@@ -72,27 +73,36 @@ public class CleanAirManager extends WorldSavedData {
         Set<Long> positions = new HashSet<>(cleanAir.keySet());
         for (Long pos : positions) {
             int air = getAir(pos);
-
-            // We distribute 'air' to all adjacent spaces (and this one)
-            int toDistribute = air / 7;        // We move 1 tenth of the air to adjacent tiles (if possible)
-            if (toDistribute > 0) {
+            air--;
+            if (air < 5) {
+                cleanAir.remove(pos);
+            } else {
+                // Find all adjacent spaces that have less air then this one (and thus more poison)
+                List<Long> distList = new ArrayList<>(6);
                 for (EnumFacing facing : EnumFacing.VALUES) {
                     long adjacent = LongPos.offset(pos, facing);
                     if (isValid(world, adjacent)) {
                         int adjacentAir = getAir(adjacent);
-                        int dist = Math.min(toDistribute, 255 - adjacentAir);
-                        air -= dist;
-                        adjacentAir += dist;
-                        cleanAir.put(adjacent, (byte) adjacentAir);
+                        if (adjacentAir < air) {
+                            distList.add(adjacent);
+                        }
                     }
                 }
-            } else {
-                air--;
-            }
-            if (air < 5) {
-                cleanAir.remove(pos);
-            } else {
-                cleanAir.put(pos, (byte) air);
+
+                if (!distList.isEmpty()) {
+                    // We distribute 'air' to all legal adjacent spaces (and this one)
+                    int toDistribute = air / (distList.size() + 2);        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    if (toDistribute > 0) {
+                        for (Long adjacent : distList) {
+                            int adjacentAir = getAir(adjacent);
+                            int dist = Math.min(toDistribute, 255 - adjacentAir);
+                            air -= dist;
+                            adjacentAir += dist;
+                            cleanAir.put(adjacent, (byte) adjacentAir);
+                        }
+                    }
+                    cleanAir.put(pos, (byte) air);
+                }
             }
         }
     }
