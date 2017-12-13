@@ -13,6 +13,10 @@
       "east": {"y": 90},
       "up": {"x": -90},
       "down": {"x": 90}
+    },
+    "working": {
+      "false": {},
+      "true": { "model": "needtobreathe:purifier_on" }
     }
   }
 }

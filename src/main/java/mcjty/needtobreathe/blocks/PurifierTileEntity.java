@@ -12,6 +12,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 
@@ -21,6 +23,8 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
 
     private int coalticks = 0;
     private int maxCoalTicks = 1;   // Client side only
+
+    private boolean isWorking = false;
 
 
     public PurifierTileEntity() {
@@ -72,6 +76,29 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
             }
             decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
         }
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        boolean working = isWorkingClientSide();
+
+        super.onDataPacket(net, packet);
+
+        if (getWorld().isRemote) {
+            // If needed send a render update.
+            boolean newWorking = isWorkingClientSide();
+            if (newWorking != working) {
+                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+            }
+        }
+    }
+
+    public boolean isWorkingClientSide() {
+        return isWorking;
+    }
+
+    public boolean isWorkingServerSide() {
+        return coalticks > 0 && getEnergyStored() > Config.PURIFIER_RFPERTICK;
     }
 
     @Override
@@ -147,11 +174,22 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
     }
 
     @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        isWorking = tagCompound.getBoolean("working");
+    }
+
+    @Override
     public void writeRestorableToNBT(NBTTagCompound tagCompound) {
         super.writeRestorableToNBT(tagCompound);
         writeBufferToNBT(tagCompound, inventoryHelper);
         tagCompound.setInteger("coal", coalticks);
     }
 
-
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        // For client only:
+        tagCompound.setBoolean("working", isWorkingServerSide());
+        return super.writeToNBT(tagCompound);
+    }
 }
