@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "needtobreath:blocks/side",
+    "down": "needtobreath:blocks/side",
+    "up": "needtobreath:blocks/side",
+    "east": "needtobreath:blocks/side",
+    "west": "needtobreath:blocks/side",
+    "north": "needtobreath:blocks/side",
+    "south": "needtobreath:blocks/side"
+  }
+}

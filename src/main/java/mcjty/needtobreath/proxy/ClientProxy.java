@@ -1,14 +1,14 @@
 package mcjty.needtobreath.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import mcjty.needtobreath.NTBOverlayRenderer;
 import mcjty.needtobreath.blocks.ModBlocks;
 import mcjty.needtobreath.items.ModItems;
+import mcjty.needtobreath.rendering.NTBOverlayRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void renderGameOverlayEvent(RenderGameOverlayEvent evt) {
+    public void renderWorldLastEvent(RenderWorldLastEvent evt) {
         NTBOverlayRenderer.onRender(evt);
     }
 

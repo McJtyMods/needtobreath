@@ -2,7 +2,7 @@ package mcjty.needtobreath.network;
 
 import io.netty.buffer.ByteBuf;
 import mcjty.needtobreath.NeedToBreath;
-import mcjty.needtobreath.NTBOverlayRenderer;
+import mcjty.needtobreath.rendering.NTBOverlayRenderer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -15,7 +15,7 @@ public class PacketSendCleanAirToClient implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        int size = buf.readByte();
+        int size = buf.readInt();
         cleanAir = new HashMap<>(size);
         for (int i = 0 ; i < size ; i++) {
             cleanAir.put(buf.readLong(), buf.readByte());
@@ -24,7 +24,7 @@ public class PacketSendCleanAirToClient implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeByte(cleanAir.size());
+        buf.writeInt(cleanAir.size());
         for (Map.Entry<Long, Byte> entry : cleanAir.entrySet()) {
             buf.writeLong(entry.getKey());
             buf.writeByte(entry.getValue());

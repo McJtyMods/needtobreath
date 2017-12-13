@@ -66,14 +66,14 @@ public class LongPos {
 
     public static long posUp(long pos) {
         if (getY(pos) > 255) {
-            return 256;
+            return -1L;
         }
         return pos + (1L << Y_SHIFT);
     }
 
     public static long posDown(long pos) {
         if (getY(pos) <= 0) {
-            return -1;
+            return -1L;
         }
         return pos - (1L << Y_SHIFT);
     }

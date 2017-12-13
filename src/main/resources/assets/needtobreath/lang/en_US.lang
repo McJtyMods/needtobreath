@@ -1,5 +1,5 @@
-tile.restrictions.pusher.name=Pusher
-item.restrictions.glassboots.name=Glass Boots
+tile.needtobreath.purifier.name=Purifier
+item.needtobreath.glassboots.name=Glass Boots
 
 itemGroup.needtobreath=NeedToBreath
 

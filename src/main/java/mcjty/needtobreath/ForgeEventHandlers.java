@@ -36,8 +36,8 @@ public class ForgeEventHandlers {
         counter--;
         if (counter <= 0) {
             counter = MAXTICKS;
-            CleanAirManager manager = CleanAirManager.getManager(evt.world);
-            manager.tick();
+            CleanAirManager manager = CleanAirManager.getManager();
+            manager.tick(evt.world);
 
             // @todo temporary debug code!
             PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(manager.getCleanAir());
