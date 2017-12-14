@@ -3,9 +3,11 @@ package mcjty.needtobreathe.blocks;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
+import mcjty.lib.varia.BlockTools;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.network.IIntegerRequester;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -16,15 +18,17 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 
 public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implements ITickable, DefaultSidedInventory, IIntegerRequester {
 
     private InventoryHelper inventoryHelper = new InventoryHelper(this, PurifierContainer.factory, 1);
 
     private int coalticks = 0;
-    private int maxCoalTicks = 1;   // Client side only
-
     private boolean isWorking = false;
+
+    // Client side only variables
+    private int maxCoalTicks = 1;
 
 
     public PurifierTileEntity() {
@@ -34,14 +38,17 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
     @Override
     public void update() {
         if (!world.isRemote) {
+            boolean oldIsWorking = isWorking;
+
             checkForCoal();
 
             int energyStored = getEnergyStored();
-            if (energyStored >= Config.PURIFIER_RFPERTICK && coalticks > 0) {
-                markDirtyQuick();
+            isWorking = energyStored >= Config.PURIFIER_RFPERTICK && coalticks > 0;
+            if (isWorking) {
                 CleanAirManager manager = CleanAirManager.getManager();
                 // Depending on how pure it already is we decrease this faster or slower
-                int air = manager.getAir(pos);
+                BlockPos p = getPurifyingSpot();
+                int air = manager.getAir(p);
                 if (air > 254) {
                     // Nothing to do. It is as pure as can be
                 } else if (air > 200) {
@@ -54,10 +61,21 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
                 } else {
                     coalticks -= 4;
                 }
-                manager.addCleanAir(pos, 1.0f);
+                manager.addCleanAir(p, 1.0f);
                 consumeEnergy(Config.PURIFIER_RFPERTICK);
             }
+
+            if (isWorking != oldIsWorking) {
+                markDirtyClient();
+            }
         }
+    }
+
+    private BlockPos getPurifyingSpot() {
+        IBlockState state = world.getBlockState(pos);
+        int meta = state.getBlock().getMetaFromState(state);
+        EnumFacing k = BlockTools.getOrientation(meta);
+        return pos.offset(k);
     }
 
     private void checkForCoal() {
@@ -68,37 +86,32 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
         if (stack.getItem() == Items.COAL) {
             if (coalticks + Config.PURIFIER_TICKSPERCOAL <= Config.PURIFIER_MAXCOALTICKS) {
                 coalticks += Config.PURIFIER_TICKSPERCOAL;
+                decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
             }
-            decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
         } else if (stack.getItem() == Item.getItemFromBlock(Blocks.COAL_BLOCK)) {
             if (coalticks + (Config.PURIFIER_TICKSPERCOAL * 9) <= Config.PURIFIER_MAXCOALTICKS) {
                 coalticks += Config.PURIFIER_TICKSPERCOAL * 9;
+                decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
             }
-            decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
         }
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        boolean working = isWorkingClientSide();
+        boolean oldIsWorking = isWorking;
 
         super.onDataPacket(net, packet);
 
-        if (getWorld().isRemote) {
+        if (world.isRemote) {
             // If needed send a render update.
-            boolean newWorking = isWorkingClientSide();
-            if (newWorking != working) {
-                getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+            if (isWorking != oldIsWorking) {
+                world.markBlockRangeForRenderUpdate(getPos(), getPos());
             }
         }
     }
 
-    public boolean isWorkingClientSide() {
+    public boolean isWorking() {
         return isWorking;
-    }
-
-    public boolean isWorkingServerSide() {
-        return coalticks > 0 && getEnergyStored() > Config.PURIFIER_RFPERTICK;
     }
 
     @Override
@@ -189,7 +202,7 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         // For client only:
-        tagCompound.setBoolean("working", isWorkingServerSide());
+        tagCompound.setBoolean("working", isWorking);
         return super.writeToNBT(tagCompound);
     }
 }

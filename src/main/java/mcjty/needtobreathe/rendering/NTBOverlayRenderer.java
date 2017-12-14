@@ -49,16 +49,6 @@ public class NTBOverlayRenderer {
         }
     }
 
-//    private static void renderProtectedBlocks(RenderWorldLastEvent evt) {
-//        Minecraft mc = Minecraft.getMinecraft();
-//        EntityPlayerSP p = mc.player;
-//        ItemStack heldItem = p.getHeldItem(EnumHand.MAIN_HAND);
-//        if (heldItem.isEmpty()) {
-//            return;
-//        }
-//        renderHighlightedBlocks(evt, p, cleanAir);
-//    }
-
     public static final ResourceLocation YELLOWGLOW = new ResourceLocation(NeedToBreathe.MODID, "textures/effects/blueglow.png");
 
     private static void renderHighlightedBlocks(RenderWorldLastEvent evt, EntityPlayerSP p, Map<Long, Byte> cleanAir) {
@@ -78,8 +68,6 @@ public class NTBOverlayRenderer {
         Minecraft.getMinecraft().getTextureManager().bindTexture(YELLOWGLOW);
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-//        tessellator.setColorRGBA(255, 255, 255, 64);
-//        tessellator.setBrightness(240);
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -93,31 +81,20 @@ public class NTBOverlayRenderer {
             buffer.setTranslation(buffer.xOffset + x, buffer.yOffset + y, buffer.zOffset + z);
 
             int alpha = value;
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), 1.1f, -0.05f, alpha);
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), 1.1f, -0.05f, alpha);
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), 1.1f, -0.05f, alpha);
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.SOUTH.ordinal(), 1.1f, -0.05f, alpha);
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.WEST.ordinal(), 1.1f, -0.05f, alpha);
-            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.EAST.ordinal(), 1.1f, -0.05f, alpha);
+            float mult = 0.6f;          // 1.1f
+            float offset = 0.03f;       // -0.05f
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), mult, offset, alpha);
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.SOUTH.ordinal(), mult, offset, alpha);
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.WEST.ordinal(), mult, offset, alpha);
+            RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.EAST.ordinal(), mult, offset, alpha);
             buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
         }
         tessellator.draw();
 
         GlStateManager.disableBlend();
-//        GlStateManager.disableTexture2D();
-//        GlStateManager.color(.5f, .3f, 0);
-//        GlStateManager.glLineWidth(2);
 
-//        buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-//
-//        for (BlockPos coordinate : coordinates) {
-//            mcjty.lib.gui.RenderHelper.renderHighLightedBlocksOutline(buffer,
-//                    base.getX() + coordinate.getX(), base.getY() + coordinate.getY(), base.getZ() + coordinate.getZ(),
-//                    .5f, .3f, 0f, 1.0f);
-//        }
-//        tessellator.draw();
-
-//        GlStateManager.enableTexture2D();
         GlStateManager.popMatrix();
     }
 

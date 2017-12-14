@@ -3,10 +3,10 @@
   "textures": {
     "particle": "needtobreathe:blocks/side",
     "down": "needtobreathe:blocks/side",
-    "up": "needtobreathe:blocks/purifier",
+    "up": "needtobreathe:blocks/side",
     "east": "needtobreathe:blocks/side",
     "west": "needtobreathe:blocks/side",
-    "north": "needtobreathe:blocks/side",
+    "north": "needtobreathe:blocks/purifier",
     "south": "needtobreathe:blocks/side"
   }
 }

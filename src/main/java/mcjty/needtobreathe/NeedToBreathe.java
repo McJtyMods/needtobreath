@@ -30,6 +30,9 @@ public class NeedToBreathe implements ModBase {
 
     public static Logger logger;
 
+    public static final String SHIFT_MESSAGE = "<Press Shift>";
+
+
     public static CreativeTabs creativeTab = new CreativeTabs("needtobreathe") {
         @Override
         public ItemStack getTabIconItem() {
