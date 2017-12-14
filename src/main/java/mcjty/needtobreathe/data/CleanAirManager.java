@@ -96,7 +96,14 @@ public class CleanAirManager extends WorldSavedData {
 
                 if (!distList.isEmpty()) {
                     // We distribute 'air' to all legal adjacent spaces (and this one)
-                    int toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    // To simulate the purifier working more globally we interprete 255 as very pure and
+                    // distribute that as 254 to adjacent spaces to get a more widespread distribution
+                    int toDistribute;
+                    if (air >= 254) {
+                        toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    } else {
+                        toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    }
                     if (toDistribute > 0) {
                         for (Long adjacent : distList) {
                             int adjacentAir = getAir(adjacent);
@@ -105,6 +112,9 @@ public class CleanAirManager extends WorldSavedData {
                             adjacentAir += dist;
                             cleanAir.put(adjacent, (byte) adjacentAir);
                         }
+                    }
+                    if (toDistribute == 254) {
+//                        air = 128;  // Half
                     }
                     cleanAir.put(pos, (byte) air);
                 }
