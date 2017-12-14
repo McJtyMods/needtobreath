@@ -33,7 +33,7 @@ public class CommandTest implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (sender instanceof EntityPlayer) {
             BlockPos position = sender.getPosition().up();
-            CleanAirManager.getManager().addCleanAir(position, 1.0f);
+            CleanAirManager.getManager().fillCleanAir(position.toLong());
         }
     }
 

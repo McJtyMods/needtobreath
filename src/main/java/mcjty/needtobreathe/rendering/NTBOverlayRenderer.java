@@ -137,8 +137,8 @@ public class NTBOverlayRenderer {
             buffer.setTranslation(buffer.xOffset + x, buffer.yOffset + y, buffer.zOffset + z);
 
             int alpha = value;
-            float mult = 0.6f;          // 1.1f
-            float offset = 0.03f;       // -0.05f
+            float mult = 0.4f;          // 1.1f
+            float offset = 0.3f;       // -0.05f
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), mult, offset, alpha);

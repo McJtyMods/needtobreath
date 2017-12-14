@@ -45,7 +45,7 @@ public class CleanAirManager extends WorldSavedData {
     }
 
 
-    private int getPoison(long p) {
+    public int getPoison(long p) {
         if (cleanAir.containsKey(p)) {
             return 255-(cleanAir.get(p) & 0xff);
         } else {
@@ -57,7 +57,7 @@ public class CleanAirManager extends WorldSavedData {
         return getAir(pos.toLong());
     }
 
-    private int getAir(long p) {
+    public int getAir(long p) {
         if (cleanAir.containsKey(p)) {
             return cleanAir.get(p) & 0xff;
         } else {
@@ -65,7 +65,7 @@ public class CleanAirManager extends WorldSavedData {
         }
     }
 
-    private boolean isValid(World world, long pos) {
+    public boolean isValid(World world, long pos) {
         if (pos == -1L) {
             return false;
         }
@@ -82,56 +82,38 @@ public class CleanAirManager extends WorldSavedData {
             if (air < 5) {
                 cleanAir.remove(pos);
             } else {
-                // Find all adjacent spaces that have less air then this one (and thus more poison)
+                // Evenly distribute all air to the adjacent spots (and this one)
+                int totalAir = air;
                 List<Long> distList = new ArrayList<>(6);
                 for (EnumFacing facing : EnumFacing.VALUES) {
                     long adjacent = LongPos.offset(pos, facing);
                     if (isValid(world, adjacent)) {
                         int adjacentAir = getAir(adjacent);
-                        if (adjacentAir < air) {
-                            distList.add(adjacent);
-                        }
+                        totalAir += adjacentAir;
+                        distList.add(adjacent);
                     }
                 }
 
                 if (!distList.isEmpty()) {
                     // We distribute 'air' to all legal adjacent spaces (and this one)
-                    // To simulate the purifier working more globally we interprete 255 as very pure and
-                    // distribute that as 254 to adjacent spaces to get a more widespread distribution
-                    int toDistribute;
-                    if (air >= 254) {
-                        toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
-                    } else {
-                        toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    air = totalAir / (distList.size()+1);
+                    for (Long adjacent : distList) {
+                        totalAir -= air;
+                        cleanAir.put(adjacent, (byte) air);
                     }
-                    if (toDistribute > 0) {
-                        for (Long adjacent : distList) {
-                            int adjacentAir = getAir(adjacent);
-                            int dist = Math.min(toDistribute, 255 - adjacentAir);
-                            air -= dist;
-                            adjacentAir += dist;
-                            cleanAir.put(adjacent, (byte) adjacentAir);
-                        }
-                    }
-                    if (toDistribute == 254) {
-//                        air = 128;  // Half
-                    }
-                    cleanAir.put(pos, (byte) air);
+                    cleanAir.put(pos, (byte) totalAir);
                 }
             }
         }
     }
 
-    public void addCleanAir(BlockPos pos, float pct) {
-        Long posl = pos.toLong();
-        Byte b = cleanAir.get(posl);
-        int cleanPct = b == null ? 0 : (b & 0xff);
-        cleanPct = (int) (cleanPct + pct * 255);
-        if (cleanPct > 255) {
-            cleanPct = 255;
+    public int fillCleanAir(long p) {
+        Byte b = cleanAir.get(p);
+        cleanAir.put(p, (byte) 255);
+        if (b == null) {
+            return 255;
         }
-        cleanAir.put(posl, (byte) cleanPct);
-
+        return 255-b;
     }
 
     @Nonnull

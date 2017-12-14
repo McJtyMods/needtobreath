@@ -6,6 +6,7 @@ import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
 import mcjty.lib.varia.BlockTools;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.data.LongPos;
 import mcjty.needtobreathe.network.IIntegerRequester;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,21 +49,37 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
                 CleanAirManager manager = CleanAirManager.getManager();
                 // Depending on how pure it already is we decrease this faster or slower
                 BlockPos p = getPurifyingSpot();
-                int air = manager.getAir(p);
-                if (air > 254) {
-                    // Nothing to do. It is as pure as can be
-                } else if (air > 200) {
-                    // Fair amount
-                    coalticks--;
-                } else if (air > 100) {
-                    coalticks -= 2;
-                } else if (air > 50) {
-                    coalticks -= 3;
-                } else {
-                    coalticks -= 4;
+                long pp = p.toLong();
+
+                if (manager.isValid(world, pp)) {
+                    int workdone = 0;
+                    for (int dx = -1 ; dx <= 1 ; dx++) {
+                        for (int dy = -1 ; dy <= 1 ; dy++) {
+                            for (int dz = -1 ; dz <= 1 ; dz++) {
+                                long p2 = LongPos.toLong(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
+                                if (manager.isValid(world, p2)) {
+                                    workdone += manager.fillCleanAir(p2);
+                                }
+                            }
+                        }
+                    }
+                    if (workdone < 4) {
+                        // Not much done to do. It is as pure as can be
+                    } else if (workdone < 50) {
+                        // Fair amount
+                        coalticks--;
+                    } else if (workdone < 100) {
+                        coalticks -= 2;
+                    } else if (workdone < 200) {
+                        coalticks -= 3;
+                    } else {
+                        coalticks -= 4;
+                    }
+                    if (coalticks < 0) {
+                        coalticks = 0;
+                    }
+                    consumeEnergy(Config.PURIFIER_RFPERTICK);
                 }
-                manager.addCleanAir(p, 1.0f);
-                consumeEnergy(Config.PURIFIER_RFPERTICK);
             }
 
             if (isWorking != oldIsWorking) {

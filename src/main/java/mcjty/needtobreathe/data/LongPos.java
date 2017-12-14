@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.data;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -34,6 +35,26 @@ public class LongPos {
                 return posEast(pos);
         }
         return pos;
+    }
+
+    public static long offset(long pos, int dx, int dy, int dz) {
+        long y = getY(pos);
+        y += dy;
+        if (y < 0 || y > 255) {
+            return -1;
+        }
+        pos += (dy << Y_SHIFT);
+        pos += (dx << X_SHIFT);
+        pos += dz;
+
+        return pos;
+    }
+
+    public static long toLong(int x, int y, int z) {
+        if (y < 0 || y > 255) {
+            return -1L;
+        }
+        return (x & X_MASK) << X_SHIFT | (y & Y_MASK) << Y_SHIFT | (z & Z_MASK) << 0;
     }
 
     public static long getX(long pos) {
@@ -76,5 +97,16 @@ public class LongPos {
             return -1L;
         }
         return pos - (1L << Y_SHIFT);
+    }
+
+    public static void main(String[] args) {
+        BlockPos p = new BlockPos(111, 222, 333);
+        long pp = p.toLong();
+        System.out.println("u = " + BlockPos.fromLong(posUp(pp)));
+        System.out.println("d = " + BlockPos.fromLong(posDown(pp)));
+        System.out.println("s = " + BlockPos.fromLong(posSouth(pp)));
+        System.out.println("n = " + BlockPos.fromLong(posNorth(pp)));
+        System.out.println("w = " + BlockPos.fromLong(posWest(pp)));
+        System.out.println("e = " + BlockPos.fromLong(posEast(pp)));
     }
 }
