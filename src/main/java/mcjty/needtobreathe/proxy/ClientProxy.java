@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -43,8 +44,14 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void renderWorldLastEvent(RenderWorldLastEvent evt) {
-        NTBOverlayRenderer.onRender(evt);
+        NTBOverlayRenderer.onRenderWorld(evt);
     }
+
+    @SubscribeEvent
+    public void renderGameOverlayEvent(RenderGameOverlayEvent evt) {
+        NTBOverlayRenderer.onRenderGame(evt);
+    }
+
 
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event) {

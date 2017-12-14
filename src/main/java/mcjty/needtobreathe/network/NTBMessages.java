@@ -14,9 +14,11 @@ public class NTBMessages {
 
         // Server side
         net.registerMessage(PacketRequestIntegersFromServer.Handler.class, PacketRequestIntegersFromServer.class, PacketHandler.nextID(), Side.SERVER);
+        net.registerMessage(PacketRequestPoisonFromServer.Handler.class, PacketRequestPoisonFromServer.class, PacketHandler.nextID(), Side.SERVER);
 
         // Client side
         net.registerMessage(PacketSendCleanAirToClient.Handler.class, PacketSendCleanAirToClient.class, PacketHandler.nextID(), Side.CLIENT);
         net.registerMessage(PacketIntegersFromServer.Handler.class, PacketIntegersFromServer.class, PacketHandler.nextID(), Side.CLIENT);
+        net.registerMessage(PacketPoisonFromServer.Handler.class, PacketPoisonFromServer.class, PacketHandler.nextID(), Side.CLIENT);
     }
 }

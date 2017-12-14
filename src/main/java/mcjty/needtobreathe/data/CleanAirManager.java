@@ -40,6 +40,11 @@ public class CleanAirManager extends WorldSavedData {
         }
     }
 
+    public int getPoison(BlockPos pos) {
+        return getPoison(pos.toLong());
+    }
+
+
     private int getPoison(long p) {
         if (cleanAir.containsKey(p)) {
             return 255-(cleanAir.get(p) & 0xff);
@@ -91,7 +96,7 @@ public class CleanAirManager extends WorldSavedData {
 
                 if (!distList.isEmpty()) {
                     // We distribute 'air' to all legal adjacent spaces (and this one)
-                    int toDistribute = air / (distList.size() + 2);        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
+                    int toDistribute = air / (distList.size());        // We move a part of the air to adjacent tiles (if possible) (but keep most for this position, hence the +2 instead of +1)
                     if (toDistribute > 0) {
                         for (Long adjacent : distList) {
                             int adjacentAir = getAir(adjacent);
