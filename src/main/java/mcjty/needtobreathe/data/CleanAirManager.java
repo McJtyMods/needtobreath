@@ -2,6 +2,7 @@ package mcjty.needtobreathe.data;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -40,10 +41,27 @@ public class CleanAirManager extends WorldSavedData {
         }
     }
 
-    public int getPoison(BlockPos pos) {
-        return getPoison(pos.toLong());
+    /**
+     * Get the minimum poison level for this position and adjacent positions
+     */
+    public int getPoison(BlockPos p) {
+        int minPoison = 255;
+        for (int dx = -1 ; dx <= 1 ; dx++) {
+            for (int dy = -1 ; dy <= 1 ; dy++) {
+                for (int dz = -1 ; dz <= 1 ; dz++) {
+                    long p2 = LongPos.toLong(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
+                    int poison = getPoison(p2);
+                    if (poison < minPoison) {
+                        minPoison = poison;
+                        if (minPoison == 0) {
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+        return minPoison;
     }
-
 
     public int getPoison(long p) {
         if (cleanAir.containsKey(p)) {
@@ -70,8 +88,15 @@ public class CleanAirManager extends WorldSavedData {
             return false;
         }
         BlockPos p = BlockPos.fromLong(pos);
-        return world.isAirBlock(p);
-//        return true;
+        return !canCollideWith(world, p);
+    }
+
+    private static boolean canCollideWith(World world, BlockPos pos) {
+        if (world.isAirBlock(pos)) {
+            return false;
+        }
+        AxisAlignedBB box = world.getBlockState(pos).getCollisionBoundingBox(world, pos);
+        return box != null;
     }
 
     public void tick(World world) {
