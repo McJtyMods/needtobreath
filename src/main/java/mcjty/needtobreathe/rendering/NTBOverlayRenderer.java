@@ -49,7 +49,7 @@ public class NTBOverlayRenderer {
                 System.out.println("cleanAir = " + cnt);
                 prevCnt = cnt;
             }
-            renderHighlightedBlocks(event, p, cleanAir);
+//            renderHighlightedBlocks(event, p, cleanAir);
         }
     }
 
@@ -138,7 +138,26 @@ public class NTBOverlayRenderer {
 
             int alpha = value;
             float mult = 0.4f;          // 1.1f
-            float offset = 0.3f;       // -0.05f
+            if (alpha < 25) {
+                mult = 0.025f;
+            } else if (alpha < 50) {
+                mult = 0.05f;
+            } else if (alpha < 80) {
+                mult = 0.1f;
+            } else if (alpha < 110) {
+                mult = 0.15f;
+            } else if (alpha < 130) {
+                mult = 0.2f;
+            } else if (alpha < 150) {
+                mult = 0.25f;
+            } else if (alpha < 180) {
+                mult = 0.3f;
+            } else if (alpha < 210) {
+                mult = 0.35f;
+            }
+
+            float offset = 0.5f - (mult/2);
+
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), mult, offset, alpha);

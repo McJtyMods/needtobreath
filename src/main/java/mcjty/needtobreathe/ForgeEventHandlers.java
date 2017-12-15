@@ -15,6 +15,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ForgeEventHandlers {
 
@@ -29,17 +33,23 @@ public class ForgeEventHandlers {
     }
 
     public static final int MAXTICKS = 10;
+    public static final int MAXEFFECTSTICKS = 5;
+    public static final int EFFECT_DURATION = MAXTICKS * MAXEFFECTSTICKS * 2;
+
     private int counter = MAXTICKS;
+    private int effectCounter = MAXEFFECTSTICKS;
 
     private static Potion witherEffect;
     private static Potion weaknessEffect;
     private static Potion poisonEffect;
+    private static Potion slownessEffect;
 
     private static void getPotions() {
         if (witherEffect == null) {
             witherEffect = Potion.REGISTRY.getObject(new ResourceLocation("wither"));
             weaknessEffect = Potion.REGISTRY.getObject(new ResourceLocation("weakness"));
             poisonEffect = Potion.REGISTRY.getObject(new ResourceLocation("poison"));
+            slownessEffect = Potion.REGISTRY.getObject(new ResourceLocation("slowness"));
         }
     }
 
@@ -57,34 +67,56 @@ public class ForgeEventHandlers {
             CleanAirManager manager = CleanAirManager.getManager();
             manager.tick(evt.world);
 
-            // @todo Set timeout for this
-            for (Entity entity : evt.world.loadedEntityList) {
-                int poison = manager.getPoison(entity.getPosition().up());
-                if (entity instanceof EntityPlayer) {
-                    if (poison > 250) {
-                        entity.attackEntityFrom(DamageSource.GENERIC, 1000);
-                    }
-
-                    if (poison > 220) {
-                        getPotions();
-                        ((EntityPlayer) entity).addPotionEffect(new PotionEffect(witherEffect, 10));
-                    }
-
-                    if (poison > 180) {
-                        getPotions();
-                        ((EntityPlayer) entity).addPotionEffect(new PotionEffect(poisonEffect, 10));
-                    }
-
-                    if (poison > 100) {
-                        getPotions();
-                        ((EntityPlayer) entity).addPotionEffect(new PotionEffect(weaknessEffect, 10));
-                    }
-                }
+            effectCounter--;
+            if (effectCounter <= 0) {
+                effectCounter = MAXEFFECTSTICKS;
+                handleEffects(evt, manager);
             }
 
             // @todo temporary debug code!
             PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(manager.getCleanAir());
             NTBMessages.INSTANCE.sendToAll(message);
+        }
+    }
+
+    private void handleEffects(TickEvent.WorldTickEvent evt, CleanAirManager manager) {
+        List<Pair<Integer, Entity>> affectedEntities = new ArrayList<>();
+        for (Entity entity : evt.world.loadedEntityList) {
+            if (entity instanceof EntityPlayer) {
+                int poison = manager.getPoison(entity.getPosition().up());
+                if (poison > 30) {
+                    affectedEntities.add(Pair.of(poison, entity));
+                }
+            }
+        }
+
+        for (Pair<Integer, Entity> pair : affectedEntities) {
+            Entity entity = pair.getRight();
+            Integer poison = pair.getLeft();
+
+            if (poison > 250) {
+                entity.attackEntityFrom(DamageSource.GENERIC, 1000);
+            } else {
+                if (poison > 220) {
+                    getPotions();
+                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(witherEffect, EFFECT_DURATION));
+                }
+
+                if (poison > 150) {
+                    getPotions();
+                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(poisonEffect, EFFECT_DURATION));
+                }
+
+                if (poison > 60) {
+                    getPotions();
+                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(slownessEffect, EFFECT_DURATION));
+                }
+
+                if (poison > 30) {
+                    getPotions();
+                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(weaknessEffect, EFFECT_DURATION));
+                }
+            }
         }
     }
 
