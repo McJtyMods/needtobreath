@@ -1,16 +1,19 @@
 package mcjty.needtobreathe;
 
 import mcjty.lib.McJtyRegister;
+import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.data.CleanAirManager;
-import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
 import mcjty.needtobreathe.network.NTBMessages;
+import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -43,6 +46,7 @@ public class ForgeEventHandlers {
     private static Potion weaknessEffect;
     private static Potion poisonEffect;
     private static Potion slownessEffect;
+
 
     private static void getPotions() {
         if (witherEffect == null) {
@@ -82,9 +86,9 @@ public class ForgeEventHandlers {
     private void handleEffects(TickEvent.WorldTickEvent evt, CleanAirManager manager) {
         List<Pair<Integer, Entity>> affectedEntities = new ArrayList<>();
         for (Entity entity : evt.world.loadedEntityList) {
-            if (entity instanceof EntityPlayer) {
+            if (entity instanceof EntityLivingBase) {
                 int poison = manager.getPoison(entity.getPosition().up());
-                if (poison > 30) {
+                if (poison > 20) {
                     affectedEntities.add(Pair.of(poison, entity));
                 }
             }
@@ -94,27 +98,21 @@ public class ForgeEventHandlers {
             Entity entity = pair.getRight();
             Integer poison = pair.getLeft();
 
-            if (poison > 250) {
-                entity.attackEntityFrom(DamageSource.GENERIC, 1000);
+            PotionEffectConfig[] potionConfigs;
+
+            if (entity instanceof EntityPlayer) {
+                potionConfigs = Config.getPlayerEffects();
+            } else if (entity instanceof IMob) {
+                potionConfigs = Config.getHostileEffects();
             } else {
-                if (poison > 220) {
-                    getPotions();
-                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(witherEffect, EFFECT_DURATION));
-                }
+                potionConfigs = Config.getPassiveEffects();
+            }
 
-                if (poison > 150) {
-                    getPotions();
-                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(poisonEffect, EFFECT_DURATION));
-                }
-
-                if (poison > 60) {
-                    getPotions();
-                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(slownessEffect, EFFECT_DURATION));
-                }
-
-                if (poison > 30) {
-                    getPotions();
-                    ((EntityPlayer) entity).addPotionEffect(new PotionEffect(weaknessEffect, EFFECT_DURATION));
+            if (potionConfigs.length > 0) {
+                for (PotionEffectConfig config : potionConfigs) {
+                    if (poison >= config.getPoisonThresshold()) {
+                        ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(config.getPotion(), EFFECT_DURATION, config.getAmplitude()));
+                    }
                 }
             }
         }
