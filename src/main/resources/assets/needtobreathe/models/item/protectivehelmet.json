@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "restrictions:items/glassboots"
+    "layer0": "needtobreathe:items/protectivehelmet"
   }
 }

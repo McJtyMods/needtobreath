@@ -4,6 +4,8 @@ import mcjty.lib.McJtyRegister;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.items.ModItems;
+import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
 import net.minecraft.block.Block;
@@ -11,10 +13,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.potion.Potion;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -33,6 +35,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
         McJtyRegister.registerItems(NeedToBreathe.instance, event.getRegistry());
+        event.getRegistry().register(ModItems.protectiveHelmet);
     }
 
     public static final int MAXTICKS = 10;
@@ -41,21 +44,6 @@ public class ForgeEventHandlers {
 
     private int counter = MAXTICKS;
     private int effectCounter = MAXEFFECTSTICKS;
-
-    private static Potion witherEffect;
-    private static Potion weaknessEffect;
-    private static Potion poisonEffect;
-    private static Potion slownessEffect;
-
-
-    private static void getPotions() {
-        if (witherEffect == null) {
-            witherEffect = Potion.REGISTRY.getObject(new ResourceLocation("wither"));
-            weaknessEffect = Potion.REGISTRY.getObject(new ResourceLocation("weakness"));
-            poisonEffect = Potion.REGISTRY.getObject(new ResourceLocation("poison"));
-            slownessEffect = Potion.REGISTRY.getObject(new ResourceLocation("slowness"));
-        }
-    }
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent evt) {
@@ -102,6 +90,12 @@ public class ForgeEventHandlers {
 
             if (entity instanceof EntityPlayer) {
                 potionConfigs = Config.getPlayerEffects();
+                EntityPlayer player = (EntityPlayer) entity;
+                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                if (!helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet) {
+                    // Reduce poison to 50% (@todo config!)
+                    poison = (int) (poison * 0.5);
+                }
             } else if (entity instanceof IMob) {
                 potionConfigs = Config.getHostileEffects();
             } else {
