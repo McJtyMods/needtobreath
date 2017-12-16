@@ -156,11 +156,33 @@ public class CleanAirManager extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-
+        int[] posarray = nbt.getIntArray("airpos");
+        byte[] airarray = nbt.getByteArray("airval");
+        cleanAir.clear();
+        for (int i = 0 ; i < airarray.length ; i++) {
+            int x = posarray[i*3+0];
+            int y = posarray[i*3+1];
+            int z = posarray[i*3+2];
+            cleanAir.put(LongPos.toLong(x, y, z), airarray[i]);
+        }
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        int posarray[] = new int[cleanAir.size() * 3];
+        byte airarray[] = new byte[cleanAir.size()];
+
+        int idx = 0;
+        for (Map.Entry<Long, Byte> entry : cleanAir.entrySet()) {
+            BlockPos pos = BlockPos.fromLong(entry.getKey());
+            airarray[idx] = entry.getValue();
+            posarray[idx++] = pos.getX();
+            posarray[idx++] = pos.getY();
+            posarray[idx++] = pos.getZ();
+        }
+        compound.setIntArray("airpos", posarray);
+        compound.setByteArray("airval", airarray);
+
         return null;
     }
 }
