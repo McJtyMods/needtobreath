@@ -4,6 +4,7 @@ import mcjty.lib.McJtyRegister;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
@@ -13,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,6 +38,7 @@ public class ForgeEventHandlers {
     public void registerItems(RegistryEvent.Register<Item> event) {
         McJtyRegister.registerItems(NeedToBreathe.instance, event.getRegistry());
         event.getRegistry().register(ModItems.protectiveHelmet);
+        event.getRegistry().register(ModItems.informationGlasses);
     }
 
     public static final int MAXTICKS = 10;
@@ -65,9 +68,13 @@ public class ForgeEventHandlers {
                 handleEffects(evt, manager);
             }
 
-            // @todo temporary debug code!
             PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(manager.getCleanAir());
-            NTBMessages.INSTANCE.sendToAll(message);
+            for (EntityPlayer player : evt.world.playerEntities) {
+                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+                    NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
+                }
+            }
         }
     }
 
@@ -93,8 +100,8 @@ public class ForgeEventHandlers {
                 EntityPlayer player = (EntityPlayer) entity;
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
                 if (!helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet) {
-                    // Reduce poison to 50% (@todo config!)
-                    poison = (int) (poison * 0.5);
+                    poison = (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+                    System.out.println("poison = " + poison);
                 }
             } else if (entity instanceof IMob) {
                 potionConfigs = Config.getHostileEffects();

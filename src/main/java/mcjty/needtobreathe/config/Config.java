@@ -14,6 +14,8 @@ public class Config {
     public static int PURIFIER_TICKSPERCOAL = 30*20;
     public static int PURIFIER_MAXCOALTICKS = PURIFIER_TICKSPERCOAL * 18;
 
+    public static float PROTECTIVE_HELMET_FACTOR = 0.4f;
+
     public static String[] POTION_EFFECTS_PLAYER = { "30,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison", "210,minecraft:wither", "250,minecraft:instant_damage@1000" };
     public static String[] POTION_EFFECTS_PASSIVE = { "30,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
     public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
@@ -70,6 +72,7 @@ public class Config {
         POTION_EFFECTS_PLAYER = cfg.getStringList("potionEffectsPlayer", CATEGORY_EFFECTS, POTION_EFFECTS_PLAYER, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_PASSIVE = cfg.getStringList("potionEffectsPassive", CATEGORY_EFFECTS, POTION_EFFECTS_PASSIVE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_HOSTILE = cfg.getStringList("potionEffectsHostile", CATEGORY_EFFECTS, POTION_EFFECTS_HOSTILE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
+        PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_MACHINES, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
     }
 
     private static void initMachineSettings(Configuration cfg) {

@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.rendering;
 
 import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketRequestPoisonFromServer;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -44,12 +47,16 @@ public class NTBOverlayRenderer {
         if (cleanAir != null) {
             Minecraft mc = Minecraft.getMinecraft();
             EntityPlayerSP p = mc.player;
-            int cnt = cleanAir.size();
-            if (cnt != prevCnt) {
-                System.out.println("cleanAir = " + cnt);
-                prevCnt = cnt;
+
+            ItemStack helmet = p.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+            if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+                int cnt = cleanAir.size();
+                if (cnt != prevCnt) {
+                    System.out.println("cleanAir = " + cnt);
+                    prevCnt = cnt;
+                }
+                renderHighlightedBlocks(event, p, cleanAir);
             }
-//            renderHighlightedBlocks(event, p, cleanAir);
         }
     }
 
