@@ -94,7 +94,9 @@ public class NTBOverlayRenderer {
         poisonTicks--;
         if (poisonTicks <= 0) {
             poisonTicks = 10;
-            NTBMessages.INSTANCE.sendToServer(new PacketRequestPoisonFromServer(Minecraft.getMinecraft().player.getPosition().up()));
+            BlockPos pos = Minecraft.getMinecraft().player.getPosition().up();
+//            System.out.println("pos.toLong() = " + pos.toLong());
+            NTBMessages.INSTANCE.sendToServer(new PacketRequestPoisonFromServer(pos));
         }
 
         if (poison > 0) {

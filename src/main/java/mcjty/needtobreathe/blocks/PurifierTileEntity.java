@@ -59,10 +59,10 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
 
                 if (data.isValid(world, pp)) {
                     int workdone = 0;
-                    for (int dx = -1 ; dx <= 1 ; dx++) {
-                        for (int dy = -1 ; dy <= 1 ; dy++) {
-                            for (int dz = -1 ; dz <= 1 ; dz++) {
-                                long p2 = LongPos.toLong(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                long p2 = LongPos.toLong(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
                                 if (data.isValid(world, p2)) {
                                     workdone += data.fillCleanAir(p2);
                                 }

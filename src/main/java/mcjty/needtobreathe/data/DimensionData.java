@@ -173,7 +173,7 @@ public class DimensionData {
         for (Long pos : positions) {
             int air = getAir(pos);
             air--;
-            if (air < 5) {
+            if (air < 5 || !isValid(world, pos)) {
                 cleanAir.remove(pos);
             } else {
                 // Evenly distribute all air to the adjacent spots (and this one)
@@ -195,8 +195,8 @@ public class DimensionData {
                         totalAir -= air;
                         cleanAir.put(adjacent, (byte) air);
                     }
-                    cleanAir.put(pos, (byte) totalAir);
                 }
+                cleanAir.put(pos, (byte) air);
             }
         }
     }
