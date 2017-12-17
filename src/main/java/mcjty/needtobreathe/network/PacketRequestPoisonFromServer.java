@@ -3,6 +3,8 @@ package mcjty.needtobreathe.network;
 import io.netty.buffer.ByteBuf;
 import mcjty.lib.network.NetworkTools;
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.data.DimensionData;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -38,9 +40,16 @@ public class PacketRequestPoisonFromServer implements IMessage {
         }
 
         private void handle(PacketRequestPoisonFromServer message, MessageContext ctx) {
-            int poison = CleanAirManager.getManager().getPoison(message.pos);
+            EntityPlayerMP player = ctx.getServerHandler().player;
+            DimensionData data = CleanAirManager.getManager().getDimensionData(player.getEntityWorld().provider.getDimension());
+            int poison;
+            if (data != null) {
+                poison = data.getPoison(message.pos);
+            } else {
+                poison = 0;
+            }
             PacketPoisonFromServer msg = new PacketPoisonFromServer(poison);
-            NTBMessages.INSTANCE.sendTo(msg, ctx.getServerHandler().player);
+            NTBMessages.INSTANCE.sendTo(msg, player);
         }
 
     }

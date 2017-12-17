@@ -2,6 +2,9 @@ package mcjty.needtobreathe.config;
 
 import net.minecraftforge.common.config.Configuration;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Config {
 
     private static final String CATEGORY_GENERAL = "general";
@@ -20,9 +23,41 @@ public class Config {
     public static String[] POTION_EFFECTS_PASSIVE = { "30,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
     public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
 
+    public static String[] DIMENSIONS_WITH_POISON = { "-1" };
+    public static String[] DIMENSIONS_WITHOUT_POISON = { };
+
+
     private static PotionEffectConfig[] playerEffects = null;
     private static PotionEffectConfig[] passiveEffects = null;
     private static PotionEffectConfig[] hostileEffects = null;
+
+    private static boolean allHavePoison = false;
+    private static Set<Integer> dimensionsWithPoison = null;
+    private static Set<Integer> dimensionsWithoutPoison = null;
+
+    public static boolean hasPoison(int dimensionId) {
+        if (dimensionsWithPoison == null) {
+            dimensionsWithPoison = new HashSet<>();
+            for (String s : DIMENSIONS_WITH_POISON) {
+                s = s.toLowerCase();
+                if ("all".equals(s)) {
+                    allHavePoison = true;
+                    break;
+                }
+                dimensionsWithPoison.add(Integer.parseInt(s));
+            }
+            dimensionsWithoutPoison = new HashSet<>();
+            for (String s : DIMENSIONS_WITHOUT_POISON) {
+                dimensionsWithoutPoison.add(Integer.parseInt(s));
+            }
+        }
+        if (allHavePoison) {
+            return !dimensionsWithoutPoison.contains(dimensionId);
+        } else {
+            return dimensionsWithPoison.contains(dimensionId) && !dimensionsWithoutPoison.contains(dimensionId);
+        }
+    }
+
 
     public static PotionEffectConfig[] getPlayerEffects() {
         if (playerEffects == null) {
@@ -72,7 +107,9 @@ public class Config {
         POTION_EFFECTS_PLAYER = cfg.getStringList("potionEffectsPlayer", CATEGORY_EFFECTS, POTION_EFFECTS_PLAYER, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_PASSIVE = cfg.getStringList("potionEffectsPassive", CATEGORY_EFFECTS, POTION_EFFECTS_PASSIVE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_HOSTILE = cfg.getStringList("potionEffectsHostile", CATEGORY_EFFECTS, POTION_EFFECTS_HOSTILE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
-        PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_MACHINES, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
+        PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_EFFECTS, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
+        DIMENSIONS_WITH_POISON = cfg.getStringList("dimensionsWithPoison", CATEGORY_EFFECTS, DIMENSIONS_WITH_POISON, "List of dimensions where the air is poisonous. Use 'all' if you want all of them");
+        DIMENSIONS_WITHOUT_POISON = cfg.getStringList("dimensionsWithoutPoison", CATEGORY_EFFECTS, DIMENSIONS_WITHOUT_POISON, "List of dimensions where the air is not poisonous. Used when 'dimensionsWithPoison' is equal to 'all'");
     }
 
     private static void initMachineSettings(Configuration cfg) {

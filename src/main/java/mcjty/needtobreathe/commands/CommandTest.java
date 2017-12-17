@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.commands;
 
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -33,7 +34,10 @@ public class CommandTest implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (sender instanceof EntityPlayer) {
             BlockPos position = sender.getPosition().up();
-            CleanAirManager.getManager().fillCleanAir(position.toLong());
+            DimensionData data = CleanAirManager.getManager().getDimensionData(sender.getEntityWorld().provider.getDimension());
+            if (data != null) {
+                data.fillCleanAir(position.toLong());
+            }
         }
     }
 

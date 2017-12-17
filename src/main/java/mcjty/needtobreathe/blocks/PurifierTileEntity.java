@@ -6,6 +6,7 @@ import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
 import mcjty.lib.varia.BlockTools;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
+import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.data.LongPos;
 import mcjty.needtobreathe.network.IIntegerRequester;
 import net.minecraft.block.state.IBlockState;
@@ -47,18 +48,23 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
             isWorking = energyStored >= Config.PURIFIER_RFPERTICK && coalticks > 0;
             if (isWorking) {
                 CleanAirManager manager = CleanAirManager.getManager();
+                DimensionData data = manager.getDimensionData(world.provider.getDimension());
+                if (data == null) {
+                    // This dimension doesn't need a purifier
+                    return;
+                }
                 // Depending on how pure it already is we decrease this faster or slower
                 BlockPos p = getPurifyingSpot();
                 long pp = p.toLong();
 
-                if (manager.isValid(world, pp)) {
+                if (data.isValid(world, pp)) {
                     int workdone = 0;
                     for (int dx = -1 ; dx <= 1 ; dx++) {
                         for (int dy = -1 ; dy <= 1 ; dy++) {
                             for (int dz = -1 ; dz <= 1 ; dz++) {
                                 long p2 = LongPos.toLong(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
-                                if (manager.isValid(world, p2)) {
-                                    workdone += manager.fillCleanAir(p2);
+                                if (data.isValid(world, p2)) {
+                                    workdone += data.fillCleanAir(p2);
                                 }
                             }
                         }
