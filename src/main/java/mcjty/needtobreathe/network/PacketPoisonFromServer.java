@@ -37,7 +37,7 @@ public class PacketPoisonFromServer implements IMessage {
         }
 
         private void handle(PacketPoisonFromServer message, MessageContext ctx) {
-            NTBOverlayRenderer.poison = message.poison;
+            NTBOverlayRenderer.setPoison(message.poison);
         }
 
     }

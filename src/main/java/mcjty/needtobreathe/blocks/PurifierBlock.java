@@ -25,7 +25,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
+import java.text.DecimalFormat;
 import java.util.List;
+
+import static mcjty.theoneprobe.api.TextStyleClass.INFO;
+import static mcjty.theoneprobe.api.TextStyleClass.LABEL;
 
 public class PurifierBlock extends GenericBlock<PurifierTileEntity, PurifierContainer> {
 
@@ -68,6 +72,8 @@ public class PurifierBlock extends GenericBlock<PurifierTileEntity, PurifierCont
         TileEntity te = world.getTileEntity(data.getPos());
         if (te instanceof PurifierTileEntity) {
             probeInfo.progress(((PurifierTileEntity) te).getCoalticks(), ((PurifierTileEntity) te).getMaxCoalTicks());
+            DecimalFormat fmt = new DecimalFormat("#.##");
+            probeInfo.horizontal().text(LABEL + "Consumption: " + INFO + fmt.format(((PurifierTileEntity) te).getLastCoalPerTick()) + "/t");
         }
     }
 

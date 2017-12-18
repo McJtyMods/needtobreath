@@ -19,8 +19,8 @@ public class Config {
 
     public static float PROTECTIVE_HELMET_FACTOR = 0.4f;
 
-    public static String[] POTION_EFFECTS_PLAYER = { "30,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison", "210,minecraft:wither", "250,minecraft:instant_damage@1000" };
-    public static String[] POTION_EFFECTS_PASSIVE = { "30,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
+    public static String[] POTION_EFFECTS_PLAYER = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison", "210,minecraft:wither", "250,minecraft:instant_damage@1000" };
+    public static String[] POTION_EFFECTS_PASSIVE = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
     public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
 
     public static String[] DIMENSIONS_WITH_POISON = { "-1" };

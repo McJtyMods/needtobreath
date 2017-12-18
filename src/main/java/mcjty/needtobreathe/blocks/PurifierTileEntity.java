@@ -29,6 +29,9 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
     private int coalticks = 0;
     private boolean isWorking = false;
 
+    private int lastCoalPerTick[] = new int[10];
+    private int lastCoalPerTickCounter = 0;
+
     // Client side only variables
     private int maxCoalTicks = 1;
 
@@ -58,32 +61,8 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
                 long pp = p.toLong();
 
                 if (data.isValid(world, pp)) {
-                    int workdone = 0;
-                    for (int dx = -1; dx <= 1; dx++) {
-                        for (int dy = -1; dy <= 1; dy++) {
-                            for (int dz = -1; dz <= 1; dz++) {
-                                long p2 = LongPos.toLong(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
-                                if (data.isValid(world, p2)) {
-                                    workdone += data.fillCleanAir(p2);
-                                }
-                            }
-                        }
-                    }
-                    if (workdone < 4) {
-                        // Not much done to do. It is as pure as can be
-                    } else if (workdone < 50) {
-                        // Fair amount
-                        coalticks--;
-                    } else if (workdone < 100) {
-                        coalticks -= 2;
-                    } else if (workdone < 200) {
-                        coalticks -= 3;
-                    } else {
-                        coalticks -= 4;
-                    }
-                    if (coalticks < 0) {
-                        coalticks = 0;
-                    }
+                    int workdone = purifyAir(data, pp);
+                    consumeCoal(workdone);
                     consumeEnergy(Config.PURIFIER_RFPERTICK);
                 }
             }
@@ -91,6 +70,74 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
             if (isWorking != oldIsWorking) {
                 markDirtyClient();
             }
+        }
+    }
+
+    private int purifyAir(DimensionData data, long pp) {
+        int workdone = 0;
+        workdone += data.fillCleanAir(pp);
+        long p2;
+        p2 = LongPos.posDown(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+        p2 = LongPos.posUp(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+        p2 = LongPos.posNorth(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+        p2 = LongPos.posSouth(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+        p2 = LongPos.posWest(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+        p2 = LongPos.posEast(pp);
+        if (data.isValid(world, p2)) {
+            workdone += data.fillCleanAir(p2);
+        }
+//                    for (int dx = -1; dx <= 1; dx++) {
+//                        for (int dy = -1; dy <= 1; dy++) {
+//                            for (int dz = -1; dz <= 1; dz++) {
+//                                long p2 = LongPos.toLong(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
+//                                if (data.isValid(world, p2)) {
+//                                    workdone += data.fillCleanAir(p2);
+//                                }
+//                            }
+//                        }
+//                    }
+        return workdone;
+    }
+
+    private void consumeCoal(int workdone) {
+        int lt;
+        if (workdone < 4) {
+            // Not much done to do. It is as pure as can be
+            lt = 0;
+        } else if (workdone < 50) {
+            // Fair amount
+            lt = 1;
+        } else if (workdone < 100) {
+            lt = 2;
+        } else if (workdone < 200) {
+            lt = 3;
+        } else if (workdone < 400) {
+            lt = 4;
+        } else if (workdone < 1000) {
+            lt = 5;
+        } else {
+            lt = 6;
+        }
+        lastCoalPerTick[lastCoalPerTickCounter] = lt;
+        lastCoalPerTickCounter = (lastCoalPerTickCounter+1)%lastCoalPerTick.length;
+        coalticks -= lt;
+        if (coalticks < 0) {
+            coalticks = 0;
         }
     }
 
@@ -153,6 +200,15 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
 
     public int getCoalticks() {
         return coalticks;
+    }
+
+    public float getLastCoalPerTick() {
+        float t = 0;
+        for (int tick : lastCoalPerTick) {
+            t += tick;
+        }
+
+        return t / lastCoalPerTick.length;
     }
 
     public int getMaxCoalTicks() {

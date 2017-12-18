@@ -2,6 +2,7 @@ package mcjty.needtobreathe.rendering;
 
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.items.InformationGlasses;
+import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketRequestPoisonFromServer;
 import net.minecraft.client.Minecraft;
@@ -45,11 +46,8 @@ public class NTBOverlayRenderer {
 
 
         if (cleanAir != null) {
-            Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayerSP p = mc.player;
-
-            ItemStack helmet = p.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-            if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+            EntityPlayerSP p = Minecraft.getMinecraft().player;
+            if (hasGlasses()) {
                 int cnt = cleanAir.size();
                 if (cnt != prevCnt) {
                     System.out.println("cleanAir = " + cnt);
@@ -60,31 +58,42 @@ public class NTBOverlayRenderer {
         }
     }
 
+    private static boolean hasGlasses() {
+        EntityPlayerSP p = Minecraft.getMinecraft().player;
+        ItemStack helmet = p.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses;
+    }
+
+    private static boolean hasHelmet() {
+        EntityPlayerSP p = Minecraft.getMinecraft().player;
+        ItemStack helmet = p.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet;
+    }
+
     // Poison from server
-    public static int poison = 0;
-    private static int poisonTicks = 10;
+    private static int[] poison = new int[10];
+    private static int poisonIdx = 0;
+    private static int poisonTicks = 5;
+
+    static {
+        for (int i = 0 ; i < poison.length ; i++) {
+            poison[i] = 0;
+        }
+    }
+
+    public static void setPoison(int p) {
+        poison[poisonIdx] = p;
+        poisonIdx = (poisonIdx+1)%10;
+    }
 
     public static void onRenderGame(RenderGameOverlayEvent event) {
         if (event.isCancelable() || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             return;
         }
 
-//        if (RadiationConfiguration.radiationOverlayX < 0) {
-//            return;
-//        }
-
-//        EntityPlayerSP player = Minecraft.getMinecraft().player;
-//        if (player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
-//            return;
-//        }
-
-//        if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() != ModItems.radiationMonitorItem) {
-//            return;
-//        }
-
-
-
-//        RadiationMonitorItem.fetchRadiation(player);
+        if (!(hasGlasses() || hasHelmet())) {
+            return;
+        }
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glDisable(GL11.GL_LIGHTING);
@@ -93,22 +102,30 @@ public class NTBOverlayRenderer {
 
         poisonTicks--;
         if (poisonTicks <= 0) {
-            poisonTicks = 10;
+            poisonTicks = 9;   // Not in sync with the world poison ticker to get more accurate averages
             BlockPos pos = Minecraft.getMinecraft().player.getPosition().up();
-//            System.out.println("pos.toLong() = " + pos.toLong());
             NTBMessages.INSTANCE.sendToServer(new PacketRequestPoisonFromServer(pos));
         }
 
-        if (poison > 0) {
-            fontRenderer.drawString(
-                    "Poison: " + (poison * 100 / 255) + "%",
-                    200, 10, //RadiationConfiguration.radiationOverlayX, RadiationConfiguration.radiationOverlayY,
-                    0xffff0000); //RadiationConfiguration.radiationOverlayColor);
+        int p = 0;
+        int maxp = 0;
+        for (int pois : poison) {
+            p += pois;
+            if (pois > maxp) {
+                maxp = pois;
+            }
+        }
+        p = p / poison.length;
+        int x = 200;
+        x = fontRenderer.drawString("Poison ", x, 10, 0xffffffff);
+
+        if (p > 0) {
+            x = fontRenderer.drawString("avg ", x, 10, 0xffffffff);
+            x = fontRenderer.drawString("" + (p * 100 / 255) + "%", x, 10, 0xffff0000);
+            x = fontRenderer.drawString("  max ", x, 10, 0xffffffff);
+            x = fontRenderer.drawString("" + (maxp * 100 / 255) + "%", x, 10, 0xffff0000);
         } else {
-            fontRenderer.drawString(
-                    "No poison detected",
-                    200, 10, //RadiationConfiguration.radiationOverlayX, RadiationConfiguration.radiationOverlayY,
-                    0xff00ff00); //RadiationConfiguration.radiationOverlayColorNoRadiation);
+            x = fontRenderer.drawString("NONE", x, 10, 0xff00ff00);
         }
     }
 

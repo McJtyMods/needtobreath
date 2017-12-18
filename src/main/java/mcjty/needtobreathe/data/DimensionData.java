@@ -100,7 +100,7 @@ public class DimensionData {
         if (b == null) {
             return 255;
         }
-        return 255-b;
+        return 255-(b & 0xff);
     }
 
 
@@ -108,13 +108,14 @@ public class DimensionData {
         counter--;
         if (counter <= 0) {
             counter = MAXTICKS;
-            tick(world);
 
             effectCounter--;
             if (effectCounter <= 0) {
                 effectCounter = MAXEFFECTSTICKS;
                 handleEffects(world);
             }
+
+            tick(world);
 
             PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAir());
             for (EntityPlayer player : world.playerEntities) {
@@ -148,6 +149,7 @@ public class DimensionData {
                 potionConfigs = Config.getPlayerEffects();
                 EntityPlayer player = (EntityPlayer) entity;
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                System.out.println("poison = " + poison);
                 if (!helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet) {
                     poison = (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
                 }
