@@ -4,6 +4,7 @@ import mcjty.lib.base.ModBase;
 import mcjty.needtobreathe.commands.CommandTest;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.proxy.CommonProxy;
+import mcjty.rftools.RFTools;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -14,11 +15,14 @@ import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NeedToBreathe.MODID, name = "NeedToBreathe",
-        dependencies = "after:forge@[" + NeedToBreathe.MIN_FORGE_VER + ",)",
+        dependencies =
+                "required-after:mcjtylib_ng@[" + RFTools.MIN_MCJTYLIB_VER + ",);" +
+                "after:forge@[" + NeedToBreathe.MIN_FORGE_VER + ",)",
         version = NeedToBreathe.VERSION,
         acceptedMinecraftVersions = "[1.12,1.13)")
 public class NeedToBreathe implements ModBase {
     public static final String MODID = "needtobreathe";
+    public static final String MIN_MCJTYLIB_VER = "2.5.0";
     public static final String VERSION = "0.0.2alpha";
     public static final String MIN_FORGE_VER = "14.22.0.2464";
 
