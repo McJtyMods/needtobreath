@@ -7,13 +7,13 @@ import mcjty.lib.gui.layout.PositionalLayout;
 import mcjty.lib.gui.widgets.EnergyBar;
 import mcjty.lib.gui.widgets.Panel;
 import mcjty.lib.gui.widgets.Widget;
+import mcjty.lib.network.Arguments;
+import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
-import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.network.NTBMessages;
-import mcjty.needtobreathe.network.PacketRequestIntegersFromServer;
 import net.minecraft.util.ResourceLocation;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
     public static final int PURIFIER_WIDTH = 180;
@@ -55,7 +55,8 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
         toplevel.setBounds(new Rectangle(guiLeft, guiTop, xSize, ySize));
 
         window = new Window(this, toplevel);
-        NTBMessages.INSTANCE.sendToServer(new PacketRequestIntegersFromServer(tileEntity.getPos()));
+        sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
+                Arguments.builder().value(tileEntity.getPos()).build());
 //        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 
@@ -68,7 +69,8 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
         coalBar.setMaxValue(tileEntity.getMaxCoalTicks());
         coalBar.setValue(tileEntity.getCoalticks());
 
-        NTBMessages.INSTANCE.sendToServer(new PacketRequestIntegersFromServer(tileEntity.getPos()));
+        sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
+                Arguments.builder().value(tileEntity.getPos()).build());
 //        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }

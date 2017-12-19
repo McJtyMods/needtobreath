@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.lib.McJtyLib;
 import mcjty.lib.base.GeneralConfig;
 import mcjty.lib.network.PacketHandler;
+import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.ForgeEventHandlers;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.blocks.ModBlocks;
@@ -33,6 +34,7 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         McJtyLib.preInit(e);
+        CommandHandler.registerCommands();
 
         GeneralConfig.preInit(e);
 

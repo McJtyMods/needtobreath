@@ -1,10 +1,12 @@
 package mcjty.needtobreathe.rendering;
 
+import mcjty.lib.network.Arguments;
+import mcjty.lib.network.PacketSendServerCommand;
+import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
-import mcjty.needtobreathe.network.PacketRequestPoisonFromServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -104,7 +106,8 @@ public class NTBOverlayRenderer {
         if (poisonTicks <= 0) {
             poisonTicks = 9;   // Not in sync with the world poison ticker to get more accurate averages
             BlockPos pos = Minecraft.getMinecraft().player.getPosition().up();
-            NTBMessages.INSTANCE.sendToServer(new PacketRequestPoisonFromServer(pos));
+            NTBMessages.INSTANCE.sendToServer(new PacketSendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTPOISON,
+                    Arguments.builder().value(pos).build()));
         }
 
         int p = 0;

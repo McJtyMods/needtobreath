@@ -1,8 +1,6 @@
 package mcjty.needtobreathe.network;
 
 import mcjty.lib.network.PacketHandler;
-import mcjty.lib.network.PacketIntegerFromServer;
-import mcjty.lib.network.PacketRequestIntegerFromServer;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -13,8 +11,6 @@ public class NTBMessages {
         INSTANCE = net;
 
         // Server side
-        net.registerMessage(PacketRequestIntegersFromServer.Handler.class, PacketRequestIntegersFromServer.class, PacketHandler.nextID(), Side.SERVER);
-        net.registerMessage(PacketRequestPoisonFromServer.Handler.class, PacketRequestPoisonFromServer.class, PacketHandler.nextID(), Side.SERVER);
 
         // Client side
         net.registerMessage(PacketSendCleanAirToClient.Handler.class, PacketSendCleanAirToClient.class, PacketHandler.nextID(), Side.CLIENT);
