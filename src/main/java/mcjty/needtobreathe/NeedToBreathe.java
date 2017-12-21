@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
         acceptedMinecraftVersions = "[1.12,1.13)")
 public class NeedToBreathe implements ModBase {
     public static final String MODID = "needtobreathe";
-    public static final String MIN_MCJTYLIB_VER = "2.5.0";
+    public static final String MIN_MCJTYLIB_VER = "2.5.2";
     public static final String VERSION = "0.0.2alpha";
     public static final String MIN_FORGE_VER = "14.22.0.2464";
 

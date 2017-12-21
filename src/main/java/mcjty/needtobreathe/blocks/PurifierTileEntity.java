@@ -3,7 +3,7 @@ package mcjty.needtobreathe.blocks;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
-import mcjty.lib.varia.BlockTools;
+import mcjty.lib.varia.OrientationTools;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
@@ -143,8 +143,7 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
 
     private BlockPos getPurifyingSpot() {
         IBlockState state = world.getBlockState(pos);
-        int meta = state.getBlock().getMetaFromState(state);
-        EnumFacing k = BlockTools.getOrientation(meta);
+        EnumFacing k = OrientationTools.getOrientation(state);
         return pos.offset(k);
     }
 
