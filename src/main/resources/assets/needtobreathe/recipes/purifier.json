@@ -1,0 +1,35 @@
+{
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "rftools"
+      }
+    }
+  ],
+  "result": {
+    "item": "needtobreathe:purifier"
+  },
+  "pattern": [
+    "ccc",
+    "ggg",
+    "iMi"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "minecraft:iron_block"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "item": "minecraft:coal",
+      "data": 0
+    },
+    "g": {
+      "item": "minecraft:gravel"
+    }
+  }
+}

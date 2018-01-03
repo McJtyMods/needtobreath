@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "needtobreathe:informationglasses"
+  },
+  "pattern": [
+    " c ",
+    "pip",
+    "rrr"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "p": {
+      "item": "minecraft:glass_pane"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "c": {
+      "item": "minecraft:comparator"
+    }
+  }
+}

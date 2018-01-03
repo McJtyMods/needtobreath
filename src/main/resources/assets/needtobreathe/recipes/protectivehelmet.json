@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "needtobreathe:protectivehelmet"
+  },
+  "pattern": [
+    " p ",
+    "php",
+    "ccc"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "h": {
+      "item": "minecraft:diamond_helmet"
+    },
+    "p": {
+      "item": "minecraft:glass_pane"
+    },
+    "c": {
+      "item": "minecraft:coal",
+      "data": 0
+    }
+  }
+}
