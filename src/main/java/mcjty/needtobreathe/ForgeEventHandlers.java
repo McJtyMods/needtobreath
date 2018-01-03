@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -39,6 +40,19 @@ public class ForgeEventHandlers {
         DimensionData data = manager.getDimensionData(world.provider.getDimension());
         if (data != null) {
             data.worldTick(world, manager);
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent evt) {
+        World world = evt.getWorld();
+        if (!Config.hasPoison(world.provider.getDimension())) {
+            return;
+        }
+        CleanAirManager manager = CleanAirManager.getManager();
+        DimensionData data = manager.getDimensionData(world.provider.getDimension());
+        if (data != null) {
+            data.fillCleanAir(evt.getPos().toLong());
         }
     }
 }
