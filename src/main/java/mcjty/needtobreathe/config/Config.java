@@ -1,6 +1,9 @@
 package mcjty.needtobreathe.config;
 
+import mcjty.lib.varia.Logging;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,9 +26,26 @@ public class Config {
     public static String[] POTION_EFFECTS_PASSIVE = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
     public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
 
+    private static String[] BLOCKS_BLOCKING = {
+            "minecraft:iron_door",
+            "minecraft:iron_trapdoor"
+    };
+    private static String[] BLOCKS_NONBLOCKING = {
+            "minecraft:wooden_door",
+            "minecraft:spruce_door",
+            "minecraft:birch_door",
+            "minecraft:jungle_door",
+            "minecraft:acacia_door",
+            "minecraft:dark_oak_door",
+            "minecraft:gravel",
+            "minecraft:sand",
+            "minecraft:ladder",
+            "minecraft:trapdoor",
+            "minecraft:hay_block"
+    };
+
     public static String[] DIMENSIONS_WITH_POISON = { "-1" };
     public static String[] DIMENSIONS_WITHOUT_POISON = { };
-
 
     private static PotionEffectConfig[] playerEffects = null;
     private static PotionEffectConfig[] passiveEffects = null;
@@ -34,6 +54,9 @@ public class Config {
     private static boolean allHavePoison = false;
     private static Set<Integer> dimensionsWithPoison = null;
     private static Set<Integer> dimensionsWithoutPoison = null;
+
+    private static Set<ResourceLocation> blocksBlocking = null;
+    private static Set<ResourceLocation> blocksNonBlocking = null;
 
     public static boolean hasPoison(int dimensionId) {
         if (dimensionsWithPoison == null) {
@@ -58,6 +81,36 @@ public class Config {
         }
     }
 
+
+    public static Set<ResourceLocation> getBlocksBlocking() {
+        if (blocksBlocking == null) {
+            blocksBlocking = new HashSet<>();
+            for (String s : BLOCKS_BLOCKING) {
+                ResourceLocation id = new ResourceLocation(s);
+                if (ForgeRegistries.BLOCKS.containsKey(id)) {
+                    blocksBlocking.add(id);
+                } else {
+                    Logging.getLogger().warn("Block with id '" + s + "' is missing!");
+                }
+            }
+        }
+        return blocksBlocking;
+    }
+
+    public static Set<ResourceLocation> getBlocksNonBlocking() {
+        if (blocksNonBlocking == null) {
+            blocksNonBlocking = new HashSet<>();
+            for (String s : BLOCKS_NONBLOCKING) {
+                ResourceLocation id = new ResourceLocation(s);
+                if (ForgeRegistries.BLOCKS.containsKey(id)) {
+                    blocksNonBlocking.add(id);
+                } else {
+                    Logging.getLogger().warn("Block with id '" + s + "' is missing!");
+                }
+            }
+        }
+        return blocksNonBlocking;
+    }
 
     public static PotionEffectConfig[] getPlayerEffects() {
         if (playerEffects == null) {
@@ -100,6 +153,8 @@ public class Config {
 
     private static void initGeneralSettings(Configuration cfg) {
         cfg.addCustomCategoryComment(CATEGORY_GENERAL, "General settings");
+        BLOCKS_BLOCKING = cfg.getStringList("blocksBlocking", CATEGORY_GENERAL, BLOCKS_BLOCKING, "List of blocks that block poison");
+        BLOCKS_NONBLOCKING = cfg.getStringList("blocksNonBlocking", CATEGORY_GENERAL, BLOCKS_NONBLOCKING, "List of blocks that don't block poison");
     }
 
     private static void initEffectsSettings(Configuration cfg) {

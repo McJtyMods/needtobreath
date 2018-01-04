@@ -6,6 +6,10 @@ import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
@@ -82,15 +86,33 @@ public class DimensionData {
             return false;
         }
         BlockPos p = BlockPos.fromLong(pos);
-        return !canCollideWith(world, p);
-    }
+        IBlockState state = world.getBlockState(p);
+        Block block = state.getBlock();
 
-    private static boolean canCollideWith(World world, BlockPos pos) {
-        if (world.isAirBlock(pos)) {
+        if (Config.getBlocksBlocking().contains(block.getRegistryName())) {
+            // Special case for doors
+            if (block instanceof BlockDoor) {
+                return state.getValue(BlockDoor.OPEN);
+            }
+            if (block instanceof BlockTrapDoor) {
+                return state.getValue(BlockTrapDoor.OPEN);
+            }
+
             return false;
         }
-        AxisAlignedBB box = world.getBlockState(pos).getCollisionBoundingBox(world, pos);
-        return box != null;
+        if (Config.getBlocksNonBlocking().contains(block.getRegistryName())) {
+            return true;
+        }
+
+        if (block.isAir(state, world, p)) {
+            return true;
+        } else {
+            AxisAlignedBB box = state.getCollisionBoundingBox(world, p);
+            if (box == null) {
+                return true;
+            }
+            return false;
+        }
     }
 
 
