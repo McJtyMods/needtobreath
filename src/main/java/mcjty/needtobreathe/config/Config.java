@@ -22,6 +22,10 @@ public class Config {
 
     public static float PROTECTIVE_HELMET_FACTOR = 0.4f;
 
+    public static int PLANT_GROWTH_POISON_DENY = 150;
+    public static int PLANT_GROWTH_POISON_SLOW = 70;
+    public static float PLANT_GROWTH_SLOWDOWN_FACTOR = .7f;
+
     public static String[] POTION_EFFECTS_PLAYER = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison", "210,minecraft:wither", "250,minecraft:instant_damage@1000" };
     public static String[] POTION_EFFECTS_PASSIVE = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
     public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
@@ -165,6 +169,10 @@ public class Config {
         PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_EFFECTS, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
         DIMENSIONS_WITH_POISON = cfg.getStringList("dimensionsWithPoison", CATEGORY_EFFECTS, DIMENSIONS_WITH_POISON, "List of dimensions where the air is poisonous. Use 'all' if you want all of them");
         DIMENSIONS_WITHOUT_POISON = cfg.getStringList("dimensionsWithoutPoison", CATEGORY_EFFECTS, DIMENSIONS_WITHOUT_POISON, "List of dimensions where the air is not poisonous. Used when 'dimensionsWithPoison' is equal to 'all'");
+
+        PLANT_GROWTH_POISON_DENY = cfg.getInt("plantGrowthPoisonDeny", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_DENY, 0, 256, "If poison is above this level plants cannot grow (256 to disable)");
+        PLANT_GROWTH_POISON_SLOW = cfg.getInt("plantGrowthPoisonSlow", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_SLOW, 0, 256, "If poison is above this level plants grow slower (256 to disable)");
+        PLANT_GROWTH_SLOWDOWN_FACTOR = cfg.getFloat("plantGrowthPoisonSlow", CATEGORY_EFFECTS, PLANT_GROWTH_SLOWDOWN_FACTOR, 0, 1, "How much is plant growth made slower. 0 means no slow down, 1 means no growth ever");
     }
 
     private static void initMachineSettings(Configuration cfg) {

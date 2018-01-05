@@ -7,9 +7,14 @@ import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -33,26 +38,63 @@ public class ForgeEventHandlers {
             return;
         }
         World world = evt.world;
-        if (!Config.hasPoison(world.provider.getDimension())) {
-            return;
-        }
-        CleanAirManager manager = CleanAirManager.getManager();
-        DimensionData data = manager.getDimensionData(world.provider.getDimension());
+        DimensionData data = getDimensionData(world);
         if (data != null) {
-            data.worldTick(world, manager);
+            data.worldTick(world);
         }
     }
 
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent evt) {
         World world = evt.getWorld();
-        if (!Config.hasPoison(world.provider.getDimension())) {
-            return;
-        }
-        CleanAirManager manager = CleanAirManager.getManager();
-        DimensionData data = manager.getDimensionData(world.provider.getDimension());
+        DimensionData data = getDimensionData(world);
         if (data != null) {
             data.fillCleanAir(evt.getPos().toLong());
         }
+    }
+
+    @SubscribeEvent
+    public void onCropGrowth(BlockEvent.CropGrowEvent.Pre evt) {
+        World world = evt.getWorld();
+        DimensionData data = getDimensionData(world);
+        if (data != null) {
+            if (preventPlantGrowth(world, data, evt.getPos())) {
+                evt.setResult(Event.Result.DENY);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBonemeal(BonemealEvent evt) {
+        World world = evt.getWorld();
+        DimensionData data = getDimensionData(world);
+        if (data != null) {
+            if (preventPlantGrowth(world, data, evt.getPos())) {
+                evt.setResult(Event.Result.ALLOW);
+                if (world.isRemote) {
+                    evt.getEntityPlayer().sendStatusMessage(new TextComponentString(TextFormatting.RED + "The bonemeal did not work!"), false);
+                }
+            }
+        }
+    }
+
+    private boolean preventPlantGrowth(World world, DimensionData data, BlockPos pos) {
+        int poison = data.getPoison(pos);
+        if (poison > Config.PLANT_GROWTH_POISON_DENY) {
+            return true;
+        } else if (poison > Config.PLANT_GROWTH_POISON_SLOW) {
+            if (world.rand.nextFloat() < Config.PLANT_GROWTH_SLOWDOWN_FACTOR) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private DimensionData getDimensionData(World world) {
+        if (!Config.hasPoison(world.provider.getDimension())) {
+            return null;
+        }
+        CleanAirManager manager = CleanAirManager.getManager();
+        return manager.getDimensionData(world.provider.getDimension());
     }
 }

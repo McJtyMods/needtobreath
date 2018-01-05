@@ -126,7 +126,7 @@ public class DimensionData {
     }
 
 
-    public void worldTick(World world, CleanAirManager manager) {
+    public void worldTick(World world) {
         counter--;
         if (counter <= 0) {
             counter = MAXTICKS;
@@ -147,7 +147,7 @@ public class DimensionData {
                 }
             }
         }
-        manager.save();
+        CleanAirManager.getManager().save();
     }
 
     private void handleEffects(World world) {
@@ -171,7 +171,6 @@ public class DimensionData {
                 potionConfigs = Config.getPlayerEffects();
                 EntityPlayer player = (EntityPlayer) entity;
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-                System.out.println("poison = " + poison);
                 if (!helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet) {
                     poison = (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
                 }
