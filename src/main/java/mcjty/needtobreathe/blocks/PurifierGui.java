@@ -38,15 +38,20 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
         super.initGui();
 
         int maxEnergyStored = tileEntity.getMaxEnergyStored();
-        energyBar = new EnergyBar(mc, this).setVertical().setMaxValue(maxEnergyStored).setLayoutHint(new PositionalLayout.PositionalHint(10, 7, 8, 54)).setShowText(false);
+        energyBar = new EnergyBar(mc, this).setVertical()
+                .setMaxValue(maxEnergyStored)
+                .setLayoutHint(new PositionalLayout.PositionalHint(10, 7, 8, 54))
+                .setTooltips("Amount of energy left", "for purifying air")
+                .setShowText(false);
         energyBar.setValue(GenericEnergyStorageTileEntity.getCurrentRF());
 
         coalBar = new EnergyBar(mc, this).setVertical().setMaxValue(tileEntity.getMaxCoalTicks())
                 .setLayoutHint(new PositionalLayout.PositionalHint(20, 7, 8, 54))
                 .setEnergyOnColor(0xffaaaaaa)
                 .setEnergyOffColor(0xff444444)
+                .setTooltips("Amount of coal left", "for purifying air")
                 .setShowText(false);
-        coalBar.setValue((int) tileEntity.getCoalticks());
+        coalBar.setValue(tileEntity.getCoalticks());
 
 
         Widget toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
