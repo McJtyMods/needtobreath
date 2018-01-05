@@ -111,7 +111,7 @@ public class DimensionData {
             if (box == null) {
                 return true;
             }
-            return false;
+            return !block.isOpaqueCube(state);
         }
     }
 
