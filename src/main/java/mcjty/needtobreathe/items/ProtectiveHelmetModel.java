@@ -15,16 +15,8 @@ public class ProtectiveHelmetModel extends ModelBiped {
     public static ProtectiveHelmetModel modelHelm;
 
     // Helmet
-    ModelRenderer helmettop;
-    ModelRenderer helmetside1;
-    ModelRenderer helmetside2;
-    ModelRenderer helmetbottom;
-    ModelRenderer helmetfront1;
-    ModelRenderer helmetfront2;
-    ModelRenderer helmetfront3;
-    ModelRenderer helmetfront4;
-    ModelRenderer helmetback;
-    ModelRenderer helmetvisor;
+    public ModelRenderer helmet_p;
+    public ModelRenderer controller_p;
 
     public ProtectiveHelmetModel() {
         textureWidth = 64;
@@ -32,79 +24,20 @@ public class ProtectiveHelmetModel extends ModelBiped {
 
         setupHelmet();
 
-        bipedHead.addChild(helmetback);
-        bipedHead.addChild(helmetbottom);
-        bipedHead.addChild(helmetfront1);
-        bipedHead.addChild(helmetfront2);
-        bipedHead.addChild(helmetfront3);
-        bipedHead.addChild(helmetfront4);
-        bipedHead.addChild(helmetside1);
-        bipedHead.addChild(helmetside2);
-        bipedHead.addChild(helmettop);
-        bipedHead.addChild(helmetvisor);
+        this.helmet_p.addChild(this.controller_p);
     }
 
     private void setupHelmet() {
-        helmettop = new ModelRenderer(this, 18, 0);
-        helmettop.addBox(0F, 0F, 0F, 8, 1, 8);
-        helmettop.setRotationPoint(-4F, -9F, -4F);
-        helmettop.setTextureSize(64, 32);
-        helmettop.mirror = true;
-        setRotation(helmettop, 0F, 0F, 0F);
-        helmetside1 = new ModelRenderer(this, 0, 9);
-        helmetside1.addBox(0F, 0F, 0F, 1, 8, 8);
-        helmetside1.setRotationPoint(4F, -8F, -4F);
-        helmetside1.setTextureSize(64, 32);
-        helmetside1.mirror = true;
-        setRotation(helmetside1, 0F, 0F, 0F);
-        helmetside2 = new ModelRenderer(this, 0, 9);
-        helmetside2.addBox(0F, 0F, 0F, 1, 8, 8);
-        helmetside2.setRotationPoint(-5F, -8F, -4F);
-        helmetside2.setTextureSize(64, 32);
-        helmetside2.mirror = true;
-        setRotation(helmetside2, 0F, 0F, 0F);
-        helmetbottom = new ModelRenderer(this, 18, 17);
-        helmetbottom.addBox(0F, 0F, 0F, 8, 0, 8);
-        helmetbottom.setRotationPoint(-4F, 0F, -4F);
-        helmetbottom.setTextureSize(64, 32);
-        helmetbottom.mirror = true;
-        setRotation(helmetbottom, 0F, 0F, 0F);
-        helmetfront1 = new ModelRenderer(this, 18, 9);
-        helmetfront1.addBox(0F, 0F, 0F, 8, 2, 1);
-        helmetfront1.setRotationPoint(-4F, -8F, -5F);
-        helmetfront1.setTextureSize(64, 32);
-        helmetfront1.mirror = true;
-        setRotation(helmetfront1, 0F, 0F, 0F);
-        helmetfront2 = new ModelRenderer(this, 18, 12);
-        helmetfront2.addBox(0F, 0F, 0F, 3, 4, 1);
-        helmetfront2.setRotationPoint(2F, -6F, -5F);
-        helmetfront2.setTextureSize(64, 32);
-        helmetfront2.mirror = true;
-        setRotation(helmetfront2, 0F, 0F, 0F);
-        helmetfront3 = new ModelRenderer(this, 18, 12);
-        helmetfront3.addBox(0F, 0F, 0F, 3, 4, 1);
-        helmetfront3.setRotationPoint(-5F, -6F, -5F);
-        helmetfront3.setTextureSize(64, 32);
-        helmetfront3.mirror = true;
-        setRotation(helmetfront3, 0F, 0F, 0F);
-        helmetfront4 = new ModelRenderer(this, 18, 9);
-        helmetfront4.addBox(0F, 0F, 0F, 8, 2, 1);
-        helmetfront4.setRotationPoint(-4F, -2F, -5F);
-        helmetfront4.setTextureSize(64, 32);
-        helmetfront4.mirror = true;
-        setRotation(helmetfront4, 0F, 0F, 0F);
-        helmetback = new ModelRenderer(this, 0, 0);
-        helmetback.addBox(0F, 0F, 0F, 8, 8, 1);
-        helmetback.setRotationPoint(-4F, -8F, 4F);
-        helmetback.setTextureSize(64, 32);
-        helmetback.mirror = true;
-        setRotation(helmetback, 0F, 0F, 0F);
-        helmetvisor = new ModelRenderer(this, 26, 12);
-        helmetvisor.addBox(0F, 0F, 0F, 4, 4, 0);
-        helmetvisor.setRotationPoint(-2F, -6F, -4F);
-        helmetvisor.setTextureSize(64, 32);
-        helmetvisor.mirror = true;
-        setRotation(helmetvisor, 0F, 0F, 0F);
+    	
+    	this.textureWidth = 64;
+        this.textureHeight = 32;
+        
+        this.helmet_p = new ModelRenderer(this, 0, 104);
+        this.helmet_p.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.helmet_p.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, 0.0F);
+        this.controller_p = new ModelRenderer(this, 36, 116);
+        this.controller_p.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.controller_p.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, 0.0F);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {

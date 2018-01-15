@@ -14,25 +14,26 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class InformationGlasses extends ItemArmor {
+public class ProtectiveHelmet2 extends ItemArmor {
 
-    public InformationGlasses() {
+    public ProtectiveHelmet2() {
         super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
-        setRegistryName("informationglasses");
-        setUnlocalizedName(NeedToBreathe.MODID + ".informationglasses");
+        setRegistryName("protectivehelmet");
+        setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet");
         setCreativeTab(NeedToBreathe.creativeTab);
     }
 
     @Override
     public void addInformation(ItemStack itemStack, World player, List<String> list, ITooltipFlag advancedToolTip) {
         super.addInformation(itemStack, player, list, advancedToolTip);
-        list.add("If you were these glasses you can see,");
-        list.add("where there is clean air");
+        list.add("If you were this helmet you will get,");
+        list.add("some protection against the poisonous");
+        list.add("atmosphere");
     }
 
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return NeedToBreathe.MODID+":textures/armor/glasses.png";
+        return NeedToBreathe.MODID+":textures/armor/helmet_2.png";
     }
 
     @SideOnly(Side.CLIENT)

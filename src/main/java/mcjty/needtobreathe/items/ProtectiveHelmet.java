@@ -33,7 +33,7 @@ public class ProtectiveHelmet extends ItemArmor {
 
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return NeedToBreathe.MODID+":textures/items/texturehelmet.png";
+        return NeedToBreathe.MODID+":textures/armor/helmet_1.png";
     }
 
     @SideOnly(Side.CLIENT)
