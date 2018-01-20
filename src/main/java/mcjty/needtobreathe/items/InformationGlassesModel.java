@@ -18,17 +18,14 @@ public class InformationGlassesModel extends ModelBiped {
     public ModelRenderer glasses;
 
     public InformationGlassesModel() {
+    	
         textureWidth = 64;
         textureHeight = 32;
-
-        setupHelmet();
-    }
-
-    private void setupHelmet() {
-
-        this.glasses = new ModelRenderer(this, 20, 63);
+        
+        float s = 2.01F;
+        this.glasses = new ModelRenderer(this, 0, 0);
         this.glasses.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.glasses.addBox(-4.5F, -6.0F, -4.5F, 9, 4, 9, 0.0F);
+        this.glasses.addBox(-4.5F, -6.0F, -4.5F, 9, 4, 9, s);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {

@@ -38,7 +38,7 @@ public class InformationGlasses extends ItemArmor {
     @SideOnly(Side.CLIENT)
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
-        return ProtectiveHelmetModel.getModel(entityLiving, itemStack);
+        return InformationGlassesModel.getModel(entityLiving, itemStack);
     }
 
 

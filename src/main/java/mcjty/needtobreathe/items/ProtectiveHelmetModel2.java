@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 public class ProtectiveHelmetModel2 extends ModelBiped {
 
-    public static ProtectiveHelmetModel2 modelHelm;
+    public static ProtectiveHelmetModel2 modelHelm2;
 
     // Helmet
     public ModelRenderer helmet_g;
@@ -23,41 +23,35 @@ public class ProtectiveHelmetModel2 extends ModelBiped {
     public ModelRenderer cannister_g;
 
     public ProtectiveHelmetModel2() {
-        textureWidth = 64;
-        textureHeight = 32;
 
-        setupHelmet();
+    	this.textureWidth = 64;
+        this.textureHeight = 32;
+        float s = 0.01F;
+
+        this.helmet_g = new ModelRenderer(this, 0, 0);
+        this.helmet_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.helmet_g.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, s);
+        this.respirator_g = new ModelRenderer(this, 46, 12);
+        this.respirator_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.respirator_g.addBox(-1.5F, -4.0F, -5.5F, 3, 7, 4, s);
+        this.controller_g = new ModelRenderer(this, 36, 12);
+        this.controller_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.controller_g.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, s);
+        this.connector_g = new ModelRenderer(this, 48, 0);
+        this.connector_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.connector_g.addBox(-0.5F, -3.0F, 4.5F, 1, 1, 1, s);
+        this.cannister_g = new ModelRenderer(this, 36, 0);
+        this.cannister_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.cannister_g.addBox(-1.5F, -2.0F, 4.5F, 3, 7, 3, s);
+        this.gas_g = new ModelRenderer(this, 52, 0);
+        this.gas_g.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.gas_g.addBox(-1.0F, -1.5F, 5.0F, 2, 6, 2, s);
         
         this.helmet_g.addChild(this.gas_g);
         this.helmet_g.addChild(this.connector_g);
         this.helmet_g.addChild(this.cannister_g);
         this.helmet_g.addChild(this.controller_g);
         this.helmet_g.addChild(this.respirator_g);
-    }
-
-    private void setupHelmet() {
-    	
-    	this.textureWidth = 64;
-        this.textureHeight = 32;
-        
-        this.gas_g = new ModelRenderer(this, 52, 104);
-        this.gas_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.gas_g.addBox(-1.0F, -1.5F, 5.0F, 2, 6, 2, 0.0F);
-        this.helmet_g = new ModelRenderer(this, 0, 104);
-        this.helmet_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.helmet_g.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, 0.0F);
-        this.connector_g = new ModelRenderer(this, 48, 104);
-        this.connector_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.connector_g.addBox(-0.5F, -3.0F, 4.5F, 1, 1, 1, 0.0F);
-        this.cannister_g = new ModelRenderer(this, 36, 104);
-        this.cannister_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.cannister_g.addBox(-1.5F, -2.0F, 4.5F, 3, 7, 3, 0.0F);
-        this.controller_g = new ModelRenderer(this, 36, 116);
-        this.controller_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.controller_g.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, 0.0F);
-        this.respirator_g = new ModelRenderer(this, 46, 116);
-        this.respirator_g.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.respirator_g.addBox(-1.5F, -4.0F, -5.5F, 3, 7, 4, 0.0F);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
@@ -74,8 +68,8 @@ public class ProtectiveHelmetModel2 extends ModelBiped {
         EntityEquipmentSlot slot = ((ItemArmor) stack.getItem()).armorType;
 
         ProtectiveHelmetModel2 armor;
-        if (slot == EntityEquipmentSlot.HEAD && modelHelm != null) {
-            return modelHelm;
+        if (slot == EntityEquipmentSlot.HEAD && modelHelm2 != null) {
+            return modelHelm2;
         }
 
         armor = new ProtectiveHelmetModel2();
@@ -91,7 +85,7 @@ public class ProtectiveHelmetModel2 extends ModelBiped {
         switch (slot) {
             case HEAD:
                 armor.bipedHead.isHidden = false;
-                modelHelm = armor;
+                modelHelm2 = armor;
                 break;
         }
         return armor;

@@ -39,7 +39,7 @@ public class ProtectiveHelmet2 extends ItemArmor {
     @SideOnly(Side.CLIENT)
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
-        return ProtectiveHelmetModel.getModel(entityLiving, itemStack);
+        return ProtectiveHelmetModel2.getModel(entityLiving, itemStack);
     }
 
 

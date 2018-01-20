@@ -19,31 +19,19 @@ public class ProtectiveHelmetModel extends ModelBiped {
     public ModelRenderer controller_p;
 
     public ProtectiveHelmetModel() {
-        textureWidth = 64;
-        textureHeight = 32;
 
-        setupHelmet();
-
-        this.helmet_p.addChild(this.controller_p);
-    }
-
-    private void setupHelmet() {
-    	
     	this.textureWidth = 64;
         this.textureHeight = 32;
+        float s = 0.01F;
         
-        this.helmet_p = new ModelRenderer(this, 0, 104);
+        this.helmet_p = new ModelRenderer(this, 0, 0);
         this.helmet_p.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.helmet_p.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, 0.0F);
-        this.controller_p = new ModelRenderer(this, 36, 116);
+        this.helmet_p.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, s);
+        this.controller_p = new ModelRenderer(this, 36, 12);
         this.controller_p.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.controller_p.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, 0.0F);
-    }
+        this.controller_p.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, s);
 
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
+        this.helmet_p.addChild(this.controller_p);
     }
 
     public static ModelBiped getModel(EntityLivingBase entity, ItemStack stack) {
