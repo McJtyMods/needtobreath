@@ -172,7 +172,7 @@ public class Config {
 
         PLANT_GROWTH_POISON_DENY = cfg.getInt("plantGrowthPoisonDeny", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_DENY, 0, 256, "If poison is above this level plants cannot grow (256 to disable)");
         PLANT_GROWTH_POISON_SLOW = cfg.getInt("plantGrowthPoisonSlow", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_SLOW, 0, 256, "If poison is above this level plants grow slower (256 to disable)");
-        PLANT_GROWTH_SLOWDOWN_FACTOR = cfg.getFloat("plantGrowthPoisonSlow", CATEGORY_EFFECTS, PLANT_GROWTH_SLOWDOWN_FACTOR, 0, 1, "How much is plant growth made slower. 0 means no slow down, 1 means no growth ever");
+        PLANT_GROWTH_SLOWDOWN_FACTOR = cfg.getFloat("plantGrowthPoisonSlowFactor", CATEGORY_EFFECTS, PLANT_GROWTH_SLOWDOWN_FACTOR, 0, 1, "How much is plant growth made slower. 0 means no slow down, 1 means no growth ever");
     }
 
     private static void initMachineSettings(Configuration cfg) {
