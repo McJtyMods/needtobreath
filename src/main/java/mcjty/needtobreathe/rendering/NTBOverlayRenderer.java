@@ -4,6 +4,7 @@ import mcjty.lib.network.Arguments;
 import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
@@ -124,9 +125,10 @@ public class NTBOverlayRenderer {
 
         if (p > 0) {
             x = fontRenderer.drawString("avg ", x, 10, 0xffffffff);
-            x = fontRenderer.drawString("" + (p * 100 / 255) + "%", x, 10, 0xffff0000);
+            int maxpoison = 255 - Config.POISON_THRESSHOLD;
+            x = fontRenderer.drawString("" + (p * 100 / maxpoison) + "%", x, 10, 0xffff0000);
             x = fontRenderer.drawString("  max ", x, 10, 0xffffffff);
-            x = fontRenderer.drawString("" + (maxp * 100 / 255) + "%", x, 10, 0xffff0000);
+            x = fontRenderer.drawString("" + (maxp * 100 / maxpoison) + "%", x, 10, 0xffff0000);
         } else {
             x = fontRenderer.drawString("NONE", x, 10, 0xff00ff00);
         }
@@ -169,19 +171,19 @@ public class NTBOverlayRenderer {
             float mult = 0.4f;          // 1.1f
             if (alpha < 25) {
                 mult = 0.025f;
-            } else if (alpha < 50) {
+            } else if (alpha < 25) {
                 mult = 0.05f;
-            } else if (alpha < 80) {
+            } else if (alpha < 40) {
                 mult = 0.1f;
-            } else if (alpha < 110) {
+            } else if (alpha < 55) {
                 mult = 0.15f;
-            } else if (alpha < 130) {
+            } else if (alpha < 65) {
                 mult = 0.2f;
-            } else if (alpha < 150) {
+            } else if (alpha < 75) {
                 mult = 0.25f;
-            } else if (alpha < 180) {
+            } else if (alpha < 90) {
                 mult = 0.3f;
-            } else if (alpha < 210) {
+            } else if (alpha < 105) {
                 mult = 0.35f;
             }
 

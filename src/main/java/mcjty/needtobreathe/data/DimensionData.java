@@ -39,6 +39,12 @@ public class DimensionData {
 
     private final Map<Long, Byte> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
 
+    private static int g_seed = 123456789;
+    public static int fastrand128() {
+        g_seed = (214013 * g_seed + 2531011);
+        return (g_seed >> 16) & 0x7F;
+    }
+
     public Map<Long, Byte> getCleanAir() {
         return cleanAir;
     }
@@ -62,10 +68,10 @@ public class DimensionData {
                 }
             }
         }
-        return minPoison;
+        return Math.max(minPoison-Config.POISON_THRESSHOLD, 0);
     }
 
-    public int getPoison(long p) {
+    private int getPoison(long p) {
         if (cleanAir.containsKey(p)) {
             return 255-(cleanAir.get(p) & 0xff);
         } else {
@@ -73,7 +79,7 @@ public class DimensionData {
         }
     }
 
-    public int getAir(long p) {
+    private int getAir(long p) {
         if (cleanAir.containsKey(p)) {
             return cleanAir.get(p) & 0xff;
         } else {
@@ -195,7 +201,9 @@ public class DimensionData {
         Set<Long> positions = new HashSet<>(cleanAir.keySet());
         for (Long pos : positions) {
             int air = getAir(pos);
-            air--;
+            if (fastrand128() < Config.POISON_CRAWL_SPEED) {
+                air--;
+            }
             if (air < 5 || !isValid(world, pos)) {
                 cleanAir.remove(pos);
             } else {
@@ -219,7 +227,7 @@ public class DimensionData {
                         cleanAir.put(adjacent, (byte) air);
                     }
                 }
-                cleanAir.put(pos, (byte) air);
+                cleanAir.put(pos, (byte) totalAir);
             }
         }
     }

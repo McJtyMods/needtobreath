@@ -22,13 +22,16 @@ public class Config {
 
     public static float PROTECTIVE_HELMET_FACTOR = 0.4f;
 
-    public static int PLANT_GROWTH_POISON_DENY = 150;
-    public static int PLANT_GROWTH_POISON_SLOW = 70;
+    public static int PLANT_GROWTH_POISON_DENY = 75;
+    public static int PLANT_GROWTH_POISON_SLOW = 35;
     public static float PLANT_GROWTH_SLOWDOWN_FACTOR = .7f;
 
-    public static String[] POTION_EFFECTS_PLAYER = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison", "210,minecraft:wither", "250,minecraft:instant_damage@1000" };
-    public static String[] POTION_EFFECTS_PASSIVE = { "40,minecraft:weakness", "60,minecraft:slowness", "150,minecraft:poison" };
-    public static String[] POTION_EFFECTS_HOSTILE = { "100,minecraft:regeneration", "200,minecraft:health_boost" };
+    public static int POISON_THRESSHOLD = 120;
+    public static int POISON_CRAWL_SPEED = 40;
+
+    public static String[] POTION_EFFECTS_PLAYER = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison", "105,minecraft:wither" };
+    public static String[] POTION_EFFECTS_PASSIVE = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison" };
+    public static String[] POTION_EFFECTS_HOSTILE = { "50,minecraft:regeneration", "100,minecraft:health_boost" };
 
     private static String[] BLOCKS_BLOCKING = {
             "minecraft:iron_door",
@@ -159,6 +162,9 @@ public class Config {
         cfg.addCustomCategoryComment(CATEGORY_GENERAL, "General settings");
         BLOCKS_BLOCKING = cfg.getStringList("blocksBlocking", CATEGORY_GENERAL, BLOCKS_BLOCKING, "List of blocks that block poison");
         BLOCKS_NONBLOCKING = cfg.getStringList("blocksNonBlocking", CATEGORY_GENERAL, BLOCKS_NONBLOCKING, "List of blocks that don't block poison");
+
+        POISON_THRESSHOLD = cfg.getInt("poisonThresshold", CATEGORY_GENERAL, POISON_THRESSHOLD, 0, 255, "The value at which we consider poison to take effect");
+        POISON_CRAWL_SPEED = cfg.getInt("poisonCrawlSpeed", CATEGORY_GENERAL, POISON_CRAWL_SPEED, 0, 128, "The chance for poison to slowly seep into an area. Lower numbers mean less chance so longer safety");
     }
 
     private static void initEffectsSettings(Configuration cfg) {
