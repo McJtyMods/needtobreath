@@ -18,15 +18,15 @@ public class ProtectiveHelmet2 extends ItemArmor {
 
     public ProtectiveHelmet2() {
         super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
-        setRegistryName("protectivehelmet");
-        setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet");
+        setRegistryName("protectivehelmet2");
+        setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet2");
         setCreativeTab(NeedToBreathe.creativeTab);
     }
 
     @Override
     public void addInformation(ItemStack itemStack, World player, List<String> list, ITooltipFlag advancedToolTip) {
         super.addInformation(itemStack, player, list, advancedToolTip);
-        list.add("If you were this helmet you will get,");
+        list.add("If you wear this helmet you will get,");
         list.add("some protection against the poisonous");
         list.add("atmosphere");
     }

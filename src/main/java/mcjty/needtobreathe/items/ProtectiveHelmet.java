@@ -26,7 +26,7 @@ public class ProtectiveHelmet extends ItemArmor {
     @Override
     public void addInformation(ItemStack itemStack, World player, List<String> list, ITooltipFlag advancedToolTip) {
         super.addInformation(itemStack, player, list, advancedToolTip);
-        list.add("If you were this helmet you will get,");
+        list.add("If you wear this helmet you will get,");
         list.add("some protection against the poisonous");
         list.add("atmosphere");
     }

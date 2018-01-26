@@ -26,7 +26,7 @@ public class InformationGlasses extends ItemArmor {
     @Override
     public void addInformation(ItemStack itemStack, World player, List<String> list, ITooltipFlag advancedToolTip) {
         super.addInformation(itemStack, player, list, advancedToolTip);
-        list.add("If you were these glasses you can see,");
+        list.add("If you wear these glasses you can see,");
         list.add("where there is clean air");
     }
 
