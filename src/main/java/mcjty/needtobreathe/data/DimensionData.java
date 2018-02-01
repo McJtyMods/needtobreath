@@ -199,6 +199,7 @@ public class DimensionData {
 
     public void tick(World world) {
         Set<Long> positions = new HashSet<>(cleanAir.keySet());
+        System.out.println("positions = " + positions.size());
         for (Long pos : positions) {
             int air = getAir(pos);
             if (fastrand128() < Config.POISON_CRAWL_SPEED) {

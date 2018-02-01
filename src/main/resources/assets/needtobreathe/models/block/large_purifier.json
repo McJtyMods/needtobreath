@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "needtobreathe:blocks/purifier_on",
+    "down": "needtobreathe:blocks/purifier_on",
+    "up": "needtobreathe:blocks/purifier_on",
+    "east": "needtobreathe:blocks/purifier_on",
+    "west": "needtobreathe:blocks/purifier_on",
+    "north": "needtobreathe:blocks/purifier_on",
+    "south": "needtobreathe:blocks/purifier_on"
+  }
+}
