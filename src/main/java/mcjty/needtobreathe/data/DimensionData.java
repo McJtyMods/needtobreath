@@ -37,7 +37,9 @@ public class DimensionData {
     private int counter = MAXTICKS;
     private int effectCounter = MAXEFFECTSTICKS;
 
-    private final Map<Long, Byte> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
+    private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
+
+
 
     private static int g_seed = 123456789;
     public static int fastrand128() {
@@ -45,7 +47,7 @@ public class DimensionData {
         return (g_seed >> 16) & 0x7F;
     }
 
-    public Map<Long, Byte> getCleanAir() {
+    public Map<SubChunkPos, ChunkData> getCleanAir() {
         return cleanAir;
     }
 
@@ -57,8 +59,7 @@ public class DimensionData {
         for (int dx = -1 ; dx <= 1 ; dx++) {
             for (int dy = -1 ; dy <= 1 ; dy++) {
                 for (int dz = -1 ; dz <= 1 ; dz++) {
-                    long p2 = LongPos.toLong(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
-                    int poison = getPoison(p2);
+                    int poison = getPoisonInternal(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
                     if (poison < minPoison) {
                         minPoison = poison;
                         if (minPoison == 0) {
@@ -71,17 +72,21 @@ public class DimensionData {
         return Math.max(minPoison-Config.POISON_THRESSHOLD, 0);
     }
 
-    private int getPoison(long p) {
-        if (cleanAir.containsKey(p)) {
-            return 255-(cleanAir.get(p) & 0xff);
+    private int getPoisonInternal(int x, int y, int z) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
+        if (cleanAir.containsKey(chunkPos)) {
+            ChunkData data = cleanAir.get(chunkPos);
+            return data.getPoison(x, y, z);
         } else {
             return 255;
         }
     }
 
-    private int getAir(long p) {
-        if (cleanAir.containsKey(p)) {
-            return cleanAir.get(p) & 0xff;
+    private int getAirInternal(int x, int y, int z) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
+        if (cleanAir.containsKey(chunkPos)) {
+            ChunkData data = cleanAir.get(chunkPos);
+            return data.getAir(x, y, z);
         } else {
             return 0;
         }
@@ -122,13 +127,20 @@ public class DimensionData {
     }
 
 
-    public int fillCleanAir(long p) {
-        Byte b = cleanAir.get(p);
-        cleanAir.put(p, (byte) 255);
-        if (b == null) {
-            return 255;
+    public int fillCleanAir(int x, int y, int z) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
+        int air;
+        ChunkData data;
+        if (cleanAir.containsKey(chunkPos)) {
+            data = cleanAir.get(chunkPos);
+            air = data.getAir(x, y, z);
+        } else {
+            data = new ChunkData();
+            cleanAir.put(chunkPos, data);
+            air = 0;
         }
-        return 255-(b & 0xff);
+        data.putAir(x, y, z, 255);
+        return 255-air;
     }
 
 
@@ -145,13 +157,14 @@ public class DimensionData {
 
             tick(world);
 
-            PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAir());
-            for (EntityPlayer player : world.playerEntities) {
-                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-                if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
-                    NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
-                }
-            }
+            // @todo
+//            PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAir());
+//            for (EntityPlayer player : world.playerEntities) {
+//                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+//                if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+//                    NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
+//                }
+//            }
         }
         CleanAirManager.getManager().save();
     }
@@ -198,10 +211,20 @@ public class DimensionData {
 
 
     public void tick(World world) {
+        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
+            SubChunkPos chunkPos = entry.getKey();
+            ChunkData data = entry.getValue();
+            byte[] a = data.getData();
+            for (int pos = 0 ; pos < 4096 ; pos++) {
+                int air = a[pos];
+                if (air >= 5 && isValid(world, ))
+            }
+
+        }
+
         Set<Long> positions = new HashSet<>(cleanAir.keySet());
-        System.out.println("positions = " + positions.size());
         for (Long pos : positions) {
-            int air = getAir(pos);
+            int air = getAirInternal(pos);
             if (fastrand128() < Config.POISON_CRAWL_SPEED) {
                 air--;
             }
@@ -214,7 +237,7 @@ public class DimensionData {
                 for (EnumFacing facing : EnumFacing.VALUES) {
                     long adjacent = LongPos.offset(pos, facing);
                     if (isValid(world, adjacent)) {
-                        int adjacentAir = getAir(adjacent);
+                        int adjacentAir = getAirInternal(adjacent);
                         totalAir += adjacentAir;
                         distList.add(adjacent);
                     }
