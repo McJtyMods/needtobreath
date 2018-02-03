@@ -17,15 +17,19 @@ public class InformationGlassesModel extends ModelBiped {
     // Glasses
     public ModelRenderer glasses;
 
-    public InformationGlassesModel() {
-    	
-        textureWidth = 64;
-        textureHeight = 32;
+    public InformationGlassesModel(float scale) {
+        super(scale);
         
-        float s = 2.01F;
+        this.textureWidth = 64;
+        this.textureHeight = 32;
+    
+        this.bipedHead.cubeList.clear();
+        
         this.glasses = new ModelRenderer(this, 0, 0);
+        this.glasses.addBox(-4.5F, -6.0F, -4.5F, 9, 4, 9);
         this.glasses.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.glasses.addBox(-4.5F, -6.0F, -4.5F, 9, 4, 9, s);
+        
+        this.bipedHead.addChild(glasses);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {
@@ -39,20 +43,20 @@ public class InformationGlassesModel extends ModelBiped {
         if (stack.isEmpty() || !(stack.getItem() instanceof ItemArmor)) {
             return null;
         }
+        
         EntityEquipmentSlot slot = ((ItemArmor) stack.getItem()).armorType;
 
         InformationGlassesModel armor;
         if (slot == EntityEquipmentSlot.HEAD && modelHelm != null) {
             return modelHelm;
         }
-
-        armor = new InformationGlassesModel();
+        
+        armor = new InformationGlassesModel(.0625f);
+    
+        armor.bipedHead.isHidden = true;
         armor.bipedBody.isHidden = true;
         armor.bipedLeftArm.isHidden = true;
         armor.bipedRightArm.isHidden = true;
-
-        armor.bipedHead.isHidden = true;
-
         armor.bipedLeftLeg.isHidden = true;
         armor.bipedRightLeg.isHidden = true;
 
@@ -62,20 +66,22 @@ public class InformationGlassesModel extends ModelBiped {
                 modelHelm = armor;
                 break;
         }
-        return armor;
+        
+        return modelHelm;
     }
 
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        this.isSneak = entity.isSneaking();
-        this.isRiding = entity.isRiding();
-//        if (entity instanceof EntityLivingBase) {
-//            this.isChild = ((EntityLivingBase) entity).isChild();
-//            this.rightArmPose = (((EntityLivingBase) entity).getHeldItem(EnumHand.MAIN_HAND) != null ? ArmPose.BOW_AND_ARROW : ArmPose.EMPTY);
-//            // TODO possibly check if it can be completely removed? 1.9 thing
-//        }
-
+     
+    	if(entity instanceof EntityLivingBase)	{
+			this.isSneak = entity.isSneaking();
+			this.isRiding = entity.isRiding();
+			this.isChild = ((EntityLivingBase)entity).isChild();
+			this.setLivingAnimations((EntityLivingBase)entity, limbSwing, limbSwingAmount, ageInTicks);
+		}
+    
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+    
         if (this.isChild) {
             float f6 = 2.0F;
             GlStateManager.pushMatrix();
@@ -107,5 +113,4 @@ public class InformationGlassesModel extends ModelBiped {
             this.bipedLeftLeg.render(scale);
         }
     }
-
 }

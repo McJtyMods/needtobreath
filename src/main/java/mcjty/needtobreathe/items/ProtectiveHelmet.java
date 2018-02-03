@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ProtectiveHelmet extends ItemArmor {
@@ -30,12 +31,14 @@ public class ProtectiveHelmet extends ItemArmor {
         list.add("some protection against the poisonous");
         list.add("atmosphere");
     }
-
+    
+    @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return NeedToBreathe.MODID+":textures/armor/helmet_1.png";
+    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type)
+    {
+        return NeedToBreathe.MODID + ":textures/armor/helmet_1.png";
     }
-
+    
     @SideOnly(Side.CLIENT)
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
