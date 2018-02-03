@@ -26,9 +26,8 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                     for (int dz = -nr; dz <= nr; dz++) {
                         BlockPos p = center.add(dx * 8, dy * 8, dz * 8);
                         if (p.getY() >= 0 && p.getY() <= 255) {
-                            long pp = p.toLong();
-                            if (data.isValid(world, pp)) {
-                                purifyAir(data, pp);
+                            if (data.isValid(world, p)) {
+                                purifyAir(data, p);
                             }
                         }
                     }
@@ -37,31 +36,31 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         }
     }
 
-    private int purifyAir(DimensionData data, long pp) {
+    private int purifyAir(DimensionData data, BlockPos pp) {
         int workdone = 0;
-        workdone += data.fillCleanAir(pp);
-        long p2;
-        p2 = LongPos.posDown(pp);
+        workdone += data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
+        BlockPos p2;
+        p2 = pp.down();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posUp(pp);
+        p2 = pp.up();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posNorth(pp);
+        p2 = pp.north();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posSouth(pp);
+        p2 = pp.south();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posWest(pp);
+        p2 = pp.west();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posEast(pp);
+        p2 = pp.east();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }

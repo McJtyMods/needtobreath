@@ -35,7 +35,7 @@ public class PacketSendCleanAirToClient implements IMessage {
     }
 
     public PacketSendCleanAirToClient(Map<Long,Byte> cleanAir) {
-        this.cleanAir = new HashMap<>(cleanAir);
+        this.cleanAir = cleanAir;
     }
 
     public static class Handler implements IMessageHandler<PacketSendCleanAirToClient, IMessage> {

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class CleanAirManager extends WorldSavedData {
 
-    public static final String NAME = "NeedToBreathData";
+    public static final String NAME = "NeedToBreatheData";
 
     private static CleanAirManager instance = null;
 

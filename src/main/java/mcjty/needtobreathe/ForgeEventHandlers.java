@@ -49,7 +49,7 @@ public class ForgeEventHandlers {
         World world = evt.getWorld();
         DimensionData data = getDimensionData(world);
         if (data != null) {
-            data.fillCleanAir(evt.getPos().toLong());
+            data.fillCleanAir(evt.getPos());
         }
     }
 

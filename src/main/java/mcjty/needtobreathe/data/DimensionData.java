@@ -18,11 +18,13 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -47,8 +49,22 @@ public class DimensionData {
         return (g_seed >> 16) & 0x7F;
     }
 
-    public Map<SubChunkPos, ChunkData> getCleanAir() {
-        return cleanAir;
+    // @todo not efficient!
+    private Map<Long, Byte> getCleanAirAsLongByteMap() {
+        Map<Long, Byte> map = new HashMap<>();
+        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
+            SubChunkPos chunkPos = entry.getKey();
+            ChunkData data = entry.getValue();
+            byte[] a = data.getData();
+            for (int idx = 0 ; idx < 4096 ; idx++) {
+                byte b = a[idx];
+                if (b != 0) {
+                    map.put(chunkPos.toPos(idx).toLong(), b);
+                }
+            }
+
+        }
+        return map;
     }
 
     /**
@@ -92,11 +108,7 @@ public class DimensionData {
         }
     }
 
-    public boolean isValid(World world, long pos) {
-        if (pos == -1L) {
-            return false;
-        }
-        BlockPos p = BlockPos.fromLong(pos);
+    public boolean isValid(World world, BlockPos p) {
         IBlockState state = world.getBlockState(p);
         Block block = state.getBlock();
 
@@ -126,6 +138,10 @@ public class DimensionData {
         }
     }
 
+
+    public int fillCleanAir(BlockPos p) {
+        return fillCleanAir(p.getX(), p.getY(), p.getZ());
+    }
 
     public int fillCleanAir(int x, int y, int z) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
@@ -157,14 +173,13 @@ public class DimensionData {
 
             tick(world);
 
-            // @todo
-//            PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAir());
-//            for (EntityPlayer player : world.playerEntities) {
-//                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-//                if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
-//                    NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
-//                }
-//            }
+            PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAirAsLongByteMap());
+            for (EntityPlayer player : world.playerEntities) {
+                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+                if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+                    NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
+                }
+            }
         }
         CleanAirManager.getManager().save();
     }
@@ -209,82 +224,151 @@ public class DimensionData {
         }
     }
 
+    private static int[] distList = new int[7];
+    private static byte[][] distListData = new byte[7][];
+
+
+    private void tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
+        byte[] a = data.getData();
+        for (int dx = 1 ; dx < 15 ; dx++) {
+            for (int dy = 1 ; dy < 15 ; dy++) {
+                for (int dz = 1 ; dz < 15 ; dz++) {
+                    int idx = SubChunkPos.index(dx, dy, dz);
+                    int air = a[idx] & 0xff;
+                    if (fastrand128() < Config.POISON_CRAWL_SPEED) {
+                        air--;
+                    }
+                    BlockPos p = chunkPos.toPos(dx, dy, dz);
+                    if (air < 5 || !isValid(world, p)) {
+                        a[idx] = 0;
+                    } else {
+                        // Evenly distribute all air to the adjacent spots (and this one)
+                        int totalAir = air;
+                        int distListCnt = 0;
+                        for (EnumFacing facing : EnumFacing.VALUES) {
+                            BlockPos adjacent = p.offset(facing);
+                            if (isValid(world, adjacent)) {
+                                int idxAdjacent = SubChunkPos.offset(idx, facing);
+                                totalAir += (int) a[idxAdjacent];
+                                distList[distListCnt++] = idxAdjacent;
+                            }
+                        }
+
+                        if (distListCnt > 0) {
+                            // We distribute 'air' to all legal adjacent spaces (and this one)
+                            air = totalAir / (distListCnt+1);
+                            for (int i = 0 ; i < distListCnt ; i++) {
+                                totalAir -= air;
+                                a[distList[i]] = (byte) air;
+                            }
+                        }
+                        a[idx] = (byte) totalAir;
+                    }
+                }
+            }
+        }
+    }
+
+    private ChunkData getChunkData(BlockPos pos) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(pos);
+        if (!cleanAir.containsKey(chunkPos)) {
+            ChunkData data = new ChunkData();
+            cleanAir.put(chunkPos, data);
+        }
+        return cleanAir.get(chunkPos);
+    }
+
+    private void tickSubChunkBorders(World world, SubChunkPos chunkPos, ChunkData data) {
+        byte[] a = data.getData();
+        for (int dx = 0 ; dx < 16 ; dx++) {
+            for (int dy = 0 ; dy < 16 ; dy++) {
+                for (int dz = 0; dz < 16; dz++) {
+                    if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
+                        int idx = SubChunkPos.index(dx, dy, dz);
+                        int air = a[idx] & 0xff;
+                        if (fastrand128() < Config.POISON_CRAWL_SPEED) {
+                            air--;
+                        }
+                        BlockPos p = chunkPos.toPos(dx, dy, dz);
+                        if (air < 5 || !isValid(world, p)) {
+                            a[idx] = 0;
+                        } else {
+                            // Evenly distribute all air to the adjacent spots (and this one)
+                            int totalAir = air;
+                            int distListCnt = 0;
+                            for (EnumFacing facing : EnumFacing.VALUES) {
+                                BlockPos adjacent = p.offset(facing);
+                                if (isValid(world, adjacent)) {
+                                    byte[] d = a;
+                                    int idxAdjacent = SubChunkPos.offsetWithCheck(idx, facing);
+                                    if (idxAdjacent < 0) {
+                                        idxAdjacent = -idxAdjacent;
+                                        d = getChunkData(adjacent).getData();
+                                        distListData[distListCnt] = d;
+                                    } else {
+                                        distListData[distListCnt] = a;
+                                    }
+                                    int adjacentAir = d[idxAdjacent];
+                                    totalAir += adjacentAir;
+                                    distList[distListCnt++] = idxAdjacent;
+                                }
+                            }
+
+                            if (distListCnt > 0) {
+                                // We distribute 'air' to all legal adjacent spaces (and this one)
+                                air = totalAir / (distListCnt + 1);
+                                for (int i = 0; i < distListCnt; i++) {
+                                    totalAir -= air;
+                                    distListData[i][distList[i]] = (byte) air;
+                                }
+                            }
+                            a[idx] = (byte) totalAir;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public void tick(World world) {
-        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
+        Set<Map.Entry<SubChunkPos, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
+        for (Map.Entry<SubChunkPos, ChunkData> entry : copy) {
             SubChunkPos chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
-            byte[] a = data.getData();
-            for (int pos = 0 ; pos < 4096 ; pos++) {
-                int air = a[pos];
-                if (air >= 5 && isValid(world, ))
-            }
 
-        }
+            // First do the internals of each subchunk
+            tickSubChunk(world, chunkPos, data);
 
-        Set<Long> positions = new HashSet<>(cleanAir.keySet());
-        for (Long pos : positions) {
-            int air = getAirInternal(pos);
-            if (fastrand128() < Config.POISON_CRAWL_SPEED) {
-                air--;
-            }
-            if (air < 5 || !isValid(world, pos)) {
-                cleanAir.remove(pos);
-            } else {
-                // Evenly distribute all air to the adjacent spots (and this one)
-                int totalAir = air;
-                List<Long> distList = new ArrayList<>(6);
-                for (EnumFacing facing : EnumFacing.VALUES) {
-                    long adjacent = LongPos.offset(pos, facing);
-                    if (isValid(world, adjacent)) {
-                        int adjacentAir = getAirInternal(adjacent);
-                        totalAir += adjacentAir;
-                        distList.add(adjacent);
-                    }
-                }
-
-                if (!distList.isEmpty()) {
-                    // We distribute 'air' to all legal adjacent spaces (and this one)
-                    air = totalAir / (distList.size()+1);
-                    for (Long adjacent : distList) {
-                        totalAir -= air;
-                        cleanAir.put(adjacent, (byte) air);
-                    }
-                }
-                cleanAir.put(pos, (byte) totalAir);
-            }
+            // Now the borders
+            tickSubChunkBorders(world, chunkPos, data);
         }
     }
 
 
     public void readFromNBT(NBTTagCompound nbt) {
-        int[] posarray = nbt.getIntArray("airpos");
-        byte[] airarray = nbt.getByteArray("airval");
         cleanAir.clear();
-        for (int i = 0 ; i < airarray.length ; i++) {
-            int x = posarray[i*3+0];
-            int y = posarray[i*3+1];
-            int z = posarray[i*3+2];
-            cleanAir.put(LongPos.toLong(x, y, z), airarray[i]);
+        NBTTagList list = nbt.getTagList("list", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0 ; i < list.tagCount() ; i++) {
+            NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
+            SubChunkPos chunkPos = new SubChunkPos(subchunkNBT.getInteger("x"), subchunkNBT.getInteger("y"), subchunkNBT.getInteger("z"));
+            byte[] data = subchunkNBT.getByteArray("data");
+            cleanAir.put(chunkPos, new ChunkData(data));
         }
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        int posarray[] = new int[cleanAir.size() * 3];
-        byte airarray[] = new byte[cleanAir.size()];
+        NBTTagList list = new NBTTagList();
 
-        int idx = 0;
-        for (Map.Entry<Long, Byte> entry : cleanAir.entrySet()) {
-            BlockPos pos = BlockPos.fromLong(entry.getKey());
-            airarray[idx] = entry.getValue();
-            posarray[idx*3+0] = pos.getX();
-            posarray[idx*3+1] = pos.getY();
-            posarray[idx*3+2] = pos.getZ();
-            idx++;
+        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
+            NBTTagCompound subchunkNBT = new NBTTagCompound();
+            subchunkNBT.setInteger("x", entry.getKey().getCx());
+            subchunkNBT.setInteger("y", entry.getKey().getCy());
+            subchunkNBT.setInteger("z", entry.getKey().getCz());
+            subchunkNBT.setByteArray("data", entry.getValue().getData());
+            list.appendTag(subchunkNBT);
         }
-        compound.setIntArray("airpos", posarray);
-        compound.setByteArray("airval", airarray);
+        compound.setTag("list", list);
 
-        return null;
+        return compound;
     }
 }

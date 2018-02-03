@@ -7,7 +7,15 @@ import net.minecraft.util.math.BlockPos;
  */
 public class ChunkData {
 
-    private byte data[] = new byte[4096];       // 0 = no clean air, 255 = 100% clean
+    private byte data[];       // 0 = no clean air, 255 = 100% clean
+
+    public ChunkData() {
+        data = new byte[4096];
+    }
+
+    public ChunkData(byte[] data) {
+        this.data = data;
+    }
 
     public int getPoison(int x, int y, int z) {
         int idx = ((x & 0xf) << 8) + ((y & 0xf) << 4) + (z & 0xf);

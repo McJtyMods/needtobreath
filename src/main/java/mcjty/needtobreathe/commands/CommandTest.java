@@ -36,7 +36,7 @@ public class CommandTest implements ICommand {
             BlockPos position = sender.getPosition().up();
             DimensionData data = CleanAirManager.getManager().getDimensionData(sender.getEntityWorld().provider.getDimension());
             if (data != null) {
-                data.fillCleanAir(position.toLong());
+                data.fillCleanAir(position);
             }
         }
     }

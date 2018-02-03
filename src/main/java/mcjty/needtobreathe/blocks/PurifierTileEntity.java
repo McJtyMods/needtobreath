@@ -58,10 +58,9 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
                 }
                 // Depending on how pure it already is we decrease this faster or slower
                 BlockPos p = getPurifyingSpot();
-                long pp = p.toLong();
 
-                if (data.isValid(world, pp)) {
-                    int workdone = purifyAir(data, pp);
+                if (data.isValid(world, p)) {
+                    int workdone = purifyAir(data, p);
                     consumeCoal(workdone);
                     consumeEnergy(Config.PURIFIER_RFPERTICK);
                 }
@@ -73,46 +72,37 @@ public class PurifierTileEntity extends GenericEnergyReceiverTileEntity implemen
         }
     }
 
-    private int purifyAir(DimensionData data, long pp) {
+    private int purifyAir(DimensionData data, BlockPos pp) {
         int workdone = 0;
-        workdone += data.fillCleanAir(pp);
-        long p2;
-        p2 = LongPos.posDown(pp);
+        workdone += data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
+        BlockPos p2;
+        p2 = pp.down();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posUp(pp);
+        p2 = pp.up();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posNorth(pp);
+        p2 = pp.north();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posSouth(pp);
+        p2 = pp.south();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posWest(pp);
+        p2 = pp.west();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-        p2 = LongPos.posEast(pp);
+        p2 = pp.east();
         if (data.isValid(world, p2)) {
             workdone += data.fillCleanAir(p2);
         }
-//                    for (int dx = -1; dx <= 1; dx++) {
-//                        for (int dy = -1; dy <= 1; dy++) {
-//                            for (int dz = -1; dz <= 1; dz++) {
-//                                long p2 = LongPos.toLong(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
-//                                if (data.isValid(world, p2)) {
-//                                    workdone += data.fillCleanAir(p2);
-//                                }
-//                            }
-//                        }
-//                    }
         return workdone;
     }
+
 
     private void consumeCoal(int workdone) {
         int lt;
