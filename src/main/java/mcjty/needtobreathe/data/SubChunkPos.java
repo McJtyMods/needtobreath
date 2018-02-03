@@ -1,6 +1,5 @@
 package mcjty.needtobreathe.data;
 
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -43,66 +42,6 @@ public class SubChunkPos {
 
     public BlockPos toPos(int idx) {
         return new BlockPos(cx*16+((idx>>8) & 0xf), cy*16+((idx>>4) & 0xf), cz*16+(idx & 0xf));
-    }
-
-    public static int index(int dx, int dy, int dz) {
-        return (dx << 8) + (dy << 4) + dz;
-    }
-
-    // Given an index in the inner part of the data (not including the outer boundary of the 16x16x16 subchunk) calculate a new index with the given offset
-    public static int offset(int idx, EnumFacing offset) {
-        switch (offset) {
-            case DOWN:
-                return idx - 16;
-            case UP:
-                return idx + 16;
-            case NORTH:
-                return idx - 1;
-            case SOUTH:
-                return idx + 1;
-            case WEST:
-                return idx - 256;
-            case EAST:
-                return idx + 256;
-        }
-        return idx;
-    }
-
-    // This version will take the border into account by returning a negative index in that case (negating that index makes a valid index in the adjacent subchunk)
-    public static int offsetWithCheck(int idx, EnumFacing offset) {
-        switch (offset) {
-            case DOWN:
-                if ((idx & 0xf0) == 0) {
-                    return - (idx | 0xf0);
-                }
-                return idx - 16;
-            case UP:
-                if ((idx & 0xf0) == 0xf0) {
-                    return - (idx & 0xf0f);
-                }
-                return idx + 16;
-            case NORTH:
-                if ((idx & 0xf) == 0) {
-                    return - (idx | 0xf);
-                }
-                return idx - 1;
-            case SOUTH:
-                if ((idx & 0xf) == 0xf) {
-                    return - (idx & 0xff0);
-                }
-                return idx + 1;
-            case WEST:
-                if ((idx & 0xf00) == 0) {
-                    return - (idx | 0xf00);
-                }
-                return idx - 256;
-            case EAST:
-                if ((idx & 0xf00) == 0xf00) {
-                    return - (idx & 0x0ff);
-                }
-                return idx + 256;
-        }
-        return idx;
     }
 
     @Override

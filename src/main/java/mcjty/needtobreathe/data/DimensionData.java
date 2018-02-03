@@ -233,7 +233,7 @@ public class DimensionData {
         for (int dx = 1 ; dx < 15 ; dx++) {
             for (int dy = 1 ; dy < 15 ; dy++) {
                 for (int dz = 1 ; dz < 15 ; dz++) {
-                    int idx = SubChunkPos.index(dx, dy, dz);
+                    int idx = ChunkData.index(dx, dy, dz);
                     int air = a[idx] & 0xff;
                     if (fastrand128() < Config.POISON_CRAWL_SPEED) {
                         air--;
@@ -248,7 +248,7 @@ public class DimensionData {
                         for (EnumFacing facing : EnumFacing.VALUES) {
                             BlockPos adjacent = p.offset(facing);
                             if (isValid(world, adjacent)) {
-                                int idxAdjacent = SubChunkPos.offset(idx, facing);
+                                int idxAdjacent = ChunkData.offset(idx, facing);
                                 totalAir += (int) a[idxAdjacent];
                                 distList[distListCnt++] = idxAdjacent;
                             }
@@ -284,7 +284,7 @@ public class DimensionData {
             for (int dy = 0 ; dy < 16 ; dy++) {
                 for (int dz = 0; dz < 16; dz++) {
                     if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
-                        int idx = SubChunkPos.index(dx, dy, dz);
+                        int idx = ChunkData.index(dx, dy, dz);
                         int air = a[idx] & 0xff;
                         if (fastrand128() < Config.POISON_CRAWL_SPEED) {
                             air--;
@@ -300,7 +300,7 @@ public class DimensionData {
                                 BlockPos adjacent = p.offset(facing);
                                 if (isValid(world, adjacent)) {
                                     byte[] d = a;
-                                    int idxAdjacent = SubChunkPos.offsetWithCheck(idx, facing);
+                                    int idxAdjacent = ChunkData.offsetWithCheck(idx, facing);
                                     if (idxAdjacent < 0) {
                                         idxAdjacent = -idxAdjacent;
                                         d = getChunkData(adjacent).getData();
