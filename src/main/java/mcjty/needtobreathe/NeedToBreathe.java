@@ -8,6 +8,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
@@ -32,6 +33,8 @@ public class NeedToBreathe implements ModBase {
     public static NeedToBreathe instance;
 
     public static Logger logger;
+
+    public static boolean lostcities = false;
 
     public static final String SHIFT_MESSAGE = "<Press Shift>";
 
@@ -60,6 +63,7 @@ public class NeedToBreathe implements ModBase {
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
         this.proxy.init(e);
+        lostcities = Loader.isModLoaded("lostcities");
     }
 
     /**

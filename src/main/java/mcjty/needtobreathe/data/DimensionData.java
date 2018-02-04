@@ -55,11 +55,16 @@ public class DimensionData {
         for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
             SubChunkPos chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
-            byte[] a = data.getData();
-            for (int idx = 0 ; idx < 4096 ; idx++) {
-                byte b = a[idx];
-                if (b != 0) {
-                    map.put(chunkPos.toPos(idx).toLong(), b);
+            if (data.isStrong()) {
+                // Don't send over strong data for now
+                // @todo
+            } else {
+                byte[] a = data.getData();
+                for (int idx = 0; idx < 4096; idx++) {
+                    byte b = a[idx];
+                    if (b != 0) {
+                        map.put(chunkPos.toPos(idx).toLong(), b);
+                    }
                 }
             }
 
@@ -92,19 +97,12 @@ public class DimensionData {
         SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
         if (cleanAir.containsKey(chunkPos)) {
             ChunkData data = cleanAir.get(chunkPos);
+            if (data.isStrong()) {
+                return 0;
+            }
             return data.getPoison(x, y, z);
         } else {
             return 255;
-        }
-    }
-
-    private int getAirInternal(int x, int y, int z) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
-        if (cleanAir.containsKey(chunkPos)) {
-            ChunkData data = cleanAir.get(chunkPos);
-            return data.getAir(x, y, z);
-        } else {
-            return 0;
         }
     }
 
@@ -138,6 +136,13 @@ public class DimensionData {
         }
     }
 
+    // Fill an entire chunk with strong clean air that doesn't do any ticking
+    public void fillCleanAirStrong(BlockPos p) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(p);
+        cleanAir.remove(chunkPos);
+        ChunkData data = new ChunkData(true);
+        cleanAir.put(chunkPos, data);
+    }
 
     public int fillCleanAir(BlockPos p) {
         return fillCleanAir(p.getX(), p.getY(), p.getZ());
@@ -149,6 +154,9 @@ public class DimensionData {
         ChunkData data;
         if (cleanAir.containsKey(chunkPos)) {
             data = cleanAir.get(chunkPos);
+            if (data.isStrong()) {
+                return 0;   // Nothing should happen
+            }
             air = data.getAir(x, y, z);
         } else {
             data = new ChunkData();
@@ -173,10 +181,13 @@ public class DimensionData {
 
             tick(world);
 
-            PacketSendCleanAirToClient message = new PacketSendCleanAirToClient(getCleanAirAsLongByteMap());
+            PacketSendCleanAirToClient message = null;
             for (EntityPlayer player : world.playerEntities) {
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
                 if (!helmet.isEmpty() && helmet.getItem() instanceof InformationGlasses) {
+                    if (message == null) {
+                        message = new PacketSendCleanAirToClient(getCleanAirAsLongByteMap());
+                    }
                     NTBMessages.INSTANCE.sendTo(message, (EntityPlayerMP) player);
                 }
             }
@@ -228,7 +239,11 @@ public class DimensionData {
     private static byte[][] distListData = new byte[7][];
 
 
-    private void tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
+    private boolean tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
+        if (data.isStrong()) {
+            return false;   // Nothing to do here
+        }
+        boolean empty = true;
         byte[] a = data.getData();
         for (int dx = 1 ; dx < 15 ; dx++) {
             for (int dy = 1 ; dy < 15 ; dy++) {
@@ -242,6 +257,7 @@ public class DimensionData {
                     if (air < 5 || !isValid(world, p)) {
                         a[idx] = 0;
                     } else {
+                        empty = false;
                         // Evenly distribute all air to the adjacent spots (and this one)
                         int totalAir = air;
                         int distListCnt = 0;
@@ -268,6 +284,7 @@ public class DimensionData {
                 }
             }
         }
+        return empty;
     }
 
     private ChunkData getChunkData(BlockPos pos) {
@@ -279,7 +296,70 @@ public class DimensionData {
         return cleanAir.get(chunkPos);
     }
 
-    private void tickSubChunkBorders(World world, SubChunkPos chunkPos, ChunkData data) {
+    /**
+     * This version is used to tick the borders of a strong chunk. i.e. the strong chunk
+     * is not touched itself but influences the surroundings
+     */
+    private void tickSubChunkBordersStrong(World world, SubChunkPos chunkPos) {
+        for (int dx = 0 ; dx < 16 ; dx++) {
+            for (int dy = 0 ; dy < 16 ; dy++) {
+                for (int dz = 0; dz < 16; dz++) {
+                    if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
+                        int idx = ChunkData.index(dx, dy, dz);
+                        int air = 255;
+                        BlockPos p = chunkPos.toPos(dx, dy, dz);
+                        // Evenly distribute all air to the adjacent spots (and this one)
+                        int totalAir = air;
+                        int distListCnt = 0;
+                        for (EnumFacing facing : EnumFacing.VALUES) {
+                            BlockPos adjacent = p.offset(facing);
+                            if (isValid(world, adjacent)) {
+                                byte[] d;
+                                int idxAdjacent = ChunkData.offsetWithCheck(idx, facing);
+                                if (idxAdjacent < 0) {
+                                    idxAdjacent = -idxAdjacent;
+                                    ChunkData adjacentData = getChunkData(adjacent);
+                                    if (adjacentData.isStrong()) {
+                                        d = null;
+                                        totalAir += 255;
+                                    } else {
+                                        d = adjacentData.getData();
+                                        totalAir += d[idxAdjacent] & 0xff;
+                                    }
+                                } else {
+                                    d = null;
+                                    totalAir += 255;
+                                }
+                                distListData[distListCnt] = d;
+                                distList[distListCnt] = idxAdjacent;
+                                distListCnt++;
+                            }
+                        }
+
+                        if (distListCnt > 0) {
+                            // We distribute 'air' to all legal adjacent spaces (and this one)
+                            air = totalAir / (distListCnt + 1);
+                            for (int i = 0; i < distListCnt; i++) {
+                                totalAir -= air;
+                                byte[] data = distListData[i];
+                                if (data != null) {
+                                    data[distList[i]] = (byte) air;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private boolean tickSubChunkBorders(World world, SubChunkPos chunkPos, ChunkData data) {
+        if (data.isStrong()) {
+            tickSubChunkBordersStrong(world, chunkPos);
+            return false;   // Nothing to do except tick borders to adjacent chunks
+        }
+        boolean empty = true;
         byte[] a = data.getData();
         for (int dx = 0 ; dx < 16 ; dx++) {
             for (int dy = 0 ; dy < 16 ; dy++) {
@@ -294,6 +374,7 @@ public class DimensionData {
                         if (air < 5 || !isValid(world, p)) {
                             a[idx] = 0;
                         } else {
+                            empty = false;
                             // Evenly distribute all air to the adjacent spots (and this one)
                             int totalAir = air;
                             int distListCnt = 0;
@@ -304,13 +385,16 @@ public class DimensionData {
                                     int idxAdjacent = ChunkData.offsetWithCheck(idx, facing);
                                     if (idxAdjacent < 0) {
                                         idxAdjacent = -idxAdjacent;
-                                        d = getChunkData(adjacent).getData();
-                                        distListData[distListCnt] = d;
-                                    } else {
-                                        distListData[distListCnt] = a;
+                                        ChunkData dataAdjacent = getChunkData(adjacent);
+                                        if (dataAdjacent.isStrong()) {
+                                            d = null;
+                                            totalAir += 255;
+                                        } else {
+                                            d = dataAdjacent.getData();
+                                            totalAir += d[idxAdjacent] & 0xff;
+                                        }
                                     }
-                                    int adjacentAir = d[idxAdjacent] & 0xff;
-                                    totalAir += adjacentAir;
+                                    distListData[distListCnt] = d;
                                     distList[distListCnt] = idxAdjacent;
                                     distListCnt++;
                                 }
@@ -321,7 +405,10 @@ public class DimensionData {
                                 air = totalAir / (distListCnt + 1);
                                 for (int i = 0; i < distListCnt; i++) {
                                     totalAir -= air;
-                                    distListData[i][distList[i]] = (byte) air;
+                                    byte[] b = distListData[i];
+                                    if (b != null) {
+                                        b[distList[i]] = (byte) air;
+                                    }
                                 }
                             }
                             a[idx] = (byte) totalAir;
@@ -330,6 +417,7 @@ public class DimensionData {
                 }
             }
         }
+        return empty;
     }
 
     public void tick(World world) {
@@ -339,10 +427,15 @@ public class DimensionData {
             ChunkData data = entry.getValue();
 
             // First do the internals of each subchunk
-            tickSubChunk(world, chunkPos, data);
+            boolean e1 = tickSubChunk(world, chunkPos, data);
 
             // Now the borders
-            tickSubChunkBorders(world, chunkPos, data);
+            boolean e2 = tickSubChunkBorders(world, chunkPos, data);
+
+            if (e1 && e2) {
+                // No clean air in the subchunk. We can remove it
+                cleanAir.remove(chunkPos);
+            }
         }
     }
 
@@ -353,8 +446,12 @@ public class DimensionData {
         for (int i = 0 ; i < list.tagCount() ; i++) {
             NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
             SubChunkPos chunkPos = new SubChunkPos(subchunkNBT.getInteger("x"), subchunkNBT.getInteger("y"), subchunkNBT.getInteger("z"));
-            byte[] data = subchunkNBT.getByteArray("data");
-            cleanAir.put(chunkPos, new ChunkData(data));
+            if (subchunkNBT.hasKey("strong")) {
+                cleanAir.put(chunkPos, new ChunkData(true));
+            } else {
+                byte[] data = subchunkNBT.getByteArray("data");
+                cleanAir.put(chunkPos, new ChunkData(data));
+            }
         }
     }
 
@@ -366,7 +463,11 @@ public class DimensionData {
             subchunkNBT.setInteger("x", entry.getKey().getCx());
             subchunkNBT.setInteger("y", entry.getKey().getCy());
             subchunkNBT.setInteger("z", entry.getKey().getCz());
-            subchunkNBT.setByteArray("data", entry.getValue().getData());
+            if (entry.getValue().isStrong()) {
+                subchunkNBT.setBoolean("strong", true);
+            } else {
+                subchunkNBT.setByteArray("data", entry.getValue().getData());
+            }
             list.appendTag(subchunkNBT);
         }
         compound.setTag("list", list);

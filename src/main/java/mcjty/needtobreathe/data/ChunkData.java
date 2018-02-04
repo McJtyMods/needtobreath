@@ -7,14 +7,22 @@ import net.minecraft.util.EnumFacing;
  */
 public class ChunkData {
 
-    private byte data[];       // 0 = no clean air, 255 = 100% clean
+    private byte data[];        // 0 = no clean air, 255 = 100% clean
+    private boolean strong;     // Full clean, no ticking
 
     public ChunkData() {
         data = new byte[4096];
+        strong = false;
     }
 
     public ChunkData(byte[] data) {
         this.data = data;
+        strong = false;
+    }
+
+    public ChunkData(boolean strong) {
+        this.data = null;
+        this.strong = strong;
     }
 
     public static int index(int dx, int dy, int dz) {
@@ -94,5 +102,9 @@ public class ChunkData {
 
     public byte[] getData() {
         return data;
+    }
+
+    public boolean isStrong() {
+        return strong;
     }
 }
