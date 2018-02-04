@@ -20,7 +20,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             }
             // Depending on how pure it already is we decrease this faster or slower
             BlockPos center = getPurifyingSpot();
-            int nr = 4;
+            int nr = 6;
             for (int dx = -nr; dx <= nr; dx++) {
                 for (int dy = -nr; dy <= nr; dy++) {
                     for (int dz = -nr; dz <= nr; dz++) {

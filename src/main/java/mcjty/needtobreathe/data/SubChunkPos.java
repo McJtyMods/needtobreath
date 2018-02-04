@@ -64,4 +64,9 @@ public class SubChunkPos {
         result = 31 * result + cz;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "SubChunkPos{" + cx + "," + cy + "," + cz + '}';
+    }
 }

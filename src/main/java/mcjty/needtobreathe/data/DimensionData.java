@@ -249,8 +249,9 @@ public class DimensionData {
                             BlockPos adjacent = p.offset(facing);
                             if (isValid(world, adjacent)) {
                                 int idxAdjacent = ChunkData.offset(idx, facing);
-                                totalAir += (int) a[idxAdjacent];
-                                distList[distListCnt++] = idxAdjacent;
+                                totalAir += a[idxAdjacent] & 0xff;
+                                distList[distListCnt] = idxAdjacent;
+                                distListCnt++;
                             }
                         }
 
@@ -308,9 +309,10 @@ public class DimensionData {
                                     } else {
                                         distListData[distListCnt] = a;
                                     }
-                                    int adjacentAir = d[idxAdjacent];
+                                    int adjacentAir = d[idxAdjacent] & 0xff;
                                     totalAir += adjacentAir;
-                                    distList[distListCnt++] = idxAdjacent;
+                                    distList[distListCnt] = idxAdjacent;
+                                    distListCnt++;
                                 }
                             }
 
