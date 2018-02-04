@@ -8,21 +8,13 @@ import net.minecraft.util.EnumFacing;
 public class ChunkData {
 
     private byte data[];        // 0 = no clean air, 255 = 100% clean
-    private boolean strong;     // Full clean, no ticking
 
     public ChunkData() {
         data = new byte[4096];
-        strong = false;
     }
 
     public ChunkData(byte[] data) {
         this.data = data;
-        strong = false;
-    }
-
-    public ChunkData(boolean strong) {
-        this.data = null;
-        this.strong = strong;
     }
 
     public static int index(int dx, int dy, int dz) {
@@ -48,37 +40,36 @@ public class ChunkData {
         return idx;
     }
 
-    // This version will take the border into account by returning a negative index in that case (negating that index makes a valid index in the adjacent subchunk)
-    public static int offsetWithCheck(int idx, EnumFacing offset) {
+    public static int offsetWrap(int idx, EnumFacing offset) {
         switch (offset) {
             case DOWN:
                 if ((idx & 0xf0) == 0) {
-                    return - (idx | 0xf0);
+                    return (idx | 0xf0);
                 }
                 return idx - 16;
             case UP:
                 if ((idx & 0xf0) == 0xf0) {
-                    return - (idx & 0xf0f);
+                    return (idx & 0xf0f);
                 }
                 return idx + 16;
             case NORTH:
                 if ((idx & 0xf) == 0) {
-                    return - (idx | 0xf);
+                    return (idx | 0xf);
                 }
                 return idx - 1;
             case SOUTH:
                 if ((idx & 0xf) == 0xf) {
-                    return - (idx & 0xff0);
+                    return (idx & 0xff0);
                 }
                 return idx + 1;
             case WEST:
                 if ((idx & 0xf00) == 0) {
-                    return - (idx | 0xf00);
+                    return (idx | 0xf00);
                 }
                 return idx - 256;
             case EAST:
                 if ((idx & 0xf00) == 0xf00) {
-                    return - (idx & 0x0ff);
+                    return (idx & 0x0ff);
                 }
                 return idx + 256;
         }
@@ -105,6 +96,6 @@ public class ChunkData {
     }
 
     public boolean isStrong() {
-        return strong;
+        return data == null;
     }
 }

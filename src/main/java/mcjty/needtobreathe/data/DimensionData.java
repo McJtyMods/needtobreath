@@ -95,8 +95,8 @@ public class DimensionData {
 
     private int getPoisonInternal(int x, int y, int z) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
-        if (cleanAir.containsKey(chunkPos)) {
-            ChunkData data = cleanAir.get(chunkPos);
+        ChunkData data = cleanAir.get(chunkPos);
+        if (data != null) {
             if (data.isStrong()) {
                 return 0;
             }
@@ -140,7 +140,7 @@ public class DimensionData {
     public void fillCleanAirStrong(BlockPos p) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(p);
         cleanAir.remove(chunkPos);
-        ChunkData data = new ChunkData(true);
+        ChunkData data = new ChunkData(null);
         cleanAir.put(chunkPos, data);
     }
 
@@ -151,11 +151,10 @@ public class DimensionData {
     public int fillCleanAir(int x, int y, int z) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
         int air;
-        ChunkData data;
-        if (cleanAir.containsKey(chunkPos)) {
-            data = cleanAir.get(chunkPos);
+        ChunkData data = cleanAir.get(chunkPos);
+        if (data != null) {
             if (data.isStrong()) {
-                return 0;   // Nothing should happen
+                return 0;   // Nothing has happened
             }
             air = data.getAir(x, y, z);
         } else {
@@ -238,154 +237,37 @@ public class DimensionData {
     private static int[] distList = new int[7];
     private static byte[][] distListData = new byte[7][];
 
-
     private boolean tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
-        if (data.isStrong()) {
-            return false;   // Nothing to do here
-        }
         boolean empty = true;
         byte[] a = data.getData();
-        for (int dx = 1 ; dx < 15 ; dx++) {
-            for (int dy = 1 ; dy < 15 ; dy++) {
-                for (int dz = 1 ; dz < 15 ; dz++) {
+        for (int dx = 0 ; dx < 16 ; dx++) {
+            for (int dy = 0 ; dy < 16 ; dy++) {
+                for (int dz = 0; dz < 16; dz++) {
                     int idx = ChunkData.index(dx, dy, dz);
                     int air = a[idx] & 0xff;
                     if (fastrand128() < Config.POISON_CRAWL_SPEED) {
                         air--;
                     }
                     BlockPos p = chunkPos.toPos(dx, dy, dz);
+
                     if (air < 5 || !isValid(world, p)) {
                         a[idx] = 0;
                     } else {
                         empty = false;
-                        // Evenly distribute all air to the adjacent spots (and this one)
                         int totalAir = air;
                         int distListCnt = 0;
-                        for (EnumFacing facing : EnumFacing.VALUES) {
-                            BlockPos adjacent = p.offset(facing);
-                            if (isValid(world, adjacent)) {
-                                int idxAdjacent = ChunkData.offset(idx, facing);
-                                totalAir += a[idxAdjacent] & 0xff;
-                                distList[distListCnt] = idxAdjacent;
-                                distListCnt++;
-                            }
-                        }
 
-                        if (distListCnt > 0) {
-                            // We distribute 'air' to all legal adjacent spaces (and this one)
-                            air = totalAir / (distListCnt+1);
-                            for (int i = 0 ; i < distListCnt ; i++) {
-                                totalAir -= air;
-                                a[distList[i]] = (byte) air;
-                            }
-                        }
-                        a[idx] = (byte) totalAir;
-                    }
-                }
-            }
-        }
-        return empty;
-    }
+                        if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
+                            // We are on a border
 
-    private ChunkData getChunkData(BlockPos pos) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(pos);
-        if (!cleanAir.containsKey(chunkPos)) {
-            ChunkData data = new ChunkData();
-            cleanAir.put(chunkPos, data);
-        }
-        return cleanAir.get(chunkPos);
-    }
-
-    /**
-     * This version is used to tick the borders of a strong chunk. i.e. the strong chunk
-     * is not touched itself but influences the surroundings
-     */
-    private void tickSubChunkBordersStrong(World world, SubChunkPos chunkPos) {
-        for (int dx = 0 ; dx < 16 ; dx++) {
-            for (int dy = 0 ; dy < 16 ; dy++) {
-                for (int dz = 0; dz < 16; dz++) {
-                    if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
-                        int idx = ChunkData.index(dx, dy, dz);
-                        int air = 255;
-                        BlockPos p = chunkPos.toPos(dx, dy, dz);
-                        // Evenly distribute all air to the adjacent spots (and this one)
-                        int totalAir = air;
-                        int distListCnt = 0;
-                        for (EnumFacing facing : EnumFacing.VALUES) {
-                            BlockPos adjacent = p.offset(facing);
-                            if (isValid(world, adjacent)) {
-                                byte[] d;
-                                int idxAdjacent = ChunkData.offsetWithCheck(idx, facing);
-                                if (idxAdjacent < 0) {
-                                    idxAdjacent = -idxAdjacent;
-                                    ChunkData adjacentData = getChunkData(adjacent);
-                                    if (adjacentData.isStrong()) {
-                                        d = null;
-                                        totalAir += 255;
-                                    } else {
-                                        d = adjacentData.getData();
-                                        totalAir += d[idxAdjacent] & 0xff;
-                                    }
-                                } else {
-                                    d = null;
-                                    totalAir += 255;
-                                }
-                                distListData[distListCnt] = d;
-                                distList[distListCnt] = idxAdjacent;
-                                distListCnt++;
-                            }
-                        }
-
-                        if (distListCnt > 0) {
-                            // We distribute 'air' to all legal adjacent spaces (and this one)
-                            air = totalAir / (distListCnt + 1);
-                            for (int i = 0; i < distListCnt; i++) {
-                                totalAir -= air;
-                                byte[] data = distListData[i];
-                                if (data != null) {
-                                    data[distList[i]] = (byte) air;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private boolean tickSubChunkBorders(World world, SubChunkPos chunkPos, ChunkData data) {
-        if (data.isStrong()) {
-            tickSubChunkBordersStrong(world, chunkPos);
-            return false;   // Nothing to do except tick borders to adjacent chunks
-        }
-        boolean empty = true;
-        byte[] a = data.getData();
-        for (int dx = 0 ; dx < 16 ; dx++) {
-            for (int dy = 0 ; dy < 16 ; dy++) {
-                for (int dz = 0; dz < 16; dz++) {
-                    if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
-                        int idx = ChunkData.index(dx, dy, dz);
-                        int air = a[idx] & 0xff;
-                        if (fastrand128() < Config.POISON_CRAWL_SPEED) {
-                            air--;
-                        }
-                        BlockPos p = chunkPos.toPos(dx, dy, dz);
-                        if (air < 5 || !isValid(world, p)) {
-                            a[idx] = 0;
-                        } else {
-                            empty = false;
                             // Evenly distribute all air to the adjacent spots (and this one)
-                            int totalAir = air;
-                            int distListCnt = 0;
                             for (EnumFacing facing : EnumFacing.VALUES) {
                                 BlockPos adjacent = p.offset(facing);
                                 if (isValid(world, adjacent)) {
                                     byte[] d = a;
-                                    int idxAdjacent = ChunkData.offsetWithCheck(idx, facing);
-                                    if (idxAdjacent < 0) {
-                                        idxAdjacent = -idxAdjacent;
-                                        ChunkData dataAdjacent = getChunkData(adjacent);
+                                    ChunkData dataAdjacent = getChunkData(adjacent);
+                                    int idxAdjacent = ChunkData.offsetWrap(idx, facing);
+                                    if (dataAdjacent != data) {
                                         if (dataAdjacent.isStrong()) {
                                             d = null;
                                             totalAir += 255;
@@ -411,13 +293,99 @@ public class DimensionData {
                                     }
                                 }
                             }
-                            a[idx] = (byte) totalAir;
+                        } else {
+                            // Evenly distribute all air to the adjacent spots (and this one)
+                            for (EnumFacing facing : EnumFacing.VALUES) {
+                                BlockPos adjacent = p.offset(facing);
+                                if (isValid(world, adjacent)) {
+                                    int idxAdjacent = ChunkData.offset(idx, facing);
+                                    totalAir += a[idxAdjacent] & 0xff;
+                                    distList[distListCnt] = idxAdjacent;
+                                    distListCnt++;
+                                }
+                            }
+
+                            if (distListCnt > 0) {
+                                // We distribute 'air' to all legal adjacent spaces (and this one)
+                                air = totalAir / (distListCnt + 1);
+                                for (int i = 0; i < distListCnt; i++) {
+                                    totalAir -= air;
+                                    a[distList[i]] = (byte) air;
+                                }
+                            }
                         }
+                        a[idx] = (byte) totalAir;
                     }
                 }
             }
         }
         return empty;
+    }
+
+    private ChunkData getChunkData(BlockPos pos) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(pos);
+        if (!cleanAir.containsKey(chunkPos)) {
+            ChunkData data = new ChunkData();
+            cleanAir.put(chunkPos, data);
+        }
+        return cleanAir.get(chunkPos);
+    }
+
+    /**
+     * This version is used to tick the borders of a strong chunk. i.e. the strong chunk
+     * is not touched itself but influences the surroundings
+     */
+    private void tickSubChunkBordersStrong(World world, SubChunkPos chunkPos, ChunkData data) {
+        for (int dx = 0 ; dx < 16 ; dx++) {
+            for (int dy = 0 ; dy < 16 ; dy++) {
+                for (int dz = 0; dz < 16; dz++) {
+                    if (dx == 0 || dy == 0 || dz == 0 || dx == 15 || dy == 15 || dz == 15) {
+                        int idx = ChunkData.index(dx, dy, dz);
+                        int air = 255;
+                        BlockPos p = chunkPos.toPos(dx, dy, dz);
+                        // Evenly distribute all air to the adjacent spots (and this one)
+                        int totalAir = air;
+                        int distListCnt = 0;
+                        for (EnumFacing facing : EnumFacing.VALUES) {
+                            BlockPos adjacent = p.offset(facing);
+                            if (isValid(world, adjacent)) {
+                                byte[] d;
+                                int idxAdjacent = ChunkData.offsetWrap(idx, facing);
+                                ChunkData adjacentData = getChunkData(adjacent);
+                                if (adjacentData != data) {
+                                    if (adjacentData.isStrong()) {
+                                        d = null;
+                                        totalAir += 255;
+                                    } else {
+                                        d = adjacentData.getData();
+                                        totalAir += d[idxAdjacent] & 0xff;
+                                    }
+                                } else {
+                                    d = null;
+                                    totalAir += 255;
+                                }
+                                distListData[distListCnt] = d;
+                                distList[distListCnt] = idxAdjacent;
+                                distListCnt++;
+                            }
+                        }
+
+                        if (distListCnt > 0) {
+                            // We distribute 'air' to all legal adjacent spaces (and this one)
+                            air = totalAir / (distListCnt + 1);
+                            for (int i = 0; i < distListCnt; i++) {
+                                totalAir -= air;
+                                byte[] d = distListData[i];
+                                if (d != null) {
+                                    d[distList[i]] = (byte) air;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public void tick(World world) {
@@ -426,15 +394,14 @@ public class DimensionData {
             SubChunkPos chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
 
-            // First do the internals of each subchunk
-            boolean e1 = tickSubChunk(world, chunkPos, data);
-
-            // Now the borders
-            boolean e2 = tickSubChunkBorders(world, chunkPos, data);
-
-            if (e1 && e2) {
-                // No clean air in the subchunk. We can remove it
-                cleanAir.remove(chunkPos);
+            if (data.isStrong()) {
+                tickSubChunkBordersStrong(world, chunkPos, data);
+            } else {
+                // First do the internals of each subchunk
+                if (tickSubChunk(world, chunkPos, data)) {
+                    // No clean air in the subchunk. We can remove it
+                    cleanAir.remove(chunkPos);
+                }
             }
         }
     }
@@ -447,7 +414,7 @@ public class DimensionData {
             NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
             SubChunkPos chunkPos = new SubChunkPos(subchunkNBT.getInteger("x"), subchunkNBT.getInteger("y"), subchunkNBT.getInteger("z"));
             if (subchunkNBT.hasKey("strong")) {
-                cleanAir.put(chunkPos, new ChunkData(true));
+                cleanAir.put(chunkPos, new ChunkData(null));
             } else {
                 byte[] data = subchunkNBT.getByteArray("data");
                 cleanAir.put(chunkPos, new ChunkData(data));
