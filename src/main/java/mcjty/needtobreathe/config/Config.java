@@ -14,6 +14,10 @@ public class Config {
     private static final String CATEGORY_MACHINES = "machines";
     private static final String CATEGORY_EFFECTS = "effects";
 
+    public static int ADVANCED_PURIFIER_MAXRF = 200000;
+    public static int ADVANCED_PURIFIER_RFINPUTPERTICK = 5000;
+    public static int ADVANCED_PURIFIER_RFPERTICK = 100;
+
     public static int PURIFIER_MAXRF = 50000;
     public static int PURIFIER_RFINPUTPERTICK = 500;
     public static int PURIFIER_RFPERTICK = 50;

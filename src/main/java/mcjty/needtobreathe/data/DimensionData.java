@@ -173,7 +173,7 @@ public class DimensionData {
     private Map<SubChunkPos, ChunkData> getCleanAirPosition(BlockPos pos) {
         SubChunkPos center = SubChunkPos.fromPos(pos);
         Map<SubChunkPos, ChunkData> map = new HashMap<>();
-        int dist = 6;
+        int dist = 10;
         for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
             SubChunkPos chunkPos = entry.getKey();
             if (Math.abs(center.getCx()-chunkPos.getCx()) <= dist && Math.abs(center.getCy()-chunkPos.getCy()) <= dist && Math.abs(center.getCz()-chunkPos.getCz()) <= dist) {

@@ -14,9 +14,16 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
     private BlockPos center = null;
     private float radius;
 
+    private boolean setup = true;
+
     @Override
     public void update() {
         if (!world.isRemote) {
+            if (!setup) {
+                return;
+            }
+            setup = false;
+
             CleanAirManager manager = CleanAirManager.getManager();
             DimensionData data = manager.getDimensionData(world.provider.getDimension());
             if (data == null) {
@@ -25,9 +32,9 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             }
 
             BlockPos center = getPurifyingSpot();
-            float radius = getPurifyingRadius();
+            float radius = getPurifyingRadius() * .97f;
             float sqradius = radius*radius;
-            float inner = radius * 0.8f;
+            float inner = radius * 0.7f;
             float sqinner = inner*inner;
 
             int r = (int) ((radius-7)/8);
@@ -39,7 +46,9 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                             BlockPos p = new BlockPos(x, y, z);
                             double sqdist = p.distanceSq(center);
                             if (sqdist < sqradius) {
-                                purifyAir(data, p, sqdist < sqinner);
+                                if (sqdist < sqinner) {
+                                    purifyAir(data, p, sqdist < sqinner);
+                                }
                             }
                         }
                     }

@@ -1,4 +1,6 @@
 tile.needtobreathe.purifier.name=Purifier
+tile.needtobreathe.advanced_purifier.name=Advanced Purifier
+tile.needtobreathe.large_purifier.name=Creative Purifier
 item.needtobreathe.protectivehelmet.name=Protective Helmet
 item.needtobreathe.informationglasses.name=Information Glasses
 

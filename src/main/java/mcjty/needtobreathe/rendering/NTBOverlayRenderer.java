@@ -160,7 +160,7 @@ public class NTBOverlayRenderer {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(BLUEGLOW);
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-        SubChunkPos playerSubChunk = new SubChunkPos(p.getPosition().getX(), p.getPosition().getY(), p.getPosition().getZ());
+        SubChunkPos playerSubChunk = SubChunkPos.fromPos(p.getPosition());
         for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
             SubChunkPos chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
