@@ -16,9 +16,12 @@ public class LostCitySupport {
         if (ws.getChunkProvider().chunkGenerator instanceof ILostChunkGenerator) {
             ILostChunkGenerator gen = (ILostChunkGenerator) ws.getChunkProvider().chunkGenerator;
             ILostChunkInfo chunkInfo = gen.getChunkInfo(pos.getX() >> 4, pos.getZ() >> 4);
+            int realHeight = gen.getRealHeight(0);
             ILostSphere sphere = chunkInfo.getSphere();
             if (sphere != null) {
-                return new LCSphere(sphere.getCenterPos(), sphere.getRadius());
+                // @todo temporary until LC is fixed with correct center
+                return new LCSphere(new BlockPos(sphere.getCenterPos().getX(), realHeight, sphere.getCenterPos().getZ()), sphere.getRadius());
+//                return new LCSphere(sphere.getCenterPos(), sphere.getRadius());
             }
         }
         return null;

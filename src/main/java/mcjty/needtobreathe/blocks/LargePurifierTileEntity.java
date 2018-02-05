@@ -39,9 +39,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                             BlockPos p = new BlockPos(x, y, z);
                             double sqdist = p.distanceSq(center);
                             if (sqdist < sqradius) {
-                                if (data.isValid(world, p)) {
-                                    purifyAir(data, p, sqdist < sqinner);
-                                }
+                                purifyAir(data, p, sqdist < sqinner);
                             }
                         }
                     }
@@ -56,7 +54,9 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             return;
         }
 
-        data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
+        if (data.isValid(world, pp)) {
+            data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
+        }
         BlockPos p2;
         p2 = pp.down();
         if (data.isValid(world, p2)) {
@@ -91,6 +91,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         LCSphere sphere = LostCitySupport.isInSphere(world, pos);
         if (sphere != null) {
             center = sphere.getCenter();
+
             radius = sphere.getRadius();
         } else {
             center = pos.up();
