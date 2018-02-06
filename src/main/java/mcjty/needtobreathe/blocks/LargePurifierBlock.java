@@ -37,8 +37,9 @@ public class LargePurifierBlock extends GenericBlock<LargePurifierTileEntity, Em
         super.addInformation(itemStack, player, list, whatIsThis);
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-            list.add(TextFormatting.WHITE + "This block cleans air");
-            list.add(TextFormatting.WHITE + "in a large area");
+            list.add(TextFormatting.WHITE + "This creative-only block cleans");
+            list.add(TextFormatting.WHITE + "air in a large area");
+            list.add(TextFormatting.WHITE + "It can detect Lost City spheres");
         } else {
             list.add(TextFormatting.WHITE + NeedToBreathe.SHIFT_MESSAGE);
         }

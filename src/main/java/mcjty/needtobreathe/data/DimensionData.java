@@ -34,11 +34,9 @@ import static mcjty.needtobreathe.data.ChunkData.CHUNK_DIM;
 public class DimensionData {
 
 
-    public static final int MAXTICKS = 10;
     public static final int MAXEFFECTSTICKS = 5;
-    public static final int EFFECT_DURATION = MAXTICKS * MAXEFFECTSTICKS * 2;
 
-    private int counter = MAXTICKS;
+    private int counter = 1;
     private int effectCounter = MAXEFFECTSTICKS;
 
     private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
@@ -115,6 +113,11 @@ public class DimensionData {
         }
     }
 
+    public void removeStrongAir(BlockPos p) {
+        SubChunkPos chunkPos = SubChunkPos.fromPos(p);
+        cleanAir.remove(chunkPos);
+    }
+
     // Fill an entire chunk with strong clean air that doesn't do any ticking
     public void fillCleanAirStrong(BlockPos p) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(p);
@@ -149,7 +152,7 @@ public class DimensionData {
     public void worldTick(World world) {
         counter--;
         if (counter <= 0) {
-            counter = MAXTICKS;
+            counter = Config.SUBCHUNK_TICKS;
 
             effectCounter--;
             if (effectCounter <= 0) {
@@ -216,7 +219,8 @@ public class DimensionData {
             if (potionConfigs.length > 0) {
                 for (PotionEffectConfig config : potionConfigs) {
                     if (poison >= config.getPoisonThresshold()) {
-                        ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(config.getPotion(), EFFECT_DURATION, config.getAmplitude()));
+                        ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(config.getPotion(),
+                                Config.SUBCHUNK_TICKS * MAXEFFECTSTICKS * 2, config.getAmplitude()));
                     }
                 }
             }
@@ -234,7 +238,7 @@ public class DimensionData {
                 for (int dz = 0; dz < CHUNK_DIM; dz++) {
                     int idx = ChunkData.index(dx, dy, dz);
                     int air = a[idx] & 0xff;
-                    if (fastrand128() < Config.POISON_CRAWL_SPEED) {
+                    if (fastrand128() < Config.CLEANAIR_DECAY_CHANCE) {
                         air--;
                     }
                     BlockPos p = chunkPos.toPos(dx, dy, dz);
@@ -348,48 +352,60 @@ public class DimensionData {
                     case DOWN:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                int idx = ChunkData.index(x, CHUNK_DIM-1, z);     // Up side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(x, CHUNK_DIM - 1, z);     // Up side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;
                     case UP:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                int idx = ChunkData.index(x, 0, z);     // Down side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(x, 0, z);     // Down side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;
                     case NORTH:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int y = 0; y < CHUNK_DIM; y++) {
-                                int idx = ChunkData.index(x, y, CHUNK_DIM-1);     // South side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(x, y, CHUNK_DIM - 1);     // South side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;
                     case SOUTH:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int y = 0; y < CHUNK_DIM; y++) {
-                                int idx = ChunkData.index(x, y, 0);     // North side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(x, y, 0);     // North side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;
                     case WEST:
                         for (int y = 0; y < CHUNK_DIM; y++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                int idx = ChunkData.index(CHUNK_DIM-1, y, z);     // Right side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(CHUNK_DIM - 1, y, z);     // Right side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;
                     case EAST:
                         for (int y = 0; y < CHUNK_DIM; y++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                int idx = ChunkData.index(0, y, z);     // Left side of adjacent chunk
-                                b[idx] = (byte) 255;
+                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                    int idx = ChunkData.index(0, y, z);     // Left side of adjacent chunk
+                                    b[idx] = (byte) 255;
+                                }
                             }
                         }
                         break;

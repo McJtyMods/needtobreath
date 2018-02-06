@@ -2,12 +2,14 @@ package mcjty.needtobreathe;
 
 import mcjty.lib.base.ModBase;
 import mcjty.needtobreathe.commands.CommandTest;
+import mcjty.needtobreathe.compat.LostCitySupport;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -64,6 +66,9 @@ public class NeedToBreathe implements ModBase {
     public void init(FMLInitializationEvent e) {
         this.proxy.init(e);
         lostcities = Loader.isModLoaded("lostcities");
+        if (lostcities) {
+            LostCitySupport.registerListener();
+        }
     }
 
     /**
