@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "needtobreathe:advanced_purifier"
+  },
+  "pattern": [
+    "ReR",
+    "dMd",
+    "ReR"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "needtobreathe:purifier"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    },
+    "e": {
+      "item": "minecraft:emerald"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "needtobreathe:purifier"
+    "model": "needtobreathe:advanced_purifier"
   },
   "variants": {
     "normal": [{}],
@@ -16,7 +16,7 @@
     },
     "working": {
       "false": {},
-      "true": { "model": "needtobreathe:purifier_on" }
+      "true": { "model": "needtobreathe:advanced_purifier_on" }
     }
   }
 }

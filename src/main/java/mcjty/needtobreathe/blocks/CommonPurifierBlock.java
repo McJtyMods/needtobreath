@@ -66,8 +66,8 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity te = world instanceof ChunkCache ? ((ChunkCache)world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
         boolean working = false;
-        if (te instanceof PurifierTileEntity) {
-            working = ((PurifierTileEntity)te).isWorking();
+        if (te instanceof CommonPurifierTileEntity) {
+            working = ((CommonPurifierTileEntity)te).isWorking();
         }
         return state.withProperty(WORKING, working);
     }
