@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.config;
 
 import mcjty.lib.varia.Logging;
+import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -73,8 +74,8 @@ public class Config {
     private static Set<Integer> dimensionsWithPoison = null;
     private static Set<Integer> dimensionsWithoutPoison = null;
 
-    private static Set<ResourceLocation> blocksBlocking = null;
-    private static Set<ResourceLocation> blocksNonBlocking = null;
+    private static Set<Block> blocksBlocking = null;
+    private static Set<Block> blocksNonBlocking = null;
 
     public static boolean hasPoison(int dimensionId) {
         if (dimensionsWithPoison == null) {
@@ -100,13 +101,13 @@ public class Config {
     }
 
 
-    public static Set<ResourceLocation> getBlocksBlocking() {
+    public static Set<Block> getBlocksBlocking() {
         if (blocksBlocking == null) {
             blocksBlocking = new HashSet<>();
             for (String s : BLOCKS_BLOCKING) {
                 ResourceLocation id = new ResourceLocation(s);
                 if (ForgeRegistries.BLOCKS.containsKey(id)) {
-                    blocksBlocking.add(id);
+                    blocksBlocking.add(ForgeRegistries.BLOCKS.getValue(id));
                 } else {
                     Logging.getLogger().warn("Block with id '" + s + "' is missing!");
                 }
@@ -115,13 +116,13 @@ public class Config {
         return blocksBlocking;
     }
 
-    public static Set<ResourceLocation> getBlocksNonBlocking() {
+    public static Set<Block> getBlocksNonBlocking() {
         if (blocksNonBlocking == null) {
             blocksNonBlocking = new HashSet<>();
             for (String s : BLOCKS_NONBLOCKING) {
                 ResourceLocation id = new ResourceLocation(s);
                 if (ForgeRegistries.BLOCKS.containsKey(id)) {
-                    blocksNonBlocking.add(id);
+                    blocksNonBlocking.add(ForgeRegistries.BLOCKS.getValue(id));
                 } else {
                     Logging.getLogger().warn("Block with id '" + s + "' is missing!");
                 }

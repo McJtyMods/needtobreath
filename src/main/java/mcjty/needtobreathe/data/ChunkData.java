@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.data;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 /**
  * All clean air in a subchunk (16x16x16)
@@ -8,6 +9,9 @@ import net.minecraft.util.EnumFacing;
 public class ChunkData {
 
     private byte data[];        // 0 = no clean air, 255 = 100% clean
+
+    private boolean valid[];    // Cache for valid
+    private int cacheNr = 0;    // Number to check if the cache is up to date
 
 //    public static final int CHUNK_DIM = 16;
 //    public static final int CHUNK_SHIFT = 4;
@@ -25,6 +29,18 @@ public class ChunkData {
 
     public ChunkData(byte[] data) {
         this.data = data;
+    }
+
+    public boolean isValid(int globalCacheNr, World world, SubChunkPos chunkPos, int idx) {
+        if (globalCacheNr == cacheNr) {
+            return valid[idx];
+        }
+        cacheNr = globalCacheNr;
+        valid = new boolean[CHUNK_SIZE];
+        for (int i = 0 ; i < CHUNK_SHIFT ; i++) {
+            valid[i] = DimensionData.isValid(world, chunkPos.toPos(i));
+        }
+        return valid[idx];
     }
 
     public static int index(int dx, int dy, int dz) {
@@ -49,6 +65,43 @@ public class ChunkData {
         }
         return idx;
     }
+
+    public static SubChunkPos adjacentChunkPos(int idx, EnumFacing offset, SubChunkPos chunkPos) {
+        switch (offset) {
+            case DOWN:
+                if ((idx & (CHUNK_MASK<<CHUNK_SHIFT)) == 0) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+            case UP:
+                if ((idx & (CHUNK_MASK<<CHUNK_SHIFT)) == (CHUNK_MASK<<CHUNK_SHIFT)) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+            case NORTH:
+                if ((idx & CHUNK_MASK) == 0) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+            case SOUTH:
+                if ((idx & CHUNK_MASK) == CHUNK_MASK) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+            case WEST:
+                if ((idx & (CHUNK_MASK<<CHUNK_2SHIFT)) == 0) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+            case EAST:
+                if ((idx & (CHUNK_MASK<<CHUNK_2SHIFT)) == (CHUNK_MASK<<CHUNK_2SHIFT)) {
+                    return chunkPos.offset(offset);
+                }
+                return chunkPos;
+        }
+        return chunkPos;
+    }
+
 
     public static int offsetWrap(int idx, EnumFacing offset) {
         switch (offset) {

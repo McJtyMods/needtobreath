@@ -38,6 +38,7 @@ public class DimensionData {
 
     private int counter = 1;
     private int effectCounter = MAXEFFECTSTICKS;
+    private int globalCacheNr = 1;         // For the validity cache
 
     private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
 
@@ -83,11 +84,18 @@ public class DimensionData {
         }
     }
 
-    public boolean isValid(World world, BlockPos p) {
+    public static boolean isValid(World world, BlockPos p) {
+        // @todo optimize this. Top function in profile:
+        // Avoid getRegistryName()
+        // Make a local cache
         IBlockState state = world.getBlockState(p);
         Block block = state.getBlock();
 
-        if (Config.getBlocksBlocking().contains(block.getRegistryName())) {
+        if (block.isAir(state, world, p)) {
+            return true;
+        }
+
+        if (Config.getBlocksBlocking().contains(block)) {
             // Special case for doors
             if (block instanceof BlockDoor) {
                 return state.getValue(BlockDoor.OPEN);
@@ -98,19 +106,15 @@ public class DimensionData {
 
             return false;
         }
-        if (Config.getBlocksNonBlocking().contains(block.getRegistryName())) {
+        if (Config.getBlocksNonBlocking().contains(block)) {
             return true;
         }
 
-        if (block.isAir(state, world, p)) {
+        AxisAlignedBB box = state.getCollisionBoundingBox(world, p);
+        if (box == null) {
             return true;
-        } else {
-            AxisAlignedBB box = state.getCollisionBoundingBox(world, p);
-            if (box == null) {
-                return true;
-            }
-            return !block.isOpaqueCube(state);
         }
+        return !block.isOpaqueCube(state);
     }
 
     public void removeStrongAir(BlockPos p) {
@@ -243,7 +247,7 @@ public class DimensionData {
                     }
                     BlockPos p = chunkPos.toPos(dx, dy, dz);
 
-                    if (air < 5 || !isValid(world, p)) {
+                    if (air < 5 || data.isValid(globalCacheNr, world, chunkPos, idx)) {
                         a[idx] = 0;
                     } else {
                         empty = false;
@@ -255,11 +259,12 @@ public class DimensionData {
 
                             // Evenly distribute all air to the adjacent spots (and this one)
                             for (EnumFacing facing : EnumFacing.VALUES) {
-                                BlockPos adjacent = p.offset(facing);
-                                if (isValid(world, adjacent)) {
+                                SubChunkPos adjacentChunkPos = ChunkData.adjacentChunkPos(idx, facing, chunkPos);
+                                ChunkData dataAdjacent = getChunkData(adjacentChunkPos);
+                                int idxAdjacent = ChunkData.offsetWrap(idx, facing);
+
+                                if (dataAdjacent.isValid(globalCacheNr, world, adjacentChunkPos, idxAdjacent)) {
                                     byte[] d = a;
-                                    ChunkData dataAdjacent = getChunkData(adjacent);
-                                    int idxAdjacent = ChunkData.offsetWrap(idx, facing);
                                     if (dataAdjacent != data) {
                                         if (dataAdjacent.isStrong()) {
                                             d = null;
@@ -291,9 +296,9 @@ public class DimensionData {
                         } else {
                             // Evenly distribute all air to the adjacent spots (and this one)
                             for (EnumFacing facing : EnumFacing.VALUES) {
-                                BlockPos adjacent = p.offset(facing);
-                                if (isValid(world, adjacent)) {
-                                    int idxAdjacent = ChunkData.offset(idx, facing);
+                                int idxAdjacent = ChunkData.offset(idx, facing);
+                                if (data.isValid(globalCacheNr, world, chunkPos, idxAdjacent)) {
+//                                    if (isValid(world, adjacent)) {
                                     totalAir += a[idxAdjacent] & 0xff;
                                     distList[distListCnt] = idxAdjacent;
                                     distListCnt++;
@@ -319,6 +324,10 @@ public class DimensionData {
 
     private ChunkData getChunkData(BlockPos pos) {
         SubChunkPos chunkPos = SubChunkPos.fromPos(pos);
+        return getChunkData(chunkPos);
+    }
+
+    private ChunkData getChunkData(SubChunkPos chunkPos) {
         if (!cleanAir.containsKey(chunkPos)) {
             ChunkData data = new ChunkData();
             cleanAir.put(chunkPos, data);
@@ -415,6 +424,8 @@ public class DimensionData {
     }
 
     public void tick(World world) {
+        globalCacheNr++;
+
         Set<Map.Entry<SubChunkPos, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
         for (Map.Entry<SubChunkPos, ChunkData> entry : copy) {
             SubChunkPos chunkPos = entry.getKey();

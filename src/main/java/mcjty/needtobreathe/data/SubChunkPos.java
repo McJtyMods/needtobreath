@@ -58,11 +58,11 @@ public class SubChunkPos {
     }
 
     public BlockPos toPos(int dx, int dy, int dz) {
-        return new BlockPos(cx*CHUNK_DIM+dx, cy*CHUNK_DIM+dy, cz*CHUNK_DIM+dz);
+        return new BlockPos((cx<<CHUNK_SHIFT)+dx, (cy<<CHUNK_SHIFT)+dy, (cz<<CHUNK_SHIFT)+dz);
     }
 
     public BlockPos toPos(int idx) {
-        return new BlockPos(cx*CHUNK_DIM+((idx>>CHUNK_2SHIFT) & CHUNK_MASK), cy*CHUNK_DIM+((idx>>CHUNK_SHIFT) & CHUNK_MASK), cz*CHUNK_DIM+(idx & CHUNK_MASK));
+        return new BlockPos((cx<<CHUNK_SHIFT)+((idx>>CHUNK_2SHIFT) & CHUNK_MASK), (cy<<CHUNK_SHIFT)+((idx>>CHUNK_SHIFT) & CHUNK_MASK), (cz<<CHUNK_SHIFT)+(idx & CHUNK_MASK));
     }
 
     @Override
