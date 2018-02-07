@@ -37,7 +37,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             return;
         }
         float sqradius = radius*radius;
-        float inner = radius * 0.7f;
+        float inner = radius * 0.8f;
         float sqinner = inner*inner;
 
         int r = (int) ((radius-7)/8);
@@ -48,9 +48,6 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                     for (int z = center.getZ() - r * 8; z <= center.getZ() + r * 8; z += 8) {
                         BlockPos p = new BlockPos(x, y, z);
                         double sqdist = p.distanceSq(center);
-//                            if (sqdist < sqradius) {
-//                                purifyAir(data, p, sqdist < sqinner);
-//                            }
                         if (sqdist < sqinner) {
                             removeStrongAir(data, p);
                         }
@@ -63,7 +60,11 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
 
     @Override
     public void update() {
+
+
         if (!world.isRemote) {
+
+
             if (!setup) {
                 return;
             }
@@ -82,7 +83,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                 return;
             }
             float sqradius = radius*radius;
-            float inner = radius * 0.7f;
+            float inner = radius * 0.8f;
             float sqinner = inner*inner;
 
             int r = (int) ((radius-7)/8);
@@ -93,11 +94,11 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                         for (int z = center.getZ() - r * 8; z <= center.getZ() + r * 8; z += 8) {
                             BlockPos p = new BlockPos(x, y, z);
                             double sqdist = p.distanceSq(center);
-//                            if (sqdist < sqradius) {
-//                                purifyAir(data, p, sqdist < sqinner);
-//                            }
                             if (sqdist < sqinner) {
                                 purifyAir(data, p, true);
+                            } else if (sqdist < sqradius) {
+                                //@todo
+//                                purifyAir(data, p, false);
                             }
                         }
                     }
@@ -154,6 +155,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         if (sphere != null) {
             center = sphere.getCenter();
             radius = sphere.getRadius();
+
         } else {
             center = pos.up();
             radius = Config.CREATIVE_PURIFIER_RADIUS;

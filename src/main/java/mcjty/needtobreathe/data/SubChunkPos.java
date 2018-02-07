@@ -50,7 +50,7 @@ public class SubChunkPos {
     }
 
     public static SubChunkPos fromPos(BlockPos pos) {
-        return new SubChunkPos(pos.getX()>> CHUNK_SHIFT, pos.getY()>>CHUNK_SHIFT, pos.getZ()>>CHUNK_SHIFT);
+        return new SubChunkPos(pos.getX()>>CHUNK_SHIFT, pos.getY()>>CHUNK_SHIFT, pos.getZ()>>CHUNK_SHIFT);
     }
 
     public static SubChunkPos fromPos(int x, int y, int z) {
