@@ -11,22 +11,17 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 import static mcjty.theoneprobe.api.TextStyleClass.INFO;
 import static mcjty.theoneprobe.api.TextStyleClass.LABEL;
@@ -55,10 +50,10 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
     public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
         super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
         TileEntity te = world.getTileEntity(data.getPos());
-        if (te instanceof PurifierTileEntity) {
-            probeInfo.progress(((PurifierTileEntity) te).getCoalticks(), ((PurifierTileEntity) te).getMaxCoalTicks());
+        if (te instanceof CommonPurifierTileEntity) {
+            probeInfo.progress(((CommonPurifierTileEntity) te).getCoalticks(), ((CommonPurifierTileEntity) te).getMaxCoalTicks());
             DecimalFormat fmt = new DecimalFormat("#.##");
-            probeInfo.horizontal().text(LABEL + "Consumption: " + INFO + fmt.format(((PurifierTileEntity) te).getLastCoalPerTick()) + "/t");
+            probeInfo.horizontal().text(LABEL + "Consumption: " + INFO + fmt.format(((CommonPurifierTileEntity) te).getLastCoalPerTick()) + "/t");
         }
     }
 

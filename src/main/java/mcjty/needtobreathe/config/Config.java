@@ -32,7 +32,7 @@ public class Config {
     public static float PLANT_GROWTH_SLOWDOWN_FACTOR = .7f;
 
     public static int POISON_THRESSHOLD = 120;
-    public static int CLEANAIR_DECAY_CHANCE = 10;
+    public static int CLEANAIR_DECAY_CHANCE = 20;
     public static int STRONGAIR_PROPAGATE_CHANCE = 50;
     public static int SUBCHUNK_TICKS = 10;
 
@@ -60,7 +60,9 @@ public class Config {
             "minecraft:sand",
             "minecraft:ladder",
             "minecraft:trapdoor",
-            "minecraft:hay_block"
+            "minecraft:hay_block",
+            "minecraft:leaves",
+            "minecraft:leaves2"
     };
 
     public static String[] DIMENSIONS_WITH_POISON = { "-1" };

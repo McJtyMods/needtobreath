@@ -55,7 +55,6 @@ public class NTBOverlayRenderer {
             if (hasGlasses()) {
                 int cnt = cleanAir.size();
                 if (cnt != prevCnt) {
-                    System.out.println("cleanAir = " + cnt);
                     prevCnt = cnt;
                 }
                 renderHighlightedBlocks(event, p, cleanAir);

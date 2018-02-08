@@ -39,6 +39,7 @@ public class DimensionData {
     private int counter = 1;
     private int effectCounter = MAXEFFECTSTICKS;
     private int globalCacheNr = 1;         // For the validity cache
+    private int globalCacheUpdateTick = 1;
 
     private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
 
@@ -130,6 +131,17 @@ public class DimensionData {
         cleanAir.put(chunkPos, data);
     }
 
+    // When a block is broken we clean the air there and also make sure the 'isValid' cache is
+    // recalculated in this subchunk
+    public void breakBlock(BlockPos p) {
+        fillCleanAir(p);
+        getChunkData(p).invalidateCache();
+    }
+
+    public void placeBlock(BlockPos p) {
+        getChunkData(p).invalidateCache();
+    }
+
     public int fillCleanAir(BlockPos p) {
         return fillCleanAir(p.getX(), p.getY(), p.getZ());
     }
@@ -180,10 +192,12 @@ public class DimensionData {
     private Map<SubChunkPos, ChunkData> getCleanAirPosition(BlockPos pos) {
         SubChunkPos center = SubChunkPos.fromPos(pos);
         Map<SubChunkPos, ChunkData> map = new HashMap<>();
-        int dist = 10;
+        int dist = 8;
         for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
             SubChunkPos chunkPos = entry.getKey();
-            if (Math.abs(center.getCx()-chunkPos.getCx()) <= dist && Math.abs(center.getCy()-chunkPos.getCy()) <= dist && Math.abs(center.getCz()-chunkPos.getCz()) <= dist) {
+            if (Math.abs(center.getCx()-chunkPos.getCx()) <= dist
+                    && Math.abs(center.getCy()-chunkPos.getCy()) <= dist
+                    && Math.abs(center.getCz()-chunkPos.getCz()) <= dist) {
                 map.put(chunkPos, entry.getValue());
             }
         }
@@ -245,9 +259,8 @@ public class DimensionData {
                     if (fastrand128() < Config.CLEANAIR_DECAY_CHANCE) {
                         air--;
                     }
-                    BlockPos p = chunkPos.toPos(dx, dy, dz);
 
-                    if (air < 5 || data.isValid(globalCacheNr, world, chunkPos, idx)) {
+                    if (air < 5 || !data.isValid(globalCacheNr, world, chunkPos, idx)) {
                         a[idx] = 0;
                     } else {
                         empty = false;
@@ -298,7 +311,6 @@ public class DimensionData {
                             for (EnumFacing facing : EnumFacing.VALUES) {
                                 int idxAdjacent = ChunkData.offset(idx, facing);
                                 if (data.isValid(globalCacheNr, world, chunkPos, idxAdjacent)) {
-//                                    if (isValid(world, adjacent)) {
                                     totalAir += a[idxAdjacent] & 0xff;
                                     distList[distListCnt] = idxAdjacent;
                                     distListCnt++;
@@ -424,7 +436,13 @@ public class DimensionData {
     }
 
     public void tick(World world) {
-        globalCacheNr++;
+        globalCacheUpdateTick--;
+        if (globalCacheUpdateTick <= 0) {
+            // We don't update the globalCacheNr every time but keep the isValid caches active for a while longer. Worlds don't change
+            // that often usually
+            globalCacheUpdateTick = 20;
+            globalCacheNr++;
+        }
 
         Set<Map.Entry<SubChunkPos, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
         for (Map.Entry<SubChunkPos, ChunkData> entry : copy) {

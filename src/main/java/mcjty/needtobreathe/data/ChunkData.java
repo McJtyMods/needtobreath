@@ -37,10 +37,14 @@ public class ChunkData {
         }
         cacheNr = globalCacheNr;
         valid = new boolean[CHUNK_SIZE];
-        for (int i = 0 ; i < CHUNK_SHIFT ; i++) {
+        for (int i = 0 ; i < CHUNK_SIZE ; i++) {
             valid[i] = DimensionData.isValid(world, chunkPos.toPos(i));
         }
         return valid[idx];
+    }
+
+    public void invalidateCache() {
+        cacheNr = 0;
     }
 
     public static int index(int dx, int dy, int dz) {

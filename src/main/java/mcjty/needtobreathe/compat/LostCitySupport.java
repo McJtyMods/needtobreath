@@ -49,7 +49,7 @@ public class LostCitySupport {
             ILostChunkGenerator gen = (ILostChunkGenerator) ws.getChunkProvider().chunkGenerator;
             ILostChunkInfo info = gen.getChunkInfo(chunkX, chunkZ);
             ILostSphere sphere = info.getSphere();
-            if (sphere != null && sphere.getCenter().getChunkX() == chunkX && sphere.getCenter().getChunkZ() == chunkZ) {
+            if (sphere != null && sphere.isEnabled() && sphere.getCenter().getChunkX() == chunkX && sphere.getCenter().getChunkZ() == chunkZ) {
                 int y;
                 if (Config.CREATIVE_PURIFIER_GENERATE_HEIGHT == -1) {
                     y = gen.getRealHeight(0);
