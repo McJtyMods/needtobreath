@@ -107,6 +107,43 @@ public class ChunkData {
     }
 
 
+    public static long adjacentChunkPosIndexed(int idx, EnumFacing offset, long chunkPos) {
+        switch (offset) {
+            case DOWN:
+                if ((idx & (CHUNK_MASK<<CHUNK_SHIFT)) == 0) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+            case UP:
+                if ((idx & (CHUNK_MASK<<CHUNK_SHIFT)) == (CHUNK_MASK<<CHUNK_SHIFT)) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+            case NORTH:
+                if ((idx & CHUNK_MASK) == 0) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+            case SOUTH:
+                if ((idx & CHUNK_MASK) == CHUNK_MASK) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+            case WEST:
+                if ((idx & (CHUNK_MASK<<CHUNK_2SHIFT)) == 0) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+            case EAST:
+                if ((idx & (CHUNK_MASK<<CHUNK_2SHIFT)) == (CHUNK_MASK<<CHUNK_2SHIFT)) {
+                    return SubChunkPosIndexed.offset(offset, chunkPos);
+                }
+                return chunkPos;
+        }
+        return chunkPos;
+    }
+
+
     public static int offsetWrap(int idx, EnumFacing offset) {
         switch (offset) {
             case DOWN:

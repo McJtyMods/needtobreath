@@ -60,11 +60,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
 
     @Override
     public void update() {
-
-
         if (!world.isRemote) {
-
-
             if (!setup) {
                 return;
             }
@@ -95,10 +91,10 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                             BlockPos p = new BlockPos(x, y, z);
                             double sqdist = p.distanceSq(center);
                             if (sqdist < sqinner) {
-                                purifyAir(data, p, true);
+                                data.fillCleanAirStrong(p);
                             } else if (sqdist < sqradius) {
                                 //@todo
-//                                purifyAir(data, p, false);
+                                purifyAir(data, p);
                             }
                         }
                     }
@@ -111,12 +107,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         data.removeStrongAir(pp);
     }
 
-    private void purifyAir(DimensionData data, BlockPos pp, boolean strong) {
-        if (strong) {
-            data.fillCleanAirStrong(pp);
-            return;
-        }
-
+    private void purifyAir(DimensionData data, BlockPos pp) {
         if (data.isValid(world, pp)) {
             data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
         }

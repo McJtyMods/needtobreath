@@ -205,8 +205,8 @@ public class NTBOverlayRenderer {
 
         int alpha = value;
 
-        float mult = ChunkData.CHUNK_DIM * .5f;
-        float offset = ChunkData.CHUNK_DIM - ChunkData.CHUNK_DIM/2.0f;
+        float mult = ChunkData.CHUNK_DIM * .3f;
+        float offset = ChunkData.CHUNK_DIM - mult;
 
         RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
         RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
@@ -226,8 +226,8 @@ public class NTBOverlayRenderer {
         buffer.setTranslation(buffer.xOffset + x, buffer.yOffset + y, buffer.zOffset + z);
 
         int alpha = 40;
-        float mult = ChunkData.CHUNK_DIM * .5f;
-        float offset = ChunkData.CHUNK_DIM - ChunkData.CHUNK_DIM/2.0f;
+        float mult = ChunkData.CHUNK_DIM * .3f;
+        float offset = ChunkData.CHUNK_DIM - mult;
 
         RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
         RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);

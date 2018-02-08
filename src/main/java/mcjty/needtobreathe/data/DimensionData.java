@@ -37,15 +37,17 @@ public class DimensionData {
     public static final int MAXEFFECTSTICKS = 5;
 
     private int counter = 1;
+    private int subCounter = 0;
     private int effectCounter = MAXEFFECTSTICKS;
     private int globalCacheNr = 1;         // For the validity cache
     private int globalCacheUpdateTick = 1;
 
     private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
-
+//    private final Map<Long, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
 
 
     private static int g_seed = 123456789;
+
     public static int fastrand128() {
         g_seed = (214013 * g_seed + 2531011);
         return (g_seed >> 16) & 0x7F;
@@ -56,10 +58,10 @@ public class DimensionData {
      */
     public int getPoison(BlockPos p) {
         int minPoison = 255;
-        for (int dx = -1 ; dx <= 1 ; dx++) {
-            for (int dy = -1 ; dy <= 1 ; dy++) {
-                for (int dz = -1 ; dz <= 1 ; dz++) {
-                    int poison = getPoisonInternal(p.getX()+dx, p.getY()+dy, p.getZ()+dz);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    int poison = getPoisonInternal(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
                     if (poison < minPoison) {
                         minPoison = poison;
                         if (minPoison == 0) {
@@ -69,7 +71,7 @@ public class DimensionData {
                 }
             }
         }
-        return Math.max(minPoison-Config.POISON_THRESSHOLD, 0);
+        return Math.max(minPoison - Config.POISON_THRESSHOLD, 0);
     }
 
     private int getPoisonInternal(int x, int y, int z) {
@@ -161,7 +163,7 @@ public class DimensionData {
             air = 0;
         }
         data.putAir(x, y, z, 255);
-        return 255-air;
+        return 255 - air;
     }
 
 
@@ -195,9 +197,9 @@ public class DimensionData {
         int dist = 8;
         for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
             SubChunkPos chunkPos = entry.getKey();
-            if (Math.abs(center.getCx()-chunkPos.getCx()) <= dist
-                    && Math.abs(center.getCy()-chunkPos.getCy()) <= dist
-                    && Math.abs(center.getCz()-chunkPos.getCz()) <= dist) {
+            if (Math.abs(center.getCx() - chunkPos.getCx()) <= dist
+                    && Math.abs(center.getCy() - chunkPos.getCy()) <= dist
+                    && Math.abs(center.getCz() - chunkPos.getCz()) <= dist) {
                 map.put(chunkPos, entry.getValue());
             }
         }
@@ -237,7 +239,7 @@ public class DimensionData {
             if (potionConfigs.length > 0) {
                 for (PotionEffectConfig config : potionConfigs) {
                     if (poison >= config.getPoisonThresshold()) {
-                        ((EntityLivingBase)entity).addPotionEffect(new PotionEffect(config.getPotion(),
+                        ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(config.getPotion(),
                                 Config.SUBCHUNK_TICKS * MAXEFFECTSTICKS * 2, config.getAmplitude()));
                     }
                 }
@@ -251,8 +253,8 @@ public class DimensionData {
     private boolean tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
         boolean empty = true;
         byte[] a = data.getData();
-        for (int dx = 0 ; dx < CHUNK_DIM ; dx++) {
-            for (int dy = 0 ; dy < CHUNK_DIM ; dy++) {
+        for (int dx = 0; dx < CHUNK_DIM; dx++) {
+            for (int dy = 0; dy < CHUNK_DIM; dy++) {
                 for (int dz = 0; dz < CHUNK_DIM; dz++) {
                     int idx = ChunkData.index(dx, dy, dz);
                     int air = a[idx] & 0xff;
@@ -267,7 +269,7 @@ public class DimensionData {
                         int totalAir = air;
                         int distListCnt = 0;
 
-                        if (dx == 0 || dy == 0 || dz == 0 || dx == CHUNK_DIM-1 || dy == CHUNK_DIM-1 || dz == CHUNK_DIM-1) {
+                        if (dx == 0 || dy == 0 || dz == 0 || dx == CHUNK_DIM - 1 || dy == CHUNK_DIM - 1 || dz == CHUNK_DIM - 1) {
                             // We are on a border
 
                             // Evenly distribute all air to the adjacent spots (and this one)
@@ -356,7 +358,7 @@ public class DimensionData {
             SubChunkPos adjacentPos = chunkPos.offset(facing);
             if (adjacentPos.getCy() < 0) {
                 continue;
-            } else if (adjacentPos.getCy() >= (256/CHUNK_DIM)) {
+            } else if (adjacentPos.getCy() >= (256 / CHUNK_DIM)) {
                 continue;
             }
 
@@ -443,19 +445,48 @@ public class DimensionData {
             globalCacheUpdateTick = 20;
             globalCacheNr++;
         }
+        subCounter++;
+
+        // We do everything if the number of subchunks is low enough and every 4 subchunk tinks
+        boolean doAll = cleanAir.size() < 3000 || (subCounter % 4 == 0);
+
+        Set<SubChunkPos> subChunksNearPlayers = new HashSet<>();
+        for (EntityPlayer player : world.playerEntities) {
+            SubChunkPos chunkPos = SubChunkPos.fromPos(player.getPosition());
+            // The subchunk of a player we update more often with regards to validity checking (for doors mostly)
+            ChunkData data = cleanAir.get(chunkPos);
+            if (data != null) {
+                data.invalidateCache();
+            }
+
+            if (!doAll) {
+                int offs = 8;
+                for (int dy = -offs; dy <= offs; dy++) {
+                    if ((chunkPos.getCy() + dy) >= 0 && (chunkPos.getCy() + dy) < (256 / CHUNK_DIM)) {
+                        for (int dx = -offs; dx <= offs; dx++) {
+                            for (int dz = -offs; dz <= offs; dz++) {
+                                subChunksNearPlayers.add(new SubChunkPos(chunkPos.getCx() + dx, chunkPos.getCy() + dy, chunkPos.getCz() + dz));
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         Set<Map.Entry<SubChunkPos, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
         for (Map.Entry<SubChunkPos, ChunkData> entry : copy) {
             SubChunkPos chunkPos = entry.getKey();
-            ChunkData data = entry.getValue();
+            if (doAll || subChunksNearPlayers.contains(chunkPos)) {
+                ChunkData data = entry.getValue();
 
-            if (data.isStrong()) {
-                tickSubChunkBordersStrong(world, chunkPos, data);
-            } else {
-                // First do the internals of each subchunk
-                if (tickSubChunk(world, chunkPos, data)) {
-                    // No clean air in the subchunk. We can remove it
-                    cleanAir.remove(chunkPos);
+                if (data.isStrong()) {
+                    tickSubChunkBordersStrong(world, chunkPos, data);
+                } else {
+                    // First do the internals of each subchunk
+                    if (tickSubChunk(world, chunkPos, data)) {
+                        // No clean air in the subchunk. We can remove it
+                        cleanAir.remove(chunkPos);
+                    }
                 }
             }
         }
@@ -465,7 +496,7 @@ public class DimensionData {
     public void readFromNBT(NBTTagCompound nbt) {
         cleanAir.clear();
         NBTTagList list = nbt.getTagList("list", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0 ; i < list.tagCount() ; i++) {
+        for (int i = 0; i < list.tagCount(); i++) {
             NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
             SubChunkPos chunkPos = new SubChunkPos(subchunkNBT.getInteger("x"), subchunkNBT.getInteger("y"), subchunkNBT.getInteger("z"));
             if (subchunkNBT.hasKey("strong")) {
