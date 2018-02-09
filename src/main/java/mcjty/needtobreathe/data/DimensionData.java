@@ -42,8 +42,7 @@ public class DimensionData {
     private int globalCacheNr = 1;         // For the validity cache
     private int globalCacheUpdateTick = 1;
 
-    private final Map<SubChunkPos, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
-//    private final Map<Long, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
+    private final Map<Long, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
 
 
     private static int g_seed = 123456789;
@@ -75,7 +74,7 @@ public class DimensionData {
     }
 
     private int getPoisonInternal(int x, int y, int z) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
+        long chunkPos = SubChunkPosIndexed.fromPos(x, y, z);
         ChunkData data = cleanAir.get(chunkPos);
         if (data != null) {
             if (data.isStrong()) {
@@ -88,9 +87,6 @@ public class DimensionData {
     }
 
     public static boolean isValid(World world, BlockPos p) {
-        // @todo optimize this. Top function in profile:
-        // Avoid getRegistryName()
-        // Make a local cache
         IBlockState state = world.getBlockState(p);
         Block block = state.getBlock();
 
@@ -121,13 +117,13 @@ public class DimensionData {
     }
 
     public void removeStrongAir(BlockPos p) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(p);
+        long chunkPos = SubChunkPosIndexed.fromPos(p);
         cleanAir.remove(chunkPos);
     }
 
     // Fill an entire chunk with strong clean air that doesn't do any ticking
     public void fillCleanAirStrong(BlockPos p) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(p);
+        long chunkPos = SubChunkPosIndexed.fromPos(p);
         cleanAir.remove(chunkPos);
         ChunkData data = new ChunkData(null);
         cleanAir.put(chunkPos, data);
@@ -149,7 +145,7 @@ public class DimensionData {
     }
 
     public int fillCleanAir(int x, int y, int z) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(x, y, z);
+        long chunkPos = SubChunkPosIndexed.fromPos(x, y, z);
         int air;
         ChunkData data = cleanAir.get(chunkPos);
         if (data != null) {
@@ -191,15 +187,18 @@ public class DimensionData {
         CleanAirManager.getManager().save();
     }
 
-    private Map<SubChunkPos, ChunkData> getCleanAirPosition(BlockPos pos) {
-        SubChunkPos center = SubChunkPos.fromPos(pos);
-        Map<SubChunkPos, ChunkData> map = new HashMap<>();
+    private Map<Long, ChunkData> getCleanAirPosition(BlockPos pos) {
+        long center = SubChunkPosIndexed.fromPos(pos);
+        Map<Long, ChunkData> map = new HashMap<>();
+        int centerCx = SubChunkPosIndexed.getX(center);
+        int centerCy = SubChunkPosIndexed.getY(center);
+        int centerCz = SubChunkPosIndexed.getZ(center);
         int dist = 8;
-        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
-            SubChunkPos chunkPos = entry.getKey();
-            if (Math.abs(center.getCx() - chunkPos.getCx()) <= dist
-                    && Math.abs(center.getCy() - chunkPos.getCy()) <= dist
-                    && Math.abs(center.getCz() - chunkPos.getCz()) <= dist) {
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
+            long chunkPos = entry.getKey();
+            if (Math.abs(centerCx - SubChunkPosIndexed.getX(chunkPos)) <= dist
+                    && Math.abs(centerCy - SubChunkPosIndexed.getY(chunkPos)) <= dist
+                    && Math.abs(centerCz - SubChunkPosIndexed.getZ(chunkPos)) <= dist) {
                 map.put(chunkPos, entry.getValue());
             }
         }
@@ -250,7 +249,7 @@ public class DimensionData {
     private static int[] distList = new int[7];
     private static byte[][] distListData = new byte[7][];
 
-    private boolean tickSubChunk(World world, SubChunkPos chunkPos, ChunkData data) {
+    private boolean tickSubChunk(World world, long chunkPos, ChunkData data) {
         boolean empty = true;
         byte[] a = data.getData();
         for (int dx = 0; dx < CHUNK_DIM; dx++) {
@@ -274,13 +273,13 @@ public class DimensionData {
 
                             // Evenly distribute all air to the adjacent spots (and this one)
                             for (EnumFacing facing : EnumFacing.VALUES) {
-                                SubChunkPos adjacentChunkPos = ChunkData.adjacentChunkPos(idx, facing, chunkPos);
+                                long adjacentChunkPos = ChunkData.adjacentChunkPosIndexed(idx, facing, chunkPos);
                                 ChunkData dataAdjacent = getChunkData(adjacentChunkPos);
                                 int idxAdjacent = ChunkData.offsetWrap(idx, facing);
 
                                 if (dataAdjacent.isValid(globalCacheNr, world, adjacentChunkPos, idxAdjacent)) {
                                     byte[] d = a;
-                                    if (dataAdjacent != data) {
+                                    if (dataAdjacent != data) { // @todo compare long
                                         if (dataAdjacent.isStrong()) {
                                             d = null;
                                             totalAir += 255;
@@ -337,11 +336,11 @@ public class DimensionData {
     }
 
     private ChunkData getChunkData(BlockPos pos) {
-        SubChunkPos chunkPos = SubChunkPos.fromPos(pos);
+        long chunkPos = SubChunkPosIndexed.fromPos(pos);
         return getChunkData(chunkPos);
     }
 
-    private ChunkData getChunkData(SubChunkPos chunkPos) {
+    private ChunkData getChunkData(long chunkPos) {
         if (!cleanAir.containsKey(chunkPos)) {
             ChunkData data = new ChunkData();
             cleanAir.put(chunkPos, data);
@@ -353,13 +352,11 @@ public class DimensionData {
      * This version is used to tick the borders of a strong chunk. i.e. the strong chunk
      * is not touched itself but influences the surroundings
      */
-    private void tickSubChunkBordersStrong(World world, SubChunkPos chunkPos, ChunkData data) {
+    private void tickSubChunkBordersStrong(long chunkPos) {
         for (EnumFacing facing : EnumFacing.VALUES) {
-            SubChunkPos adjacentPos = chunkPos.offset(facing);
-            if (adjacentPos.getCy() < 0) {
-                continue;
-            } else if (adjacentPos.getCy() >= (256 / CHUNK_DIM)) {
-                continue;
+            long adjacentPos = SubChunkPosIndexed.offset(facing, chunkPos);
+            if (adjacentPos == chunkPos) {
+                continue;   // Same chunk, that means we hit a Y border
             }
 
             ChunkData adjacentData = cleanAir.get(adjacentPos);
@@ -450,9 +447,12 @@ public class DimensionData {
         // We do everything if the number of subchunks is low enough and every 4 subchunk tinks
         boolean doAll = cleanAir.size() < 3000 || (subCounter % 4 == 0);
 
-        Set<SubChunkPos> subChunksNearPlayers = new HashSet<>();
+        Set<Long> subChunksNearPlayers = new HashSet<>();
         for (EntityPlayer player : world.playerEntities) {
-            SubChunkPos chunkPos = SubChunkPos.fromPos(player.getPosition());
+            long chunkPos = SubChunkPosIndexed.fromPos(player.getPosition());
+            int cx = SubChunkPosIndexed.getX(chunkPos);
+            int cy = SubChunkPosIndexed.getY(chunkPos);
+            int cz = SubChunkPosIndexed.getZ(chunkPos);
             // The subchunk of a player we update more often with regards to validity checking (for doors mostly)
             ChunkData data = cleanAir.get(chunkPos);
             if (data != null) {
@@ -462,10 +462,10 @@ public class DimensionData {
             if (!doAll) {
                 int offs = 8;
                 for (int dy = -offs; dy <= offs; dy++) {
-                    if ((chunkPos.getCy() + dy) >= 0 && (chunkPos.getCy() + dy) < (256 / CHUNK_DIM)) {
+                    if ((cy + dy) >= 0 && (cy + dy) < (256 / CHUNK_DIM)) {
                         for (int dx = -offs; dx <= offs; dx++) {
                             for (int dz = -offs; dz <= offs; dz++) {
-                                subChunksNearPlayers.add(new SubChunkPos(chunkPos.getCx() + dx, chunkPos.getCy() + dy, chunkPos.getCz() + dz));
+                                subChunksNearPlayers.add(SubChunkPosIndexed.toLong(cx + dx, cy + dy, cz + dz));
                             }
                         }
                     }
@@ -473,14 +473,14 @@ public class DimensionData {
             }
         }
 
-        Set<Map.Entry<SubChunkPos, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
-        for (Map.Entry<SubChunkPos, ChunkData> entry : copy) {
-            SubChunkPos chunkPos = entry.getKey();
+        Set<Map.Entry<Long, ChunkData>> copy = new HashSet<>(cleanAir.entrySet());
+        for (Map.Entry<Long, ChunkData> entry : copy) {
+            long chunkPos = entry.getKey();
             if (doAll || subChunksNearPlayers.contains(chunkPos)) {
                 ChunkData data = entry.getValue();
 
                 if (data.isStrong()) {
-                    tickSubChunkBordersStrong(world, chunkPos, data);
+                    tickSubChunkBordersStrong(chunkPos);
                 } else {
                     // First do the internals of each subchunk
                     if (tickSubChunk(world, chunkPos, data)) {
@@ -498,7 +498,7 @@ public class DimensionData {
         NBTTagList list = nbt.getTagList("list", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
             NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
-            SubChunkPos chunkPos = new SubChunkPos(subchunkNBT.getInteger("x"), subchunkNBT.getInteger("y"), subchunkNBT.getInteger("z"));
+            long chunkPos = subchunkNBT.getLong("pos");
             if (subchunkNBT.hasKey("strong")) {
                 cleanAir.put(chunkPos, new ChunkData(null));
             } else {
@@ -511,11 +511,9 @@ public class DimensionData {
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagList list = new NBTTagList();
 
-        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
             NBTTagCompound subchunkNBT = new NBTTagCompound();
-            subchunkNBT.setInteger("x", entry.getKey().getCx());
-            subchunkNBT.setInteger("y", entry.getKey().getCy());
-            subchunkNBT.setInteger("z", entry.getKey().getCz());
+            subchunkNBT.setLong("pos", entry.getKey());
             if (entry.getValue().isStrong()) {
                 subchunkNBT.setBoolean("strong", true);
             } else {

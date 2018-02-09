@@ -6,7 +6,7 @@ import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.ChunkData;
-import mcjty.needtobreathe.data.SubChunkPos;
+import mcjty.needtobreathe.data.SubChunkPosIndexed;
 import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
@@ -30,9 +30,9 @@ import java.util.Map;
 
 public class NTBOverlayRenderer {
 
-    private static Map<SubChunkPos, ChunkData> cleanAir;
+    private static Map<Long, ChunkData> cleanAir;
 
-    public static void setCleanAir(Map<SubChunkPos, ChunkData> cleanAir) {
+    public static void setCleanAir(Map<Long, ChunkData> cleanAir) {
         NTBOverlayRenderer.cleanAir = cleanAir;
     }
 
@@ -140,7 +140,7 @@ public class NTBOverlayRenderer {
     public static final ResourceLocation BLUEGLOW = new ResourceLocation(NeedToBreathe.MODID, "textures/effects/blueglow.png");
     public static final ResourceLocation GREENGLOW = new ResourceLocation(NeedToBreathe.MODID, "textures/effects/greenglow.png");
 
-    private static void renderHighlightedBlocks(RenderWorldLastEvent evt, EntityPlayerSP p, Map<SubChunkPos, ChunkData> cleanAir) {
+    private static void renderHighlightedBlocks(RenderWorldLastEvent evt, EntityPlayerSP p, Map<Long, ChunkData> cleanAir) {
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * evt.getPartialTicks();
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.getPartialTicks();
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.getPartialTicks();
@@ -159,12 +159,12 @@ public class NTBOverlayRenderer {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(BLUEGLOW);
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-        SubChunkPos playerSubChunk = SubChunkPos.fromPos(p.getPosition());
-        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
-            SubChunkPos chunkPos = entry.getKey();
+        long playerSubChunk = SubChunkPosIndexed.fromPos(p.getPosition());
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
+            long chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
             if (!data.isStrong()) {
-                if (playerSubChunk.equals(chunkPos)) {
+                if (playerSubChunk == chunkPos) {
                     renderData(buffer, chunkPos, data);
                 } else {
                     renderDataAveraged(buffer, chunkPos, data);
@@ -175,8 +175,8 @@ public class NTBOverlayRenderer {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(GREENGLOW);
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-        for (Map.Entry<SubChunkPos, ChunkData> entry : cleanAir.entrySet()) {
-            SubChunkPos chunkPos = entry.getKey();
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
+            long chunkPos = entry.getKey();
             ChunkData data = entry.getValue();
             if (data.isStrong()) {
                 renderDataStrong(buffer, chunkPos);
@@ -189,8 +189,8 @@ public class NTBOverlayRenderer {
         GlStateManager.popMatrix();
     }
 
-    private static void renderDataAveraged(BufferBuilder buffer, SubChunkPos chunkPos, ChunkData data) {
-        BlockPos coordinate = chunkPos.toPos(0, 0, 0);
+    private static void renderDataAveraged(BufferBuilder buffer, long chunkPos, ChunkData data) {
+        BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, 0, 0, 0);
 
         float x = coordinate.getX();
         float y = coordinate.getY();
@@ -217,8 +217,8 @@ public class NTBOverlayRenderer {
         buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
     }
 
-    private static void renderDataStrong(BufferBuilder buffer, SubChunkPos chunkPos) {
-        BlockPos coordinate = chunkPos.toPos(0, 0, 0);
+    private static void renderDataStrong(BufferBuilder buffer, long chunkPos) {
+        BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, 0, 0, 0);
 
         float x = coordinate.getX();
         float y = coordinate.getY();
@@ -238,10 +238,10 @@ public class NTBOverlayRenderer {
         buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
     }
 
-    private static void renderData(BufferBuilder buffer, SubChunkPos chunkPos, ChunkData data) {
+    private static void renderData(BufferBuilder buffer, long chunkPos, ChunkData data) {
         for (int idx = 0 ; idx < ChunkData.CHUNK_SIZE ; idx++) {
             int value = data.getData()[idx] & 0xff;
-            BlockPos coordinate = chunkPos.toPos(idx);
+            BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, idx);
 
             float x = coordinate.getX();
             float y = coordinate.getY();

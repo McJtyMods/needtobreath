@@ -25,15 +25,15 @@ public class SubChunkPosIndexed {
     }
 
     public static int getX(long sidx) {
-        return (int) ((sidx >> X_SHIFT) & X_MASK);
+        return (int)(sidx << 64 - X_SHIFT - NUM_X_BITS >> 64 - NUM_X_BITS);
     }
 
     public static int getY(long sidx) {
-        return (int) ((sidx >> Y_SHIFT) & Y_MASK);
+        return (int)(sidx << 64 - Y_SHIFT - NUM_Y_BITS >> 64 - NUM_Y_BITS);
     }
 
     public static int getZ(long sidx) {
-        return (int) (sidx & Z_MASK);
+        return (int)(sidx << 64 - NUM_Z_BITS >> 64 - NUM_Z_BITS);
     }
 
     public static long offset(EnumFacing facing, long sidx) {
@@ -73,6 +73,9 @@ public class SubChunkPosIndexed {
     }
 
     public static BlockPos toPos(long sidx, int idx) {
-        return new BlockPos((getX(sidx)<<CHUNK_SHIFT)+((idx>>CHUNK_2SHIFT) & CHUNK_MASK), (getY(sidx)<<CHUNK_SHIFT)+((idx>>CHUNK_SHIFT) & CHUNK_MASK), (getZ(sidx)<<CHUNK_SHIFT)+(idx & CHUNK_MASK));
+        int cx = getX(sidx) << CHUNK_SHIFT;
+        int cy = getY(sidx) << CHUNK_SHIFT;
+        int cz = getZ(sidx) << CHUNK_SHIFT;
+        return new BlockPos(cx + ((idx>>CHUNK_2SHIFT) & CHUNK_MASK), cy + ((idx>>CHUNK_SHIFT) & CHUNK_MASK), cz + (idx & CHUNK_MASK));
     }
 }
