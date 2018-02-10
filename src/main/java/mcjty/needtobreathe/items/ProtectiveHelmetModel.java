@@ -23,15 +23,16 @@ public class ProtectiveHelmetModel extends ModelBiped {
      	
     	this.textureWidth = 64;
         this.textureHeight = 32;
+        float s = 0.01F;
     
         this.bipedHead.cubeList.clear();
         
         this.helmet_p = new ModelRenderer(this, 0, 0);
-        this.helmet_p.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9);
+        this.helmet_p.addBox(-4.5F, -9.0F, -4.5F, 9, 10, 9, s);
         this.helmet_p.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.controller_p = new ModelRenderer(this, 36, 12);
-        this.controller_p.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2);
+        this.controller_p.addBox(-1.5F, -8.0F, 4.5F, 3, 5, 2, s);
         this.controller_p.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.bipedHead.addChild(controller_p);
