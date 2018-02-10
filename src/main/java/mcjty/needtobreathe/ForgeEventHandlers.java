@@ -30,6 +30,10 @@ public class ForgeEventHandlers {
         McJtyRegister.registerItems(NeedToBreathe.instance, event.getRegistry());
         event.getRegistry().register(ModItems.protectiveHelmet);
         event.getRegistry().register(ModItems.informationGlasses);
+        event.getRegistry().register(ModItems.hazmatSuitBoots);
+        event.getRegistry().register(ModItems.hazmatSuitChest);
+        event.getRegistry().register(ModItems.hazmatSuitHelmet);
+        event.getRegistry().register(ModItems.hazmatSuitLegs);
     }
 
     @SubscribeEvent
