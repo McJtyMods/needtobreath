@@ -100,6 +100,7 @@ public class ProtectiveHelmetModel2 extends ModelBiped {
                 modelHelm2 = armor;
                 break;
         }
+        
         return modelHelm2;
     }
 	
