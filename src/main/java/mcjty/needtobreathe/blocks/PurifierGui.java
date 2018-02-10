@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.Rectangle;
 
-public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
+public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
     public static final int PURIFIER_WIDTH = 180;
     public static final int PURIFIER_HEIGHT = 152;
 
@@ -27,6 +27,14 @@ public class PurifierGui extends GenericGuiContainer<PurifierTileEntity> {
 
     public PurifierGui(PurifierTileEntity tileEntity, PurifierContainer container) {
         super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "purifier");
+        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
+
+        xSize = PURIFIER_WIDTH;
+        ySize = PURIFIER_HEIGHT;
+    }
+
+    public PurifierGui(AdvancedPurifierTileEntity tileEntity, PurifierContainer container) {
+        super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "advanced_purifier");
         GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
 
         xSize = PURIFIER_WIDTH;

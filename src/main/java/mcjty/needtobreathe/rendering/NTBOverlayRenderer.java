@@ -5,6 +5,8 @@ import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.data.ChunkData;
+import mcjty.needtobreathe.data.SubChunkPosIndexed;
 import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
@@ -28,9 +30,9 @@ import java.util.Map;
 
 public class NTBOverlayRenderer {
 
-    private static Map<Long, Byte> cleanAir;
+    private static Map<Long, ChunkData> cleanAir;
 
-    public static void setCleanAir(Map<Long, Byte> cleanAir) {
+    public static void setCleanAir(Map<Long, ChunkData> cleanAir) {
         NTBOverlayRenderer.cleanAir = cleanAir;
     }
 
@@ -53,7 +55,6 @@ public class NTBOverlayRenderer {
             if (hasGlasses()) {
                 int cnt = cleanAir.size();
                 if (cnt != prevCnt) {
-                    System.out.println("cleanAir = " + cnt);
                     prevCnt = cnt;
                 }
                 renderHighlightedBlocks(event, p, cleanAir);
@@ -137,8 +138,9 @@ public class NTBOverlayRenderer {
 
 
     public static final ResourceLocation BLUEGLOW = new ResourceLocation(NeedToBreathe.MODID, "textures/effects/blueglow.png");
+    public static final ResourceLocation GREENGLOW = new ResourceLocation(NeedToBreathe.MODID, "textures/effects/greenglow.png");
 
-    private static void renderHighlightedBlocks(RenderWorldLastEvent evt, EntityPlayerSP p, Map<Long, Byte> cleanAir) {
+    private static void renderHighlightedBlocks(RenderWorldLastEvent evt, EntityPlayerSP p, Map<Long, ChunkData> cleanAir) {
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * evt.getPartialTicks();
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.getPartialTicks();
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.getPartialTicks();
@@ -152,16 +154,95 @@ public class NTBOverlayRenderer {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(BLUEGLOW);
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
-
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        for (Map.Entry<Long, Byte> entry : cleanAir.entrySet()) {
-            int value = entry.getValue() & 0xff;
-            BlockPos coordinate = BlockPos.fromLong(entry.getKey());
+        Minecraft.getMinecraft().getTextureManager().bindTexture(BLUEGLOW);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        long playerSubChunk = SubChunkPosIndexed.fromPos(p.getPosition());
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
+            long chunkPos = entry.getKey();
+            ChunkData data = entry.getValue();
+            if (!data.isStrong()) {
+                if (playerSubChunk == chunkPos) {
+                    renderData(buffer, chunkPos, data);
+                } else {
+                    renderDataAveraged(buffer, chunkPos, data);
+                }
+            }
+        }
+        tessellator.draw();
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(GREENGLOW);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
+        for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
+            long chunkPos = entry.getKey();
+            ChunkData data = entry.getValue();
+            if (data.isStrong()) {
+                renderDataStrong(buffer, chunkPos);
+            }
+        }
+        tessellator.draw();
+
+        GlStateManager.disableBlend();
+
+        GlStateManager.popMatrix();
+    }
+
+    private static void renderDataAveraged(BufferBuilder buffer, long chunkPos, ChunkData data) {
+        BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, 0, 0, 0);
+
+        float x = coordinate.getX();
+        float y = coordinate.getY();
+        float z = coordinate.getZ();
+        buffer.setTranslation(buffer.xOffset + x, buffer.yOffset + y, buffer.zOffset + z);
+
+        int value = 0;
+        for (byte b : data.getData()) {
+            value += b & 0xff;
+        }
+        value /= data.getData().length;
+
+        int alpha = value;
+
+        float mult = ChunkData.CHUNK_DIM * .3f;
+        float offset = ChunkData.CHUNK_DIM - mult;
+
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.SOUTH.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.WEST.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.EAST.ordinal(), mult, offset, alpha);
+        buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
+    }
+
+    private static void renderDataStrong(BufferBuilder buffer, long chunkPos) {
+        BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, 0, 0, 0);
+
+        float x = coordinate.getX();
+        float y = coordinate.getY();
+        float z = coordinate.getZ();
+        buffer.setTranslation(buffer.xOffset + x, buffer.yOffset + y, buffer.zOffset + z);
+
+        int alpha = 40;
+        float mult = ChunkData.CHUNK_DIM * .3f;
+        float offset = ChunkData.CHUNK_DIM - mult;
+
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.UP.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.DOWN.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.NORTH.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.SOUTH.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.WEST.ordinal(), mult, offset, alpha);
+        RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.EAST.ordinal(), mult, offset, alpha);
+        buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
+    }
+
+    private static void renderData(BufferBuilder buffer, long chunkPos, ChunkData data) {
+        for (int idx = 0 ; idx < ChunkData.CHUNK_SIZE ; idx++) {
+            int value = data.getData()[idx] & 0xff;
+            BlockPos coordinate = SubChunkPosIndexed.toPos(chunkPos, idx);
+
             float x = coordinate.getX();
             float y = coordinate.getY();
             float z = coordinate.getZ();
@@ -169,9 +250,9 @@ public class NTBOverlayRenderer {
 
             int alpha = value;
             float mult = 0.4f;          // 1.1f
-            if (alpha < 25) {
+            if (alpha < 20) {
                 mult = 0.025f;
-            } else if (alpha < 25) {
+            } else if (alpha < 30) {
                 mult = 0.05f;
             } else if (alpha < 40) {
                 mult = 0.1f;
@@ -197,11 +278,6 @@ public class NTBOverlayRenderer {
             RenderGlowEffect.addSideFullTexture(buffer, EnumFacing.EAST.ordinal(), mult, offset, alpha);
             buffer.setTranslation(buffer.xOffset - x, buffer.yOffset - y, buffer.zOffset - z);
         }
-        tessellator.draw();
-
-        GlStateManager.disableBlend();
-
-        GlStateManager.popMatrix();
     }
 
 

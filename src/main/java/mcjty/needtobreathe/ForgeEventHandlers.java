@@ -44,12 +44,24 @@ public class ForgeEventHandlers {
         }
     }
 
+    public void onBlockPlace(BlockEvent.PlaceEvent evt) {
+        World world = evt.getWorld();
+        if (!world.isRemote) {
+            DimensionData data = getDimensionData(world);
+            if (data != null) {
+                data.placeBlock(evt.getPos());
+            }
+        }
+    }
+
     @SubscribeEvent
     public void onBlockBreak(BlockEvent.BreakEvent evt) {
         World world = evt.getWorld();
-        DimensionData data = getDimensionData(world);
-        if (data != null) {
-            data.fillCleanAir(evt.getPos().toLong());
+        if (!world.isRemote) {
+            DimensionData data = getDimensionData(world);
+            if (data != null) {
+                data.breakBlock(evt.getPos());
+            }
         }
     }
 
