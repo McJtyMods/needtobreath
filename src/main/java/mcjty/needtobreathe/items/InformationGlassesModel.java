@@ -19,15 +19,16 @@ public class InformationGlassesModel extends ModelBiped {
 
     public InformationGlassesModel(float scale) {
         super(scale);
-
+        
         this.textureWidth = 64;
         this.textureHeight = 32;
-
+    
         this.bipedHead.cubeList.clear();
-
+        
         this.glasses = new ModelRenderer(this, 0, 0);
         this.glasses.addBox(-4.5F, -6.0F, -4.5F, 9, 4, 9);
         this.glasses.setRotationPoint(0.0F, 0.0F, 0.0F);
+        
         this.bipedHead.addChild(glasses);
     }
 
@@ -42,19 +43,20 @@ public class InformationGlassesModel extends ModelBiped {
         if (stack.isEmpty() || !(stack.getItem() instanceof ItemArmor)) {
             return null;
         }
+        
         EntityEquipmentSlot slot = ((ItemArmor) stack.getItem()).armorType;
 
         InformationGlassesModel armor;
         if (slot == EntityEquipmentSlot.HEAD && modelHelm != null) {
             return modelHelm;
         }
-
+        
         armor = new InformationGlassesModel(.0625f);
+    
         armor.bipedHead.isHidden = true;
         armor.bipedBody.isHidden = true;
         armor.bipedLeftArm.isHidden = true;
         armor.bipedRightArm.isHidden = true;
-
         armor.bipedLeftLeg.isHidden = true;
         armor.bipedRightLeg.isHidden = true;
 
@@ -64,21 +66,22 @@ public class InformationGlassesModel extends ModelBiped {
                 modelHelm = armor;
                 break;
         }
+        
         return modelHelm;
     }
 
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-
-        if (entity instanceof EntityLivingBase)	{
-            this.isSneak = entity.isSneaking();
-            this.isRiding = entity.isRiding();
-            this.isChild = ((EntityLivingBase)entity).isChild();
-            this.setLivingAnimations((EntityLivingBase)entity, limbSwing, limbSwingAmount, ageInTicks);
-        }
-
-
+     
+    	if(entity instanceof EntityLivingBase)	{
+			this.isSneak = entity.isSneaking();
+			this.isRiding = entity.isRiding();
+			this.isChild = ((EntityLivingBase)entity).isChild();
+			this.setLivingAnimations((EntityLivingBase)entity, limbSwing, limbSwingAmount, ageInTicks);
+		}
+    
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+    
         if (this.isChild) {
             float f6 = 2.0F;
             GlStateManager.pushMatrix();
@@ -110,5 +113,4 @@ public class InformationGlassesModel extends ModelBiped {
             this.bipedLeftLeg.render(scale);
         }
     }
-
 }

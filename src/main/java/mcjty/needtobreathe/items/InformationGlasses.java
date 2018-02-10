@@ -30,15 +30,15 @@ public class InformationGlasses extends ItemArmor {
         list.add("If you wear these glasses you can see,");
         list.add("where there is clean air");
     }
-
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return NeedToBreathe.MODID + ":textures/armor/glasses.png";
+	
+	@Nullable
+	@Override
+	public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type)
+	{
+		return NeedToBreathe.MODID + ":textures/armor/glasses.png";
 	}
-
-
-    @SideOnly(Side.CLIENT)
+	
+	@SideOnly(Side.CLIENT)
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
         return InformationGlassesModel.getModel(entityLiving, itemStack);
