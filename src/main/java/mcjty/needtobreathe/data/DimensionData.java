@@ -2,7 +2,9 @@ package mcjty.needtobreathe.data;
 
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.config.PotionEffectConfig;
+import mcjty.needtobreathe.items.HazmatSuit;
 import mcjty.needtobreathe.items.InformationGlasses;
+import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
@@ -228,6 +230,21 @@ public class DimensionData {
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
                 if (!helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet) {
                     poison = (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+                }
+                if (HazmatSuit.hasFullArmor((EntityPlayer) entity)) {
+                    ItemStack chestplate = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+                    int air = ModItems.hazmatSuitChest.getAir(chestplate);
+                    if (air < 50) {    // @todo config
+                        if (fastrand128() < poison) {
+                            ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
+                        }
+                        poison = (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+                    } else if (air > 0) {
+                        if (fastrand128() < poison) {
+                            ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
+                        }
+                        poison = 0;
+                    }
                 }
             } else if (entity instanceof IMob) {
                 potionConfigs = Config.getHostileEffects();

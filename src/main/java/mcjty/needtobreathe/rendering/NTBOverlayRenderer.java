@@ -7,7 +7,9 @@ import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.ChunkData;
 import mcjty.needtobreathe.data.SubChunkPosIndexed;
+import mcjty.needtobreathe.items.HazmatSuit;
 import mcjty.needtobreathe.items.InformationGlasses;
+import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.items.ProtectiveHelmet;
 import mcjty.needtobreathe.network.NTBMessages;
 import net.minecraft.client.Minecraft;
@@ -74,6 +76,12 @@ public class NTBOverlayRenderer {
         return !helmet.isEmpty() && helmet.getItem() instanceof ProtectiveHelmet;
     }
 
+    private static boolean hasHazmatHelmet() {
+        EntityPlayerSP p = Minecraft.getMinecraft().player;
+        ItemStack helmet = p.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        return !helmet.isEmpty() && helmet.getItem() == ModItems.hazmatSuitHelmet;
+    }
+
     // Poison from server
     private static int[] poison = new int[10];
     private static int poisonIdx = 0;
@@ -95,7 +103,7 @@ public class NTBOverlayRenderer {
             return;
         }
 
-        if (!(hasGlasses() || hasHelmet())) {
+        if (!(hasGlasses() || hasHelmet() || hasHazmatHelmet())) {
             return;
         }
 
@@ -132,6 +140,18 @@ public class NTBOverlayRenderer {
             x = fontRenderer.drawString("" + (maxp * 100 / maxpoison) + "%", x, 10, 0xffff0000);
         } else {
             x = fontRenderer.drawString("NONE", x, 10, 0xff00ff00);
+        }
+
+        if (hasHazmatHelmet()) {
+            if (!HazmatSuit.hasFullArmor(Minecraft.getMinecraft().player)) {
+                long time = System.currentTimeMillis();
+                fontRenderer.drawString("INCOMPLETE", 200, 20, (time % 1000) < 500 ? 0xffff0000 : 0xff000000);
+            } else {
+                int a = ModItems.hazmatSuitChest.getAir(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.CHEST));
+                x = fontRenderer.drawString("Status ", 200, 20, 0xffffffff);
+                int pct = a * 100 / Config.HAZMATSUIT_MAXAIR;
+                x = fontRenderer.drawString("" + pct + "%", x, 20, pct < 10 ? 0xffff0000 : 0xffffff00);
+            }
         }
     }
 

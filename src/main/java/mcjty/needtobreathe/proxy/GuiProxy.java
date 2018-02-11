@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 public class GuiProxy implements IGuiHandler {
 
     public static final int GUI_PURIFIER = 1;
+    public static final int GUI_AIRCOMPRESSOR = 2;
 
     @Override
     public Object getServerGuiElement(int guiid, EntityPlayer entityPlayer, World world, int x, int y, int z) {
