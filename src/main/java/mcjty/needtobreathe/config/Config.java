@@ -41,6 +41,7 @@ public class Config {
     public static int STRONGAIR_PROPAGATE_CHANCE = 50;
     public static int SUBCHUNK_TICKS = 10;
 
+    public static boolean CREATIVE_PURIFIER_FAKE = true;
     public static float CREATIVE_PURIFIER_RADIUS = 50;
     public static boolean CREATIVE_PURIFIER_LOSTCITIES = true;
     public static float CREATIVE_PURIFIER_AUTOGENERATE = 1.0f;
@@ -214,6 +215,7 @@ public class Config {
         PURIFIER_TICKSPERCOAL = cfg.getInt("purifierTicksPerCoal", CATEGORY_MACHINES, PURIFIER_TICKSPERCOAL, 1, 2000000000, "How many ticks a single piece of coal can purify");
         PURIFIER_MAXCOALTICKS = cfg.getInt("purifierMaxCoalTicks", CATEGORY_MACHINES, PURIFIER_MAXCOALTICKS, 1, 2000000000, "Maximum coal tick capacity. Should be more then 'purifierTicksPerCoal'!");
 
+        CREATIVE_PURIFIER_FAKE = cfg.getBoolean("creativePurifierFake", CATEGORY_MACHINES, CREATIVE_PURIFIER_FAKE, "If true the creative purifier uses a 'fake' algorithm to detect poison in spheres (more optimal). Warning! This option must be set correctly at worldgen!");
         CREATIVE_PURIFIER_RADIUS = cfg.getFloat("creativePurifierRadius", CATEGORY_MACHINES, CREATIVE_PURIFIER_RADIUS, 0, 500, "Radius for the creative purifier (in case it is not purifying a Lost City sphere)");
         CREATIVE_PURIFIER_LOSTCITIES = cfg.getBoolean("creativePurifierLostCities", CATEGORY_MACHINES, CREATIVE_PURIFIER_LOSTCITIES, "If true the creative purifier will detect Lost City spheres");
         CREATIVE_PURIFIER_AUTOGENERATE = cfg.getFloat("creativePurifierAutogenerate", CATEGORY_MACHINES, CREATIVE_PURIFIER_AUTOGENERATE, 0, 1, "If Lost Cities is present, this gives the chance that a creative purifier is generated automatically at the center of a Lost City sphere (at a given height)");

@@ -58,6 +58,11 @@ public class DimensionData {
      * Get the minimum poison level for this position and adjacent positions
      */
     public int getPoison(BlockPos p) {
+        if (Config.CREATIVE_PURIFIER_FAKE) {
+            // Faster algorithm
+        }
+
+
         int minPoison = 255;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {

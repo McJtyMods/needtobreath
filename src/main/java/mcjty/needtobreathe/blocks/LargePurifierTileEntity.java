@@ -23,6 +23,11 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
     public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
         super.onBlockBreak(world, pos, state);
 
+        if (Config.CREATIVE_PURIFIER_FAKE) {
+            // In 'fake' mode we don't do this
+            return;
+        }
+
         CleanAirManager manager = CleanAirManager.getManager();
         DimensionData data = manager.getDimensionData(world.provider.getDimension());
         if (data == null) {
@@ -60,6 +65,11 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
 
     @Override
     public void update() {
+        if (Config.CREATIVE_PURIFIER_FAKE) {
+            // In 'fake' mode we don't do this
+            return;
+        }
+
         if (!world.isRemote) {
             if (!setup) {
                 return;
@@ -137,6 +147,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             data.fillCleanAir(p2);
         }
     }
+
 
     private BlockPos getPurifyingSpot() {
         if (center != null) {
