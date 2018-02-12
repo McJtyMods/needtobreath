@@ -207,9 +207,9 @@ public class DimensionData {
     }
 
     // This is used in case we are using CREATIVE_PURIFIER_FAKE mode
-    public void markSphere(BlockPos p, BlockPos center, float radius) {
+    public void markSphere(BlockPos p, LCSphere sphere) {
         long chunkPos = SubChunkPosIndexed.fromPos(p);
-        sphereData.put(chunkPos, new LCSphere(center, radius));
+        sphereData.put(chunkPos, sphere);
     }
 
     // This is used in case we are using CREATIVE_PURIFIER_FAKE mode

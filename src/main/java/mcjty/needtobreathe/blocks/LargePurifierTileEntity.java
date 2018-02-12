@@ -22,11 +22,6 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
     public void onBlockBreak(World world, BlockPos pos, IBlockState state) {
         super.onBlockBreak(world, pos, state);
 
-        if (Config.CREATIVE_PURIFIER_FAKE) {
-            // In 'fake' mode we don't do this
-            return;
-        }
-
         CleanAirManager manager = CleanAirManager.getManager();
         DimensionData data = manager.getDimensionData(world.provider.getDimension());
         if (data == null) {
@@ -36,15 +31,14 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
 
         System.out.println("Cleaning up");
         BlockPos center = getPurifyingSpot();
-        float radius = getPurifyingRadius() * .97f;
-        if (radius < 0.001) {
-            return;
-        }
-        float sqradius = radius*radius;
-
-        int r = (int) ((radius-7)/8);
 
         if (Config.CREATIVE_PURIFIER_FAKE) {
+            float radius = getPurifyingRadius();
+            if (radius < 0.001) {
+                return;
+            }
+            float sqradius = radius*radius;
+            int r = (int) (radius/8);
             for (int y = center.getY() - r * 8; y <= center.getY() + r * 8; y += 8) {
                 if (y > 0 && y < 255) {
                     for (int x = center.getX() - r * 8; x <= center.getX() + r * 8; x += 8) {
@@ -59,6 +53,12 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                 }
             }
         } else {
+            float radius = getPurifyingRadius() * .97f;
+            if (radius < 0.001) {
+                return;
+            }
+            float sqradius = radius*radius;
+            int r = (int) ((radius-7)/8);
             float inner = radius * 0.8f;
             float sqinner = inner * inner;
             for (int y = center.getY() - r * 8; y <= center.getY() + r * 8; y += 8) {
@@ -93,15 +93,16 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
             }
 
             BlockPos center = getPurifyingSpot();
-            float radius = getPurifyingRadius() * .97f;
-            if (radius < 0.001) {
-                return;
-            }
-            float sqradius = radius*radius;
-
-            int r = (int) ((radius-7)/8);
 
             if (Config.CREATIVE_PURIFIER_FAKE) {
+                float radius = getPurifyingRadius();
+                if (radius < 0.001) {
+                    return;
+                }
+                float sqradius = radius*radius;
+
+                int r = (int) (radius/8);
+                LCSphere sphere = new LCSphere(center, radius);
                 for (int y = center.getY() - r * 8; y <= center.getY() + r * 8; y += 8) {
                     if (y > 0 && y < 255) {
                         for (int x = center.getX() - r * 8; x <= center.getX() + r * 8; x += 8) {
@@ -109,13 +110,20 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
                                 BlockPos p = new BlockPos(x, y, z);
                                 double sqdist = p.distanceSq(center);
                                 if (sqdist <= sqradius) {
-                                    data.markSphere(p, center, radius);
+                                    data.markSphere(p, sphere);
                                 }
                             }
                         }
                     }
                 }
             } else {
+                float radius = getPurifyingRadius() * .97f;
+                if (radius < 0.001) {
+                    return;
+                }
+                float sqradius = radius*radius;
+
+                int r = (int) ((radius-7)/8);
                 float inner = radius * 0.8f;
                 float sqinner = inner * inner;
                 for (int y = center.getY() - r * 8; y <= center.getY() + r * 8; y += 8) {
