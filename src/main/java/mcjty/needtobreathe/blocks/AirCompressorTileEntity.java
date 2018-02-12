@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 
 public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity implements ITickable, DefaultSidedInventory {
 
@@ -86,12 +87,13 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                     // No poison in this dimension so the machine works ideally
                     ModItems.hazmatSuitChest.setAir(chestplate, air+1);
                 } else {
-                    if (!DimensionData.isValid(world, getPos().up())) {
+                    BlockPos up = getPos().up();
+                    if (!DimensionData.isValid(world, world.getBlockState(up), up)) {
                         blocked = true;
                         markDirtyQuick();
                         return;
                     }
-                    int poison = data.getPoison(getPos().up());
+                    int poison = data.getPoison(world, up);
                     if (poison > 200) {
                         // Can't work. Too much poison
                     } else if (poison > 100) {

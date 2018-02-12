@@ -95,7 +95,7 @@ public class ForgeEventHandlers {
     }
 
     private boolean preventPlantGrowth(World world, DimensionData data, BlockPos pos) {
-        int poison = data.getPoison(pos);
+        int poison = data.getPoison(world, pos);
         if (poison > Config.PLANT_GROWTH_POISON_DENY) {
             return true;
         } else if (poison > Config.PLANT_GROWTH_POISON_SLOW) {

@@ -1,6 +1,7 @@
 package mcjty.needtobreathe.data;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -38,7 +39,8 @@ public class ChunkData {
         cacheNr = globalCacheNr;
         valid = new boolean[CHUNK_SIZE];
         for (int i = 0 ; i < CHUNK_SIZE ; i++) {
-            valid[i] = DimensionData.isValid(world, SubChunkPosIndexed.toPos(chunkPos, i));
+            BlockPos p = SubChunkPosIndexed.toPos(chunkPos, i);
+            valid[i] = DimensionData.isValid(world, world.getBlockState(p), p);
         }
         return valid[idx];
     }

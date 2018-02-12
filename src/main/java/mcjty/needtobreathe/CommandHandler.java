@@ -22,7 +22,7 @@ public class CommandHandler {
             DimensionData data = CleanAirManager.getManager().getDimensionData(player.getEntityWorld().provider.getDimension());
             int poison;
             if (data != null) {
-                poison = data.getPoison(pos);
+                poison = data.getPoison(player.getEntityWorld(), pos);
             } else {
                 poison = 0;
             }

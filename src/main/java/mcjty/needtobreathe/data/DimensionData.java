@@ -1,5 +1,6 @@
 package mcjty.needtobreathe.data;
 
+import mcjty.needtobreathe.compat.LCSphere;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.items.HazmatSuit;
@@ -25,6 +26,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,7 +47,7 @@ public class DimensionData {
     private int globalCacheUpdateTick = 1;
 
     private final Map<Long, ChunkData> cleanAir = new HashMap<>();       // 0 = no clean air, 255 = 100% clean
-
+    private final Map<Long, LCSphere> sphereData = new HashMap<>();
 
     private static int g_seed = 123456789;
 
@@ -57,12 +59,77 @@ public class DimensionData {
     /**
      * Get the minimum poison level for this position and adjacent positions
      */
-    public int getPoison(BlockPos p) {
-        if (Config.CREATIVE_PURIFIER_FAKE) {
-            // Faster algorithm
+    public int getPoison(World world, BlockPos p) {
+        int poison = getMinPoisonData(p);
+        if (poison <= 1) {
+            return poison;
         }
 
+        if (Config.CREATIVE_PURIFIER_FAKE) {
+            // Faster algorithm
+            long chunkPos = SubChunkPosIndexed.fromPos(p);
+            if (sphereData.containsKey(chunkPos)) {
+                // We could be in the center of a sphere
+                LCSphere sphere = sphereData.get(chunkPos);
+                float radius = sphere.getRadius();
+                float sqradius = radius*radius;
+                BlockPos center = sphere.getCenter();
+                double sqdist = p.distanceSq(center);
+                if (sqdist <= sqradius) {
+                    // We are in the sphere. Check for breach
+                    if (sqdist <= (radius-15) * (radius-15)) {
+                        // We are too close to the center. No poison here
+                        return 0;
+                    }
+                    double dist = Math.sqrt(sqdist);
+                    double dx = p.getX() - center.getX();
+                    double dy = p.getY() - center.getY();
+                    double dz = p.getZ() - center.getZ();
+                    Vec3d diff = new Vec3d(dx, dy, dz).normalize();
+                    // Calculate a few points just outside the sphere and see if there is poison there
+                    BlockPos end = center.add(diff.x * (radius+1), diff.y * (radius+1), diff.z * (radius+1));
+                    int maxPoison = getMaxPoisonData(end);
+                    if (maxPoison <= 1) {
+                        // Not worth checking. The poison outside the sphere is too low
+                        // @todo make this check even exit sooner depending on distance to radius
+                        return 0;
+                    }
 
+                    // We now know that there is poison right outside the sphere. Check if we can reach that point
+                    if (IntersectionHelper.rayTraceBlocks(world, new Vec3d(p), new Vec3d(end))) {
+                        // We hit an obstacle
+                        return 0;
+                    }
+                    // We can reach the poison. Make it somewhat smaller depending on distance
+                    double factor = Math.max(10.0f - radius + dist, 0.0) / 10.0;
+                    return (int) (maxPoison * factor);
+//                    return 0;
+                }
+            }
+        }
+
+        return poison;
+    }
+
+    private int getMaxPoisonData(BlockPos p) {
+        int maxPoison = 0;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    int poison = getPoisonInternal(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
+                    if (poison > maxPoison) {
+                        maxPoison = poison;
+                        if (maxPoison >= 255) {
+                            return 255 - Config.POISON_THRESSHOLD;
+                        }
+                    }
+                }
+            }
+        }
+        return Math.max(maxPoison - Config.POISON_THRESSHOLD, 0);
+    }
+
+    private int getMinPoisonData(BlockPos p) {
         int minPoison = 255;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
@@ -93,8 +160,7 @@ public class DimensionData {
         }
     }
 
-    public static boolean isValid(World world, BlockPos p) {
-        IBlockState state = world.getBlockState(p);
+    public static boolean isValid(World world, IBlockState state, BlockPos p) {
         Block block = state.getBlock();
 
         if (block.isAir(state, world, p)) {
@@ -120,20 +186,36 @@ public class DimensionData {
         if (box == null) {
             return true;
         }
-        return !block.isOpaqueCube(state);
+        return false;
+//        return !block.isFullBlock(state);
+//        return !block.isOpaqueCube(state);
     }
 
+    // This is used in case we are NOT using CREATIVE_PURIFIER_FAKE mode
     public void removeStrongAir(BlockPos p) {
         long chunkPos = SubChunkPosIndexed.fromPos(p);
         cleanAir.remove(chunkPos);
     }
 
     // Fill an entire chunk with strong clean air that doesn't do any ticking
+    // This is used in case we are NOT using CREATIVE_PURIFIER_FAKE mode
     public void fillCleanAirStrong(BlockPos p) {
         long chunkPos = SubChunkPosIndexed.fromPos(p);
         cleanAir.remove(chunkPos);
         ChunkData data = new ChunkData(null);
         cleanAir.put(chunkPos, data);
+    }
+
+    // This is used in case we are using CREATIVE_PURIFIER_FAKE mode
+    public void markSphere(BlockPos p, BlockPos center, float radius) {
+        long chunkPos = SubChunkPosIndexed.fromPos(p);
+        sphereData.put(chunkPos, new LCSphere(center, radius));
+    }
+
+    // This is used in case we are using CREATIVE_PURIFIER_FAKE mode
+    public void removeSphere(BlockPos p) {
+        long chunkPos = SubChunkPosIndexed.fromPos(p);
+        sphereData.remove(chunkPos);
     }
 
     // When a block is broken we clean the air there and also make sure the 'isValid' cache is
@@ -216,7 +298,7 @@ public class DimensionData {
         List<Pair<Integer, Entity>> affectedEntities = new ArrayList<>();
         for (Entity entity : world.loadedEntityList) {
             if (entity instanceof EntityLivingBase) {
-                int poison = getPoison(entity.getPosition().up());
+                int poison = getPoison(world, entity.getPosition().up());
                 if (poison > 20) {
                     affectedEntities.add(Pair.of(poison, entity));
                 }
@@ -516,35 +598,76 @@ public class DimensionData {
 
 
     public void readFromNBT(NBTTagCompound nbt) {
+        readCleanAir(nbt);
+        readSpheres(nbt);
+    }
+
+    private void readCleanAir(NBTTagCompound compound) {
         cleanAir.clear();
-        NBTTagList list = nbt.getTagList("list", Constants.NBT.TAG_COMPOUND);
+        NBTTagList list = compound.getTagList("list", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound subchunkNBT = list.getCompoundTagAt(i);
-            long chunkPos = subchunkNBT.getLong("pos");
-            if (subchunkNBT.hasKey("strong")) {
-                cleanAir.put(chunkPos, new ChunkData(null));
+            NBTTagCompound nbt = list.getCompoundTagAt(i);
+            long chunkPos = nbt.getLong("pos");
+            ChunkData data;
+            if (nbt.hasKey("strong")) {
+                data = new ChunkData(null);
+                cleanAir.put(chunkPos, data);
             } else {
-                byte[] data = subchunkNBT.getByteArray("data");
-                cleanAir.put(chunkPos, new ChunkData(data));
+                byte[] array = nbt.getByteArray("data");
+                data = new ChunkData(array);
+                cleanAir.put(chunkPos, data);
             }
         }
     }
 
+    private void readSpheres(NBTTagCompound compound) {
+        sphereData.clear();
+        NBTTagList list = compound.getTagList("spheres", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < list.tagCount(); i++) {
+            NBTTagCompound nbt = list.getCompoundTagAt(i);
+            long chunkPos = nbt.getLong("pos");
+            BlockPos center = new BlockPos(nbt.getInteger("sx"), nbt.getInteger("sy"), nbt.getInteger("sz"));
+            float radius = nbt.getFloat("sr");
+            sphereData.put(chunkPos, new LCSphere(center, radius));
+        }
+    }
+
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+        writeCleanAir(compound);
+        writeSpheres(compound);
+        return compound;
+    }
+
+    private void writeSpheres(NBTTagCompound compound) {
+        NBTTagList list = new NBTTagList();
+
+        for (Map.Entry<Long, LCSphere> entry : sphereData.entrySet()) {
+            NBTTagCompound nbt = new NBTTagCompound();
+            nbt.setLong("pos", entry.getKey());
+            LCSphere sphere = entry.getValue();
+            nbt.setInteger("sx", sphere.getCenter().getX());
+            nbt.setInteger("sy", sphere.getCenter().getY());
+            nbt.setInteger("sz", sphere.getCenter().getZ());
+            nbt.setFloat("sr", sphere.getRadius());
+            list.appendTag(nbt);
+        }
+        compound.setTag("spheres", list);
+    }
+
+    private void writeCleanAir(NBTTagCompound compound) {
         NBTTagList list = new NBTTagList();
 
         for (Map.Entry<Long, ChunkData> entry : cleanAir.entrySet()) {
-            NBTTagCompound subchunkNBT = new NBTTagCompound();
-            subchunkNBT.setLong("pos", entry.getKey());
-            if (entry.getValue().isStrong()) {
-                subchunkNBT.setBoolean("strong", true);
+            NBTTagCompound nbt = new NBTTagCompound();
+            nbt.setLong("pos", entry.getKey());
+            ChunkData data = entry.getValue();
+            if (data.isStrong()) {
+                nbt.setBoolean("strong", true);
             } else {
-                subchunkNBT.setByteArray("data", entry.getValue().getData());
+                nbt.setByteArray("data", data.getData());
             }
-            list.appendTag(subchunkNBT);
+            list.appendTag(nbt);
         }
         compound.setTag("list", list);
-
-        return compound;
     }
 }

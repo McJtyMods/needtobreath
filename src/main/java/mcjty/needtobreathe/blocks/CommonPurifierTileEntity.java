@@ -57,7 +57,7 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
                 // Depending on how pure it already is we decrease this faster or slower
                 BlockPos p = getPurifyingSpot();
 
-                if (data.isValid(world, p)) {
+                if (data.isValid(world, world.getBlockState(p), p)) {
                     int workdone = purifyAir(data, p);
                     consumeCoal(workdone);
                     consumeEnergy(getRfPerTick());
@@ -79,27 +79,27 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
         workdone += data.fillCleanAir(pp.getX(), pp.getY(), pp.getZ());
         BlockPos p2;
         p2 = pp.down();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         p2 = pp.up();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         p2 = pp.north();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         p2 = pp.south();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         p2 = pp.west();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         p2 = pp.east();
-        if (data.isValid(world, p2)) {
+        if (data.isValid(world, world.getBlockState(p2), p2)) {
             workdone += data.fillCleanAir(p2);
         }
         return workdone;

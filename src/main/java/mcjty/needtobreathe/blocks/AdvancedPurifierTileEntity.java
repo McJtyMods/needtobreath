@@ -35,11 +35,11 @@ public class AdvancedPurifierTileEntity extends CommonPurifierTileEntity {
     private int purifyDirection(DimensionData data, BlockPos p, @Nonnull EnumFacing facing, @Nullable EnumFacing alternative) {
         int workdone = 0;
         p = p.offset(facing);
-        if (data.isValid(world, p)) {
+        if (data.isValid(world, world.getBlockState(p), p)) {
             workdone += data.fillCleanAir(p);
         }
         int cnt = 2;
-        while (data.isValid(world, p.offset(facing)) && cnt > 0) {
+        while (data.isValid(world, world.getBlockState(p.offset(facing)), p.offset(facing)) && cnt > 0) {
             p = p.offset(facing);
             cnt--;
         }
@@ -47,7 +47,7 @@ public class AdvancedPurifierTileEntity extends CommonPurifierTileEntity {
 
         if (alternative != null) {
             cnt = 2;
-            while (data.isValid(world, p.offset(alternative)) && cnt > 0) {
+            while (data.isValid(world, world.getBlockState(p.offset(alternative)), p.offset(alternative)) && cnt > 0) {
                 p = p.offset(alternative);
                 cnt--;
             }
