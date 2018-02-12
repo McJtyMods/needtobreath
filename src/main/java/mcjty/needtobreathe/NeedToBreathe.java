@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 public class NeedToBreathe implements ModBase {
     public static final String MODID = "needtobreathe";
     public static final String MIN_MCJTYLIB_VER = "2.6.2";
-    public static final String VERSION = "0.1.0beta";
+    public static final String VERSION = "0.1.1beta";
     public static final String MIN_FORGE_VER = "14.22.0.2464";
 
     @SidedProxy(clientSide = "mcjty.needtobreathe.proxy.ClientProxy", serverSide = "mcjty.needtobreathe.proxy.ServerProxy")
