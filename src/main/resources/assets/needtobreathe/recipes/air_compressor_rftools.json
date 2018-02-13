@@ -6,27 +6,26 @@
     }
   ],
   "result": {
-    "item": "needtobreathe:purifier"
+    "item": "needtobreathe:air_compressor"
   },
   "pattern": [
-    "ccc",
-    "ggg",
-    "iMi"
+    " h ",
+    "pMp",
+    "iii"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
     "M": {
       "item": "rftools:machine_frame"
     },
+    "p": {
+      "item": "minecraft:piston"
+    },
     "i": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:iron_bars"
     },
-    "c": {
-      "item": "minecraft:coal",
-      "data": 0
-    },
-    "g": {
-      "item": "minecraft:gravel"
+    "h": {
+      "item": "minecraft:hopper"
     }
   }
 }

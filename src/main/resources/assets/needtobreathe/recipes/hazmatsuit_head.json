@@ -4,11 +4,14 @@
   },
   "pattern": [
     "lll",
-    "l l",
+    "lpl",
     "   "
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
+    "p": {
+      "item": "minecraft:glass_pane"
+    },
     "l": {
       "item": "needtobreathe:insulated_leather"
     }
