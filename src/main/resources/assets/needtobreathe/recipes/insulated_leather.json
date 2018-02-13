@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "needtobreathe:insulated_leather"
+  },
+  "pattern": [
+    "ggg",
+    "gLg",
+    "ggg"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "g": {
+      "item": "minecraft:gold_nugget"
+    }
+  }
+}

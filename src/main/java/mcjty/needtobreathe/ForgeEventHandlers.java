@@ -34,6 +34,7 @@ public class ForgeEventHandlers {
         event.getRegistry().register(ModItems.hazmatSuitChest);
         event.getRegistry().register(ModItems.hazmatSuitHelmet);
         event.getRegistry().register(ModItems.hazmatSuitLegs);
+        event.getRegistry().register(ModItems.insulatedLeather);
     }
 
     @SubscribeEvent

@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "needtobreathe:hazmatsuit_legs"
+  },
+  "pattern": [
+    "lll",
+    "l l",
+    "l l"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "l": {
+      "item": "needtobreathe:insulated_leather"
+    }
+  }
+}

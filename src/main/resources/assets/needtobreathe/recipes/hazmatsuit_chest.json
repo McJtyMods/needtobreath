@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "needtobreathe:hazmatsuit_chest"
+  },
+  "pattern": [
+    "l l",
+    "ili",
+    "lll"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "l": {
+      "item": "needtobreathe:insulated_leather"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  }
+}

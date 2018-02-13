@@ -1,7 +1,9 @@
 package mcjty.needtobreathe.items;
 
+import mcjty.needtobreathe.NeedToBreathe;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -15,6 +17,7 @@ public class ModItems {
     public static HazmatSuit hazmatSuitChest;
     public static HazmatSuit hazmatSuitLegs;
     public static HazmatSuit hazmatSuitBoots;
+    public static Item insulatedLeather;
 
     public static void init() {
         protectiveHelmet = new ProtectiveHelmet();
@@ -24,6 +27,10 @@ public class ModItems {
         hazmatSuitChest = new HazmatSuit(EntityEquipmentSlot.CHEST);
         hazmatSuitHelmet = new HazmatSuit(EntityEquipmentSlot.HEAD);
         hazmatSuitLegs = new HazmatSuit(EntityEquipmentSlot.LEGS);
+        insulatedLeather = new Item()
+                .setRegistryName("insulated_leather")
+                .setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet")
+                .setCreativeTab(NeedToBreathe.creativeTab);
     }
 
     @SideOnly(Side.CLIENT)
@@ -35,6 +42,6 @@ public class ModItems {
         ModelLoader.setCustomModelResourceLocation(hazmatSuitChest, 0, new ModelResourceLocation(hazmatSuitChest.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(hazmatSuitHelmet, 0, new ModelResourceLocation(hazmatSuitHelmet.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(hazmatSuitLegs, 0, new ModelResourceLocation(hazmatSuitLegs.getRegistryName(), "inventory"));
-        
+        ModelLoader.setCustomModelResourceLocation(insulatedLeather, 0, new ModelResourceLocation(insulatedLeather.getRegistryName(), "inventory"));
     }
 }
