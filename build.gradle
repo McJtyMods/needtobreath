@@ -89,7 +89,7 @@ dependencies {
     deobfCompile "com.github.mcjty:intwheel:1.12-1.2.7"
     deobfCompile "com.github.mcjty:mcjtylib:1.12-2.6.3-SNAPSHOT"
     deobfCompile "com.github.mcjty:rftools:1.12-7.23"
-    deobfCompile "com.github.mcjty:lostcities:1.12-2.0.0beta2"
+    deobfCompile "com.github.mcjty:lostcities:1.12-2.0.3"
 
     compile "li.cil.oc:OpenComputers:MC1.12.1-1.7.+:api"
 }
