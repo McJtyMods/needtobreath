@@ -29,7 +29,7 @@ public class ModItems {
         hazmatSuitLegs = new HazmatSuit(EntityEquipmentSlot.LEGS);
         insulatedLeather = new Item()
                 .setRegistryName("insulated_leather")
-                .setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet")
+                .setUnlocalizedName(NeedToBreathe.MODID + ".insulatedleather")
                 .setCreativeTab(NeedToBreathe.creativeTab);
     }
 

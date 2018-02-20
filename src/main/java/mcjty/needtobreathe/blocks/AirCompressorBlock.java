@@ -31,6 +31,7 @@ public class AirCompressorBlock extends GenericBlock<AirCompressorTileEntity, Ai
 
     public AirCompressorBlock() {
         super(NeedToBreathe.instance, Material.IRON, AirCompressorTileEntity.class, AirCompressorContainer.class, "air_compressor", true);
+        setCreativeTab(NeedToBreathe.creativeTab);
     }
 
     @Override
