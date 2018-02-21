@@ -73,6 +73,9 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onCropGrowth(BlockEvent.CropGrowEvent.Pre evt) {
         World world = evt.getWorld();
+        if (world.isRemote) {
+            return;
+        }
         DimensionData data = getDimensionData(world);
         if (data != null) {
             if (preventPlantGrowth(world, data, evt.getPos())) {
@@ -84,6 +87,9 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onBonemeal(BonemealEvent evt) {
         World world = evt.getWorld();
+        if (world.isRemote) {
+            return;
+        }
         DimensionData data = getDimensionData(world);
         if (data != null) {
             if (preventPlantGrowth(world, data, evt.getPos())) {
