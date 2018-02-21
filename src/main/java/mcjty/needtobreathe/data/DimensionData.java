@@ -296,13 +296,19 @@ public class DimensionData {
 
     private void handleEffects(World world) {
         List<Pair<Integer, Entity>> affectedEntities = new ArrayList<>();
-        for (Entity entity : world.loadedEntityList) {
+
+        // Avoid the iterator here because it can cause concurrent modification exceptions due to
+        // our test for poison possibly loading chunks (and thus new entities)
+        int i = 0;
+        while (i < world.loadedEntityList.size()) {
+            Entity entity = world.loadedEntityList.get(i);
             if (entity instanceof EntityLivingBase) {
                 int poison = getPoison(world, entity.getPosition().up());
                 if (poison > 20) {
                     affectedEntities.add(Pair.of(poison, entity));
                 }
             }
+            i++;
         }
 
         for (Pair<Integer, Entity> pair : affectedEntities) {
