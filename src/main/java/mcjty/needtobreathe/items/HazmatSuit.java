@@ -1,7 +1,10 @@
 package mcjty.needtobreathe.items;
 
 import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.needtobreathe.api.IAirCanister;
+import mcjty.needtobreathe.api.IProtectiveHelmet;
 import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -17,7 +20,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class HazmatSuit extends ItemArmor {
+public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCanister {
 
     public HazmatSuit(EntityEquipmentSlot slot) {
         super(ArmorMaterial.LEATHER, 0, slot);
@@ -36,6 +39,29 @@ public class HazmatSuit extends ItemArmor {
     @Override
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
         return HazmatSuitModel.getModel(entityLiving, itemStack);
+    }
+
+    @Override
+    public boolean isActive(EntityPlayer player) {
+        return hasFullArmor(player);
+    }
+
+    @Override
+    public int getReducedPoison(EntityPlayer player, int poison) {
+        ItemStack chestplate = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        int air = ModItems.hazmatSuitChest.getAir(chestplate);
+        if (air < 50) {    // @todo config
+            if (DimensionData.fastrand128() < poison) {
+                ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
+            }
+            return (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+        } else if (air > 0) {
+            if (DimensionData.fastrand128() < poison) {
+                ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
+            }
+            return 0;
+        }
+        return poison;
     }
 
     public static boolean hasFullArmor(EntityPlayer player) {
@@ -57,6 +83,12 @@ public class HazmatSuit extends ItemArmor {
         return true;
     }
 
+    @Override
+    public boolean isActive(ItemStack stack) {
+        return stack.getItem() == ModItems.hazmatSuitChest;
+    }
+
+    @Override
     public int getAir(ItemStack stack) {
         if (stack.hasTagCompound()) {
             return stack.getTagCompound().getInteger("air");
@@ -64,10 +96,12 @@ public class HazmatSuit extends ItemArmor {
         return 0;
     }
 
+    @Override
     public int getMaxAir(ItemStack stack) {
         return Config.HAZMATSUIT_MAXAIR;
     }
 
+    @Override
     public void setAir(ItemStack stack, int air) {
         if (!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
@@ -82,7 +116,7 @@ public class HazmatSuit extends ItemArmor {
             list.add("Hazmat suit chestplate");
             list.add("This has to be filled in the air");
             list.add("compressor before it works!");
-            list.add(TextFormatting.GREEN+"Energy: " + getAir(stack) + " / " + getMaxAir(stack));
+            list.add(TextFormatting.GREEN+"Air: " + getAir(stack) + " / " + getMaxAir(stack));
         } else {
             list.add("Hazmat suit part");
             list.add("The haxmat has to be complete");

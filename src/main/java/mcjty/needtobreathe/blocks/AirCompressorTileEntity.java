@@ -3,10 +3,10 @@ package mcjty.needtobreathe.blocks;
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
+import mcjty.needtobreathe.api.IAirCanister;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
-import mcjty.needtobreathe.items.ModItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,7 +30,7 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
 
     @Override
     public int[] getSlotsForFace(EnumFacing side) {
-        return new int[] { AirCompressorContainer.SLOT_CHESTPLATE };
+        return new int[] { AirCompressorContainer.SLOT_AIRCANISTER};
     }
 
     @Override
@@ -40,8 +40,8 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (index == AirCompressorContainer.SLOT_CHESTPLATE) {
-            return stack.getItem() == ModItems.hazmatSuitChest;
+        if (index == AirCompressorContainer.SLOT_AIRCANISTER) {
+            return stack.getItem() instanceof IAirCanister;
         }
         return true;
     }
@@ -72,10 +72,12 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                 blocked = false;
                 markDirtyQuick();
             }
-            ItemStack chestplate = getStackInSlot(AirCompressorContainer.SLOT_CHESTPLATE);
-            if (!chestplate.isEmpty()) {
-                int air = ModItems.hazmatSuitChest.getAir(chestplate);
-                if (air >= Config.HAZMATSUIT_MAXAIR) {
+            ItemStack itemToCharge = getStackInSlot(AirCompressorContainer.SLOT_AIRCANISTER);
+            if (!itemToCharge.isEmpty() && itemToCharge.getItem() instanceof IAirCanister && ((IAirCanister) itemToCharge.getItem()).isActive(itemToCharge)) {
+                IAirCanister canister = (IAirCanister) itemToCharge.getItem();
+
+                int air = canister.getAir(itemToCharge);
+                if (air >= canister.getMaxAir(itemToCharge)) {
                     return;
                 }
                 if (getEnergyStored() < Config.AIRCOMPRESSOR_RFPERTICK) {
@@ -85,7 +87,7 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                 DimensionData data = CleanAirManager.getManager().getDimensionData(world.provider.getDimension());
                 if (data == null) {
                     // No poison in this dimension so the machine works ideally
-                    ModItems.hazmatSuitChest.setAir(chestplate, air+1);
+                    canister.setAir(itemToCharge, air+1);
                 } else {
                     BlockPos up = getPos().up();
                     if (!DimensionData.isValid(world, world.getBlockState(up), up)) {
@@ -99,10 +101,10 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                     } else if (poison > 100) {
                         // Work but not very well
                         if (world.rand.nextFloat() > .5f) {
-                            ModItems.hazmatSuitChest.setAir(chestplate, air+1);
+                            canister.setAir(itemToCharge, air+1);
                         }
                     } else {
-                        ModItems.hazmatSuitChest.setAir(chestplate, air+1);
+                        canister.setAir(itemToCharge, air+1);
                     }
                 }
             }
