@@ -12,6 +12,7 @@ import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,11 +23,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -303,7 +306,10 @@ public class DimensionData {
             if (entity instanceof EntityLivingBase) {
                 int poison = getPoison(world, entity.getPosition().up());
                 if (poison > 20) {
-                    affectedEntities.add(Pair.of(poison, entity));
+                    ResourceLocation key = EntityList.getKey(entity);
+                    if (!Config.getImmuneEntities().contains(key)) {
+                        affectedEntities.add(Pair.of(poison, entity));
+                    }
                 }
             }
             i++;

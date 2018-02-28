@@ -1,9 +1,11 @@
 package mcjty.needtobreathe.config;
 
 import mcjty.lib.varia.Logging;
+import mcjty.needtobreathe.NeedToBreathe;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.HashSet;
@@ -47,9 +49,11 @@ public class Config {
     public static float CREATIVE_PURIFIER_AUTOGENERATE = 1.0f;
     public static int CREATIVE_PURIFIER_GENERATE_HEIGHT = 0;
 
-    public static String[] POTION_EFFECTS_PLAYER = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison", "105,minecraft:wither" };
-    public static String[] POTION_EFFECTS_PASSIVE = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison" };
-    public static String[] POTION_EFFECTS_HOSTILE = { "50,minecraft:regeneration", "100,minecraft:health_boost" };
+    private static String[] IMMUNE_ENTITIES = {};
+
+    private static String[] POTION_EFFECTS_PLAYER = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison", "105,minecraft:wither" };
+    private static String[] POTION_EFFECTS_PASSIVE = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison" };
+    private static String[] POTION_EFFECTS_HOSTILE = { "50,minecraft:regeneration", "100,minecraft:health_boost" };
 
     private static String[] BLOCKS_BLOCKING = {
             "minecraft:iron_door",
@@ -71,8 +75,8 @@ public class Config {
             "minecraft:leaves2"
     };
 
-    public static String[] DIMENSIONS_WITH_POISON = { "-1" };
-    public static String[] DIMENSIONS_WITHOUT_POISON = { };
+    private static String[] DIMENSIONS_WITH_POISON = { "-1" };
+    private static String[] DIMENSIONS_WITHOUT_POISON = { };
 
     private static PotionEffectConfig[] playerEffects = null;
     private static PotionEffectConfig[] passiveEffects = null;
@@ -84,6 +88,7 @@ public class Config {
 
     private static Set<Block> blocksBlocking = null;
     private static Set<Block> blocksNonBlocking = null;
+    private static Set<ResourceLocation> immuneEntities = null;
 
     public static boolean hasPoison(int dimensionId) {
         if (dimensionsWithPoison == null) {
@@ -108,6 +113,20 @@ public class Config {
         }
     }
 
+    public static Set<ResourceLocation> getImmuneEntities() {
+        if (immuneEntities == null) {
+            immuneEntities = new HashSet<>();
+            for (String s : IMMUNE_ENTITIES) {
+                EntityEntry entity = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(s));
+                if (entity == null) {
+                    NeedToBreathe.logger.warn("Could not find entity '" + s + "' for the immunity list!");
+                } else {
+                    immuneEntities.add(new ResourceLocation(s));
+                }
+            }
+        }
+        return immuneEntities;
+    }
 
     public static Set<Block> getBlocksBlocking() {
         if (blocksBlocking == null) {
@@ -191,6 +210,7 @@ public class Config {
 
     private static void initEffectsSettings(Configuration cfg) {
         cfg.addCustomCategoryComment(CATEGORY_EFFECTS, "Effect settings");
+        IMMUNE_ENTITIES = cfg.getStringList("immuneEntities", CATEGORY_EFFECTS, IMMUNE_ENTITIES, "A list of entities that are immune to poison effects");
         POTION_EFFECTS_PLAYER = cfg.getStringList("potionEffectsPlayer", CATEGORY_EFFECTS, POTION_EFFECTS_PLAYER, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_PASSIVE = cfg.getStringList("potionEffectsPassive", CATEGORY_EFFECTS, POTION_EFFECTS_PASSIVE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_HOSTILE = cfg.getStringList("potionEffectsHostile", CATEGORY_EFFECTS, POTION_EFFECTS_HOSTILE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
