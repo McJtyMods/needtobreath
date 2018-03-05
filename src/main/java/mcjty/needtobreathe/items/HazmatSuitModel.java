@@ -56,30 +56,29 @@ public class HazmatSuitModel extends ModelBiped {
         
         //helmet
         this.mask = new ModelRenderer(this, 0, 0);
-        this.mask.addBox(-4.5F, -9.0F, -4.6F, 9, 13, 9, s);
+        this.mask.addBox(-4.5F, -9.0F, -4.5F, 9, 13, 9, s);
         this.mask.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.respirator = new ModelRenderer(this, 36, 0);
-        this.respirator.addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4, 0.0F);
+        this.respirator.addBox(-2.5F, -5.0F, -5.5F, 5, 4, 4, s);
         this.respirator.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.setRotation(respirator, 0.5235987755982988F, 0.0F, s);
+        this.setRotation(respirator, 0.5235987755982988F, 0.0F, 0.0F);
         
         this.resp_l = new ModelRenderer(this, 36, 8);
-        this.resp_l.addBox(0.0F, 0.0F, -2.5F, 3, 3, 3, 0.0F);
+        this.resp_l.addBox(0.0F, 0.0F, -2.5F, 3, 3, 3, s);
         this.resp_l.setRotationPoint(0.5F, -4.0F, -5.5F);
-        this.setRotation(resp_l, 0.0F, -0.7853981633974483F, s);
+        this.setRotation(resp_l, 0.0F, -0.7853981633974483F, 0.0F);
         this.resp_l.mirror = true;
         
         this.resp_r = new ModelRenderer(this, 36, 8);
-        this.resp_r.addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3, 0.0F);
+        this.resp_r.addBox(-3.0F, 0.0F, -2.5F, 3, 3, 3, s);
         this.resp_r.setRotationPoint(-0.5F, -4.0F, -5.5F);
-        this.setRotation(resp_r, 0.0F, 0.7853981633974483F, s);
-    
-    
+        this.setRotation(resp_r, 0.0F, 0.7853981633974483F, 0.0F);
+   
         this.bipedHead.addChild(mask);
         this.bipedHead.addChild(respirator);
-        this.bipedHead.addChild(resp_l);
-        this.bipedHead.addChild(resp_r);
+        this.respirator.addChild(resp_l);
+        this.respirator.addChild(resp_r);
         
         //chestplate
         this.body = new ModelRenderer(this, 0, 22);
@@ -87,22 +86,21 @@ public class HazmatSuitModel extends ModelBiped {
         this.body.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.arm_l = new ModelRenderer(this, 0, 37);
-        this.arm_l.addBox(-1.5F, -2.0F, -2.9F, 5, 8, 6, s);
-        this.arm_l.setRotationPoint(0, 0, 0);
+        this.arm_l.addBox(-1.5F, -2.5F, -2.9F, 5, 8, 6, s);
+        this.arm_l.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.arm_l.mirror = true;
         
         this.glove_l = new ModelRenderer(this, 22, 37);
-        this.glove_l.addBox(-1.5F, 6.0F, -2.0F, 5, 4, 5, s);
+        this.glove_l.addBox(-1.5F, 5.5F, -2.5F, 5, 5, 5, s);
         this.glove_l.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.glove_l.mirror = true;
         
         this.arm_r = new ModelRenderer(this, 0, 37);
-        this.arm_r.addBox(-3.5F, -2.0F, -3.0F, 5, 8, 6, s);
-        this.arm_r.setRotationPoint(0, 0, 0);
-        this.setRotation(arm_r, 0.0F, 0.0F, 0.17453292519943295F);
+        this.arm_r.addBox(-3.5F, -2.5F, -3.0F, 5, 8, 6, s);
+        this.arm_r.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.glove_r = new ModelRenderer(this, 22, 37);
-        this.glove_r.addBox(-3.5F, 6.0F, -2.5F, 5, 4, 5, s);
+        this.glove_r.addBox(-3.5F, 5.5F, -2.5F, 5, 5, 5, s);
         this.glove_r.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.bipedBody.addChild(body);
@@ -115,21 +113,19 @@ public class HazmatSuitModel extends ModelBiped {
         
         this.belt = new ModelRenderer(this, 0, 52);
         this.belt.addBox(-4.5F, 9.0F, -3.0F, 9, 5, 6, s);
-        this.belt.setRotationPoint(0.0F, -4.0F, 0.0F);
+        this.belt.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.leg_l = new ModelRenderer(this, 0, 63);
         this.leg_l.addBox(-2.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_l.setRotationPoint(0, 0, 0);
+        this.leg_l.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.leg_r = new ModelRenderer(this, 0, 63);
         this.leg_r.addBox(-3.0F, -3.0F, -2.55F, 5, 9, 5, s);
-        this.leg_r.setRotationPoint(0, 0, 0);
+        this.leg_r.setRotationPoint(0.0F, 0.0F, 0.0F);
         
         this.bipedRightLeg.addChild(leg_r);
         this.bipedLeftLeg.addChild(leg_l);
         this.bipedBody.addChild(belt);
-        
-        
         
         //boots
         bootsLeft = new ModelRenderer(this, 0, 0);
@@ -138,6 +134,7 @@ public class HazmatSuitModel extends ModelBiped {
         this.boot_l = new ModelRenderer(this, 0, 77);
         this.boot_l.setRotationPoint(0,0,0);
         this.boot_l.addBox(-2.0F, 6.0F, -2.5F, 5, 6, 5, s);
+        
         this.boot_r = new ModelRenderer(this, 0, 77);
         this.boot_r.setRotationPoint(0, 0 ,0);
         this.boot_r.addBox(-2.95F, 6.0F, -2.5F, 5, 6, 5, s);
