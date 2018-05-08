@@ -111,6 +111,10 @@ dependencies {
         deobfCompile "com.github.mcjty:mcjtylib:${mcjtylib_version}"
         deobfCompile "com.github.mcjty:rftools:1.12-7.23"
         deobfCompile "com.github.mcjty:lostcities:1.12-2.0.5"
+    } else {
+	compile project(':McJtyLib')
+	compile project(':RFTools')
+	compile project(':LostCities')
     }
     compile "li.cil.oc:OpenComputers:${oc_version}"
 }
