@@ -1,7 +1,7 @@
 package mcjty.needtobreathe.blocks;
 
 import mcjty.lib.blocks.GenericBlock;
-import mcjty.lib.container.GenericGuiContainer;
+import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.proxy.GuiProxy;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -19,12 +19,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import static mcjty.theoneprobe.api.TextStyleClass.ERROR;
-import static mcjty.theoneprobe.api.TextStyleClass.INFO;
-import static mcjty.theoneprobe.api.TextStyleClass.LABEL;
 
 public class AirCompressorBlock extends GenericBlock<AirCompressorTileEntity, AirCompressorContainer> {
 
