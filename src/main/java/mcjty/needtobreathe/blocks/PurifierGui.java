@@ -1,19 +1,19 @@
 package mcjty.needtobreathe.blocks;
 
 import mcjty.lib.container.GenericGuiContainer;
-import mcjty.lib.entity.GenericEnergyStorageTileEntity;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.layout.PositionalLayout;
 import mcjty.lib.gui.widgets.EnergyBar;
 import mcjty.lib.gui.widgets.Panel;
 import mcjty.lib.gui.widgets.Widget;
 import mcjty.lib.network.Arguments;
+import mcjty.lib.tileentity.GenericEnergyStorageTileEntity;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.network.NTBMessages;
 import net.minecraft.util.ResourceLocation;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
     public static final int PURIFIER_WIDTH = 180;

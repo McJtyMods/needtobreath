@@ -1,6 +1,6 @@
 package mcjty.needtobreathe.blocks;
 
-import mcjty.lib.entity.GenericTileEntity;
+import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.needtobreathe.compat.LCSphere;
 import mcjty.needtobreathe.compat.LostCitySupport;
 import mcjty.needtobreathe.config.Config;

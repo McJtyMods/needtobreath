@@ -1,7 +1,6 @@
 package mcjty.needtobreathe.blocks;
 
-import mcjty.lib.container.BaseBlock;
-import mcjty.lib.container.GenericBlock;
+import mcjty.lib.blocks.GenericBlock;
 import mcjty.lib.container.GenericGuiContainer;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.proxy.GuiProxy;

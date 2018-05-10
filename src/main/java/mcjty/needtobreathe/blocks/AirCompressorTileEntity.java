@@ -2,7 +2,7 @@ package mcjty.needtobreathe.blocks;
 
 import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
-import mcjty.lib.entity.GenericEnergyReceiverTileEntity;
+import mcjty.lib.tileentity.GenericEnergyReceiverTileEntity;
 import mcjty.needtobreathe.api.IAirCanister;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
