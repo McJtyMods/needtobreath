@@ -6,8 +6,8 @@ import mcjty.lib.gui.layout.PositionalLayout;
 import mcjty.lib.gui.widgets.EnergyBar;
 import mcjty.lib.gui.widgets.Panel;
 import mcjty.lib.gui.widgets.Widget;
-import mcjty.lib.network.Arguments;
 import mcjty.lib.tileentity.GenericEnergyStorageTileEntity;
+import mcjty.lib.typed.TypedMap;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.network.NTBMessages;
@@ -69,7 +69,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
 
         window = new Window(this, toplevel);
         sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
-                Arguments.builder().value(tileEntity.getPos()).build());
+                TypedMap.builder().put(CommandHandler.PARAM_POS, tileEntity.getPos()).build());
 //        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 
@@ -83,7 +83,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
         coalBar.setValue(tileEntity.getCoalticks());
 
         sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
-                Arguments.builder().value(tileEntity.getPos()).build());
+                TypedMap.builder().put(CommandHandler.PARAM_POS, tileEntity.getPos()).build());
 //        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }

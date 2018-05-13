@@ -1,7 +1,7 @@
 package mcjty.needtobreathe.rendering;
 
-import mcjty.lib.network.Arguments;
 import mcjty.lib.network.PacketSendServerCommand;
+import mcjty.lib.typed.TypedMap;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.config.Config;
@@ -117,7 +117,7 @@ public class NTBOverlayRenderer {
             poisonTicks = 9;   // Not in sync with the world poison ticker to get more accurate averages
             BlockPos pos = Minecraft.getMinecraft().player.getPosition().up();
             NTBMessages.INSTANCE.sendToServer(new PacketSendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTPOISON,
-                    Arguments.builder().value(pos).build()));
+                    TypedMap.builder().put(CommandHandler.PARAM_POS, pos).build()));
         }
 
         int p = 0;
