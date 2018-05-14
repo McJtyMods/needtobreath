@@ -3,7 +3,6 @@ package mcjty.needtobreathe;
 import mcjty.lib.base.ModBase;
 import mcjty.needtobreathe.commands.CommandTest;
 import mcjty.needtobreathe.compat.LostCitySupport;
-import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,7 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NeedToBreathe.MODID, name = "NeedToBreathe",
@@ -77,11 +79,6 @@ public class NeedToBreathe implements ModBase {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
         this.proxy.postInit(e);
-    }
-
-    @Mod.EventHandler
-    public void serverStopped(FMLServerStoppedEvent event) {
-        CleanAirManager.clearInstance();
     }
 
     @Mod.EventHandler

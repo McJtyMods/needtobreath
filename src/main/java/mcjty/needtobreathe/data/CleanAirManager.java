@@ -1,11 +1,9 @@
 package mcjty.needtobreathe.data;
 
+import mcjty.lib.worlddata.AbstractWorldData;
 import mcjty.needtobreathe.config.Config;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
@@ -13,25 +11,18 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CleanAirManager extends WorldSavedData {
+public class CleanAirManager extends AbstractWorldData<CleanAirManager> {
 
-    public static final String NAME = "NeedToBreatheData";
-
-    private static CleanAirManager instance = null;
-
+    private static final String NAME = "NeedToBreatheData";
     private Map<Integer, DimensionData> dimensionDataMap = new HashMap<>();
-
-
 
     public CleanAirManager(String name) {
         super(name);
     }
 
-
-    public void save() {
-        WorldServer world = DimensionManager.getWorld(0);
-        world.setData(NAME, this);
-        markDirty();
+    @Override
+    public void clear() {
+        dimensionDataMap.clear();
     }
 
     @Nullable
@@ -46,24 +37,9 @@ public class CleanAirManager extends WorldSavedData {
         }
     }
 
-    public static void clearInstance() {
-        if (instance != null) {
-            instance.dimensionDataMap.clear();
-            instance = null;
-        }
-    }
-
     @Nonnull
     public static CleanAirManager getManager() {
-        WorldServer world = DimensionManager.getWorld(0);
-        if (instance != null) {
-            return instance;
-        }
-        instance = (CleanAirManager) world.loadData(CleanAirManager.class, NAME);
-        if (instance == null) {
-            instance = new CleanAirManager(NAME);
-        }
-        return instance;
+        return getData(CleanAirManager.class, NAME);
     }
 
     @Override
