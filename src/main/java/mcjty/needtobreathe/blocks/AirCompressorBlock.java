@@ -26,7 +26,7 @@ import static mcjty.theoneprobe.api.TextStyleClass.ERROR;
 public class AirCompressorBlock extends GenericBlock<AirCompressorTileEntity, AirCompressorContainer> {
 
     public AirCompressorBlock() {
-        super(NeedToBreathe.instance, Material.IRON, AirCompressorTileEntity.class, AirCompressorContainer.class, "air_compressor", true);
+        super(NeedToBreathe.instance, Material.IRON, AirCompressorTileEntity.class, AirCompressorContainer::new, "air_compressor", true);
         setCreativeTab(NeedToBreathe.creativeTab);
     }
 

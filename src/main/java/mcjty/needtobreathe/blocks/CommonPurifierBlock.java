@@ -31,7 +31,7 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
     public static final PropertyBool WORKING = PropertyBool.create("working");
 
     public CommonPurifierBlock(String name, Class<T> clazz) {
-        super(NeedToBreathe.instance, Material.IRON, clazz, PurifierContainer.class, name, true);
+        super(NeedToBreathe.instance, Material.IRON, clazz, PurifierContainer::new, name, true);
         setCreativeTab(NeedToBreathe.creativeTab);
     }
 
