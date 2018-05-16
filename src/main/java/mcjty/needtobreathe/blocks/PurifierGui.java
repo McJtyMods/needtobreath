@@ -62,7 +62,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
         coalBar.setValue(tileEntity.getCoalticks());
 
 
-        Widget toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
+        Panel toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
                 .addChild(energyBar)
                 .addChild(coalBar);
         toplevel.setBounds(new Rectangle(guiLeft, guiTop, xSize, ySize));

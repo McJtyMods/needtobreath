@@ -37,7 +37,7 @@ public class AirCompressorBlock extends GenericBlock<AirCompressorTileEntity, Ai
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Class<? extends GenericGuiContainer> getGuiClass() {
+    public Class<? extends GenericGuiContainer<AirCompressorTileEntity>> getGuiClass() {
         return AirCompressorGui.class;
     }
 

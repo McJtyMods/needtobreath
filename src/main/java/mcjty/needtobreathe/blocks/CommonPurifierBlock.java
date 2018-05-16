@@ -37,7 +37,7 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Class<? extends GenericGuiContainer> getGuiClass() {
+    public Class<? extends GenericGuiContainer<CommonPurifierTileEntity>> getGuiClass() {
         return PurifierGui.class;
     }
 

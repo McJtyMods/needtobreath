@@ -43,7 +43,7 @@ public class AirCompressorGui extends GenericGuiContainer<AirCompressorTileEntit
         energyBar.setValue(GenericEnergyStorageTileEntity.getCurrentRF());
 
 
-        Widget toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
+        Panel toplevel = new Panel(mc, this).setBackground(iconLocation).setLayout(new PositionalLayout())
                 .addChild(energyBar);
         toplevel.setBounds(new Rectangle(guiLeft, guiTop, xSize, ySize));
 
