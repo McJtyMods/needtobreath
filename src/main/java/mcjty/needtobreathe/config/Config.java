@@ -1,9 +1,12 @@
 package mcjty.needtobreathe.config;
 
+import mcjty.lib.McJtyLib;
 import mcjty.lib.varia.Logging;
+import mcjty.lib.varia.WorldTools;
 import mcjty.needtobreathe.NeedToBreathe;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -49,6 +52,8 @@ public class Config {
     public static float CREATIVE_PURIFIER_AUTOGENERATE = 1.0f;
     public static int CREATIVE_PURIFIER_GENERATE_HEIGHT = 0;
 
+    public static boolean OUTSIDE_HAS_POISON = false;
+
     private static String[] IMMUNE_ENTITIES = {};
 
     private static String[] POTION_EFFECTS_PLAYER = { "20,minecraft:weakness", "30,minecraft:slowness", "75,minecraft:poison", "105,minecraft:wither" };
@@ -78,6 +83,9 @@ public class Config {
     private static String[] DIMENSIONS_WITH_POISON = { "-1" };
     private static String[] DIMENSIONS_WITHOUT_POISON = { };
 
+    private static String[] BIOMES_WITH_POISON = { };
+    private static String[] BIOMES_WITHOUT_POISON = { };
+
     private static PotionEffectConfig[] playerEffects = null;
     private static PotionEffectConfig[] passiveEffects = null;
     private static PotionEffectConfig[] hostileEffects = null;
@@ -89,6 +97,44 @@ public class Config {
     private static Set<Block> blocksBlocking = null;
     private static Set<Block> blocksNonBlocking = null;
     private static Set<ResourceLocation> immuneEntities = null;
+
+    private static boolean useBiomeCheck = false;
+    private static Set<String> biomesWithPoison = null;
+    private static Set<String> biomesWithoutPoison = null;
+
+    public static Set<String> getBiomesWithPoison() {
+        if (biomesWithPoison == null) {
+            biomesWithPoison = new HashSet<>();
+            for (String s : BIOMES_WITH_POISON) {
+                Biome biome = WorldTools.findBiome(s);
+                if (biome != null) {
+                    biomesWithPoison.add(biome.biomeName);
+                } else {
+                    NeedToBreathe.logger.warn("Could not find biome '" + s + "'!");
+                }
+            }
+        }
+        return biomesWithPoison;
+    }
+
+    public static Set<String> getBiomesWithoutPoison() {
+        if (biomesWithoutPoison == null) {
+            biomesWithoutPoison = new HashSet<>();
+            for (String s : BIOMES_WITHOUT_POISON) {
+                Biome biome = WorldTools.findBiome(s);
+                if (biome != null) {
+                    biomesWithoutPoison.add(biome.biomeName);
+                } else {
+                    NeedToBreathe.logger.warn("Could not find biome '" + s + "'!");
+                }
+            }
+        }
+        return biomesWithoutPoison;
+    }
+
+    public static boolean isUseBiomeCheck() {
+        return useBiomeCheck;
+    }
 
     public static boolean hasPoison(int dimensionId) {
         if (dimensionsWithPoison == null) {
@@ -206,6 +252,12 @@ public class Config {
         CLEANAIR_DECAY_CHANCE = cfg.getInt("cleanairDecayChance", CATEGORY_GENERAL, CLEANAIR_DECAY_CHANCE, 0, 128, "The chance at which clean air decays. Lower values mean less chance. 128 means one decay every subchunk tick");
         STRONGAIR_PROPAGATE_CHANCE = cfg.getInt("strongairPropagateChance", CATEGORY_GENERAL, STRONGAIR_PROPAGATE_CHANCE, 0, 128, "The chance that a strong air subchunk will propagate clean air to a non-strong air neighbour subchunk block (every subchunk tick)");
         SUBCHUNK_TICKS = cfg.getInt("subChunkTicks", CATEGORY_GENERAL, SUBCHUNK_TICKS, 0, 50000, "The amount of ticks before a subchunk tick happens. If this is increased then global changes to the air/poison propagation will be slower");
+
+        OUTSIDE_HAS_POISON = cfg.getBoolean("outsideHasPoison", CATEGORY_MACHINES, OUTSIDE_HAS_POISON, "If true then the outside will be poisonous (access to sunlight is used as a test)");
+
+        BIOMES_WITH_POISON = cfg.getStringList("biomesWithPoison", CATEGORY_GENERAL, BIOMES_WITH_POISON, "List of biomes that contain poison. If this list is not empty then other biomes are assumed to have no poison");
+        BIOMES_WITHOUT_POISON = cfg.getStringList("biomesWithoutPoison", CATEGORY_GENERAL, BIOMES_WITHOUT_POISON, "List of biomes that contain no poison. If this list is not empty then other biomes are assumed to have poison");
+        useBiomeCheck = BIOMES_WITH_POISON.length > 0 || BIOMES_WITHOUT_POISON.length > 0;
     }
 
     private static void initEffectsSettings(Configuration cfg) {

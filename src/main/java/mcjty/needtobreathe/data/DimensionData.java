@@ -28,8 +28,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -37,7 +37,6 @@ import java.util.*;
 import static mcjty.needtobreathe.data.ChunkData.CHUNK_DIM;
 
 public class DimensionData {
-
 
     public static final int MAXEFFECTSTICKS = 5;
 
@@ -60,56 +59,82 @@ public class DimensionData {
     /**
      * Get the minimum poison level for this position and adjacent positions
      */
-    public int getPoison(World world, BlockPos p) {
-        int poison = getMinPoisonData(p);
+    public int getPoison(World world, BlockPos pos) {
+        int poison = getMinPoisonData(pos);
         if (poison <= 1) {
             return poison;
         }
 
-        if (Config.CREATIVE_PURIFIER_FAKE) {
-            // Faster algorithm
-            long chunkPos = SubChunkPosIndexed.fromPos(p);
-            if (sphereData.containsKey(chunkPos)) {
-                // We could be in the center of a sphere
-                LCSphere sphere = sphereData.get(chunkPos);
-                float radius = sphere.getRadius();
-                float sqradius = radius*radius;
-                BlockPos center = sphere.getCenter();
-                double sqdist = p.distanceSq(center);
-                if (sqdist <= sqradius) {
-                    // We are in the sphere. Check for breach
-                    if (sqdist <= (radius-15) * (radius-15)) {
-                        // We are too close to the center. No poison here
-                        return 0;
-                    }
-                    double dist = Math.sqrt(sqdist);
-                    double dx = p.getX() - center.getX();
-                    double dy = p.getY() - center.getY();
-                    double dz = p.getZ() - center.getZ();
-                    Vec3d diff = new Vec3d(dx, dy, dz).normalize();
-                    // Calculate a few points just outside the sphere and see if there is poison there
-                    BlockPos end = center.add(diff.x * (radius+1), diff.y * (radius+1), diff.z * (radius+1));
-                    int maxPoison = getMaxPoisonData(end);
-                    if (maxPoison <= 1) {
-                        // Not worth checking. The poison outside the sphere is too low
-                        // @todo make this check even exit sooner depending on distance to radius
-                        return 0;
-                    }
-
-                    // We now know that there is poison right outside the sphere. Check if we can reach that point
-                    if (IntersectionHelper.rayTraceBlocks(world, new Vec3d(p), new Vec3d(end))) {
-                        // We hit an obstacle
-                        return 0;
-                    }
-                    // We can reach the poison. Make it somewhat smaller depending on distance
-                    double factor = Math.max(10.0f - radius + dist, 0.0) / 10.0;
-                    return (int) (maxPoison * factor);
-//                    return 0;
+        if (Config.isUseBiomeCheck()) {
+            Biome biome = world.getBiome(pos);
+            if (Config.getBiomesWithoutPoison().contains(biome.biomeName)) {
+                return 0;
+            }
+            if (!Config.getBiomesWithPoison().isEmpty()) {
+                if (!Config.getBiomesWithPoison().contains(biome.biomeName)) {
+                    return 0;
                 }
             }
         }
 
+        if (Config.CREATIVE_PURIFIER_FAKE) {
+            Integer p = getPoisonWithSphere(world, pos);
+            if (p != null) {
+                poison = p;
+            }
+        }
+
+        if (poison > 0 && Config.OUTSIDE_HAS_POISON) {
+            if (!world.canSeeSky(pos)) {
+                return 0;
+            }
+        }
+
         return poison;
+    }
+
+    private Integer getPoisonWithSphere(World world, BlockPos p) {
+        // Faster algorithm
+        long chunkPos = SubChunkPosIndexed.fromPos(p);
+        if (sphereData.containsKey(chunkPos)) {
+            // We could be in the center of a sphere
+            LCSphere sphere = sphereData.get(chunkPos);
+            float radius = sphere.getRadius();
+            float sqradius = radius*radius;
+            BlockPos center = sphere.getCenter();
+            double sqdist = p.distanceSq(center);
+            if (sqdist <= sqradius) {
+                // We are in the sphere. Check for breach
+                if (sqdist <= (radius-15) * (radius-15)) {
+                    // We are too close to the center. No poison here
+                    return 0;
+                }
+                double dist = Math.sqrt(sqdist);
+                double dx = p.getX() - center.getX();
+                double dy = p.getY() - center.getY();
+                double dz = p.getZ() - center.getZ();
+                Vec3d diff = new Vec3d(dx, dy, dz).normalize();
+                // Calculate a few points just outside the sphere and see if there is poison there
+                BlockPos end = center.add(diff.x * (radius+1), diff.y * (radius+1), diff.z * (radius+1));
+                int maxPoison = getMaxPoisonData(end);
+                if (maxPoison <= 1) {
+                    // Not worth checking. The poison outside the sphere is too low
+                    // @todo make this check even exit sooner depending on distance to radius
+                    return 0;
+                }
+
+                // We now know that there is poison right outside the sphere. Check if we can reach that point
+                if (IntersectionHelper.rayTraceBlocks(world, new Vec3d(p), new Vec3d(end))) {
+                    // We hit an obstacle
+                    return 0;
+                }
+                // We can reach the poison. Make it somewhat smaller depending on distance
+                double factor = Math.max(10.0f - radius + dist, 0.0) / 10.0;
+                return (int) (maxPoison * factor);
+//                    return 0;
+            }
+        }
+        return null;
     }
 
     private int getMaxPoisonData(BlockPos p) {
