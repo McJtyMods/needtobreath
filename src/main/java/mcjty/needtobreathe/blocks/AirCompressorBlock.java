@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static mcjty.theoneprobe.api.TextStyleClass.ERROR;
 
@@ -37,10 +38,9 @@ public class AirCompressorBlock extends GenericBlock<AirCompressorTileEntity, Ai
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Class<? extends GenericGuiContainer<AirCompressorTileEntity>> getGuiClass() {
-        return AirCompressorGui.class;
+    public BiFunction<AirCompressorTileEntity, AirCompressorContainer, GenericGuiContainer<? super AirCompressorTileEntity>> getGuiFactory() {
+        return AirCompressorGui::new;
     }
-
 
     @Override
     public int getGuiID() {

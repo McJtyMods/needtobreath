@@ -1,5 +1,6 @@
 package mcjty.needtobreathe.blocks;
 
+import mcjty.lib.container.GenericContainer;
 import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.layout.PositionalLayout;
@@ -25,16 +26,8 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
     private static final ResourceLocation iconLocation = new ResourceLocation(NeedToBreathe.MODID, "textures/gui/purifier.png");
 //    private static final ResourceLocation iconGuiElements = new ResourceLocation(NeedToBreathe.MODID, "textures/gui/guielements.png");
 
-    public PurifierGui(PurifierTileEntity tileEntity, PurifierContainer container) {
+    public PurifierGui(CommonPurifierTileEntity tileEntity, GenericContainer container) {
         super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "purifier");
-        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
-
-        xSize = PURIFIER_WIDTH;
-        ySize = PURIFIER_HEIGHT;
-    }
-
-    public PurifierGui(AdvancedPurifierTileEntity tileEntity, PurifierContainer container) {
-        super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "advanced_purifier");
         GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
 
         xSize = PURIFIER_WIDTH;

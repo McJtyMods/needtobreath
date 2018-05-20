@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.text.DecimalFormat;
+import java.util.function.BiFunction;
 
 import static mcjty.theoneprobe.api.TextStyleClass.INFO;
 import static mcjty.theoneprobe.api.TextStyleClass.LABEL;
@@ -37,8 +38,8 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Class<? extends GenericGuiContainer<CommonPurifierTileEntity>> getGuiClass() {
-        return PurifierGui.class;
+    public BiFunction<T, PurifierContainer, GenericGuiContainer<? super T>> getGuiFactory() {
+        return PurifierGui::new;
     }
 
     @Override
