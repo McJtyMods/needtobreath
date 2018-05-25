@@ -13,8 +13,8 @@ public class NTBMessages {
         // Server side
 
         // Client side
-        net.registerMessage(PacketSendCleanAirToClient.Handler.class, PacketSendCleanAirToClient.class, PacketHandler.nextID(), Side.CLIENT);
-        net.registerMessage(PacketIntegersFromServer.Handler.class, PacketIntegersFromServer.class, PacketHandler.nextID(), Side.CLIENT);
-        net.registerMessage(PacketPoisonFromServer.Handler.class, PacketPoisonFromServer.class, PacketHandler.nextID(), Side.CLIENT);
+        net.registerMessage(PacketSendCleanAirToClient.Handler.class, PacketSendCleanAirToClient.class, PacketHandler.nextPacketID(), Side.CLIENT);
+        net.registerMessage(PacketIntegersFromServer.Handler.class, PacketIntegersFromServer.class, PacketHandler.nextPacketID(), Side.CLIENT);
+        net.registerMessage(PacketPoisonFromServer.Handler.class, PacketPoisonFromServer.class, PacketHandler.nextPacketID(), Side.CLIENT);
     }
 }
