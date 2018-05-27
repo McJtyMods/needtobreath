@@ -63,7 +63,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
         window = new Window(this, toplevel);
         sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
                 TypedMap.builder().put(CommandHandler.PARAM_POS, tileEntity.getPos()).build());
-//        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
+        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 
 
@@ -77,6 +77,6 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
 
         sendServerCommand(NeedToBreathe.MODID, CommandHandler.CMD_REQUESTINTEGERS,
                 TypedMap.builder().put(CommandHandler.PARAM_POS, tileEntity.getPos()).build());
-//        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
+        tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }
