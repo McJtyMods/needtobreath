@@ -1,0 +1,5 @@
+0.2.0alpha:
+- Made compatible with the latest McJtyLib (3.0.0)
+- Support for per-biome poison
+- Support for poison outside vs inside
+- Fixed the GUI/energybar not syncing
