@@ -177,15 +177,17 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
 
     @Override
     public int[] get() {
-        return new int[] { getEnergyStored(), coalticks, Config.PURIFIER_MAXCOALTICKS };
+        long storedPower = getStoredPower();
+        return new int[] { (int)(storedPower >> 32), (int)storedPower, coalticks, Config.PURIFIER_MAXCOALTICKS };
     }
 
     @Override
     public void set(int[] integers) {
         // This is only called client side
-        storage.modifyEnergyStored(integers[0] - storage.getEnergyStored());
-        coalticks = integers[1];
-        maxCoalTicks = integers[2];
+        long storedPower = (((long)integers[0]) << 32) | (integers[1] & 0xffffffffL);
+        storage.modifyEnergyStored(storedPower - storage.getEnergyStored());
+        coalticks = integers[2];
+        maxCoalTicks = integers[3];
     }
 
     public int getCoalticks() {
