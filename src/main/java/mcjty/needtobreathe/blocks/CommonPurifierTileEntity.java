@@ -45,7 +45,7 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
 
             checkForCoal();
 
-            int energyStored = getEnergyStored();
+            long energyStored = getStoredPower();
             isWorking = energyStored >= getRfPerTick() && coalticks > 0;
             if (isWorking) {
                 CleanAirManager manager = CleanAirManager.getManager();

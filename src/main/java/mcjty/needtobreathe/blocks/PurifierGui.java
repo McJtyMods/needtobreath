@@ -28,7 +28,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
 
     public PurifierGui(CommonPurifierTileEntity tileEntity, GenericContainer container) {
         super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "purifier");
-        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
+        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getStoredPower());
 
         xSize = PURIFIER_WIDTH;
         ySize = PURIFIER_HEIGHT;
@@ -38,7 +38,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
     public void initGui() {
         super.initGui();
 
-        int maxEnergyStored = tileEntity.getMaxEnergyStored();
+        long maxEnergyStored = tileEntity.getCapacity();
         energyBar = new EnergyBar(mc, this).setVertical()
                 .setMaxValue(maxEnergyStored)
                 .setLayoutHint(new PositionalLayout.PositionalHint(10, 7, 8, 54))
@@ -71,7 +71,7 @@ public class PurifierGui extends GenericGuiContainer<CommonPurifierTileEntity> {
     protected void drawGuiContainerBackgroundLayer(float v, int i, int i2) {
         drawWindow();
 
-        energyBar.setValue(tileEntity.getEnergyStored());
+        energyBar.setValue(tileEntity.getStoredPower());
         coalBar.setMaxValue(tileEntity.getMaxCoalTicks());
         coalBar.setValue(tileEntity.getCoalticks());
 

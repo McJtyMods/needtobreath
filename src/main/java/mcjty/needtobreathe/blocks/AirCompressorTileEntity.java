@@ -80,7 +80,7 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                 if (air >= canister.getMaxAir(itemToCharge)) {
                     return;
                 }
-                if (getEnergyStored() < Config.AIRCOMPRESSOR_RFPERTICK) {
+                if (getStoredPower() < Config.AIRCOMPRESSOR_RFPERTICK) {
                     return;
                 }
                 consumeEnergy(Config.AIRCOMPRESSOR_RFPERTICK);

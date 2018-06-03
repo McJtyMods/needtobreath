@@ -24,7 +24,7 @@ public class AirCompressorGui extends GenericGuiContainer<AirCompressorTileEntit
 
     public AirCompressorGui(AirCompressorTileEntity tileEntity, AirCompressorContainer container) {
         super(NeedToBreathe.instance, NTBMessages.INSTANCE, tileEntity, container, /*NeedToBreathe.GUI_MANUAL_MAIN*/ -1, "air_compressor");
-        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getEnergyStored());
+        GenericEnergyStorageTileEntity.setCurrentRF(tileEntity.getStoredPower());
 
         xSize = WIDTH;
         ySize = HEIGHT;
@@ -34,7 +34,7 @@ public class AirCompressorGui extends GenericGuiContainer<AirCompressorTileEntit
     public void initGui() {
         super.initGui();
 
-        int maxEnergyStored = tileEntity.getMaxEnergyStored();
+        long maxEnergyStored = tileEntity.getCapacity();
         energyBar = new EnergyBar(mc, this).setVertical()
                 .setMaxValue(maxEnergyStored)
                 .setLayoutHint(new PositionalLayout.PositionalHint(10, 7, 8, 54))
@@ -56,7 +56,7 @@ public class AirCompressorGui extends GenericGuiContainer<AirCompressorTileEntit
     protected void drawGuiContainerBackgroundLayer(float v, int i, int i2) {
         drawWindow();
 
-        energyBar.setValue(tileEntity.getEnergyStored());
+        energyBar.setValue(tileEntity.getStoredPower());
         tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }
