@@ -367,6 +367,9 @@ public class DimensionData {
                     if (factor != null) {
                         poison = (int) (poison * factor);
                     }
+                    if (ModItems.hasProbeInBauble(player)) {
+                        poison = (int) (poison * Config.PROTECTIVE_BAUBLE_FACTOR);
+                    }
                 }
             } else if (entity instanceof IMob) {
                 potionConfigs = Config.getHostileEffects();

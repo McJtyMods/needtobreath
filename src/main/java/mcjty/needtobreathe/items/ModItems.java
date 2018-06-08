@@ -1,7 +1,9 @@
 package mcjty.needtobreathe.items;
 
 import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.needtobreathe.compat.BaubleTools;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
@@ -20,6 +22,7 @@ public class ModItems {
     public static HazmatSuit hazmatSuitLegs;
     public static HazmatSuit hazmatSuitBoots;
     public static Item insulatedLeather;
+    public static Item protectiveBauble;
 
     public static void init() {
         protectiveHelmet = new ProtectiveHelmet();
@@ -33,6 +36,10 @@ public class ModItems {
                 .setRegistryName("insulated_leather")
                 .setUnlocalizedName(NeedToBreathe.MODID + ".insulatedleather")
                 .setCreativeTab(NeedToBreathe.creativeTab);
+
+        if (NeedToBreathe.baubles) {
+            protectiveBauble = BaubleTools.initProtectionBauble();
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -45,5 +52,18 @@ public class ModItems {
         ModelLoader.setCustomModelResourceLocation(hazmatSuitHelmet, 0, new ModelResourceLocation(hazmatSuitHelmet.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(hazmatSuitLegs, 0, new ModelResourceLocation(hazmatSuitLegs.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(insulatedLeather, 0, new ModelResourceLocation(insulatedLeather.getRegistryName(), "inventory"));
+
+        if (NeedToBreathe.baubles) {
+            BaubleTools.initBaubleModel(protectiveBauble);
+        }
     }
+
+    public static boolean hasProbeInBauble(EntityPlayer player) {
+        if (NeedToBreathe.baubles) {
+            return BaubleTools.hasProtectiveBauble(player);
+        } else {
+            return false;
+        }
+    }
+
 }

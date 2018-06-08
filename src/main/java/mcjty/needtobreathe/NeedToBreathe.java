@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NeedToBreathe.MODID, name = "NeedToBreathe",
@@ -37,6 +38,7 @@ public class NeedToBreathe implements ModBase {
 
     public static Logger logger;
 
+    public static boolean baubles = false;
     public static boolean lostcities = false;
 
     public static final String SHIFT_MESSAGE = "<Press Shift>";
@@ -57,12 +59,18 @@ public class NeedToBreathe implements ModBase {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         logger = e.getModLog();
-        this.proxy.preInit(e);
+
+        baubles = Loader.isModLoaded("Baubles") || Loader.isModLoaded("baubles");
+        if (baubles) {
+            logger.log(Level.INFO, "NeedToBreathe Detected Baubles: enabling support");
+        }
 
         lostcities = Loader.isModLoaded("lostcities");
         if (lostcities) {
             LostCitySupport.register();
         }
+
+        this.proxy.preInit(e);
     }
 
     /**

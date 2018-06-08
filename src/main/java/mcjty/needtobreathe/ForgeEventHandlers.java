@@ -33,6 +33,10 @@ public class ForgeEventHandlers {
         event.getRegistry().register(ModItems.hazmatSuitHelmet);
         event.getRegistry().register(ModItems.hazmatSuitLegs);
         event.getRegistry().register(ModItems.insulatedLeather);
+
+        if (NeedToBreathe.baubles) {
+            event.getRegistry().register(ModItems.protectiveBauble);
+        }
     }
 
     @SubscribeEvent

@@ -38,6 +38,7 @@ public class Config {
     public static int PURIFIER_MAXCOALTICKS = PURIFIER_TICKSPERCOAL * 18;
 
     public static float PROTECTIVE_HELMET_FACTOR = 0.4f;
+    public static float PROTECTIVE_BAUBLE_FACTOR = 0.4f;
     public static int HAZMATSUIT_MAXAIR = 1000;
 
     public static int PLANT_GROWTH_POISON_DENY = 75;
@@ -292,6 +293,7 @@ public class Config {
         POTION_EFFECTS_PASSIVE = cfg.getStringList("potionEffectsPassive", CATEGORY_EFFECTS, POTION_EFFECTS_PASSIVE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         POTION_EFFECTS_HOSTILE = cfg.getStringList("potionEffectsHostile", CATEGORY_EFFECTS, POTION_EFFECTS_HOSTILE, "A list of potion effects with every string of the form: 'amount,id[@amplitude]'");
         PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_EFFECTS, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
+        PROTECTIVE_BAUBLE_FACTOR = cfg.getFloat("protectiveBaubleFactor", CATEGORY_EFFECTS, PROTECTIVE_BAUBLE_FACTOR, 0, 1, "How much the protective bauble reduces the poison. 0 means full poison reduction, 1 means no effect");
         DIMENSIONS_WITH_POISON = cfg.getStringList("dimensionsWithPoison", CATEGORY_EFFECTS, DIMENSIONS_WITH_POISON, "List of dimensions where the air is poisonous. Use 'all' if you want all of them");
         DIMENSIONS_WITHOUT_POISON = cfg.getStringList("dimensionsWithoutPoison", CATEGORY_EFFECTS, DIMENSIONS_WITHOUT_POISON, "List of dimensions where the air is not poisonous. Used when 'dimensionsWithPoison' is equal to 'all'");
         HELMETS_WITH_PROTECTION = cfg.getStringList("helmetsWithProtection", CATEGORY_EFFECTS, HELMETS_WITH_PROTECTION, "List of helmets that give some kind of protection. Format: 'modid:helmet=<factor>'. If <factor> is 0 the helmet gives full protection. If <factor> is 1 then no protection");
