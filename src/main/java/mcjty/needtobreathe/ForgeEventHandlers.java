@@ -8,8 +8,6 @@ import mcjty.needtobreathe.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -94,9 +92,6 @@ public class ForgeEventHandlers {
         if (data != null) {
             if (preventPlantGrowth(world, data, evt.getPos())) {
                 evt.setResult(Event.Result.ALLOW);
-                if (world.isRemote) {
-                    evt.getEntityPlayer().sendStatusMessage(new TextComponentString(TextFormatting.RED + "The bonemeal did not work!"), false);
-                }
             }
         }
     }

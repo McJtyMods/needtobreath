@@ -351,10 +351,16 @@ public class DimensionData {
                 EntityPlayer player = (EntityPlayer) entity;
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
-                if (!helmet.isEmpty() && helmet.getItem() instanceof IProtectiveHelmet) {
-                    IProtectiveHelmet protectiveHelmet = (IProtectiveHelmet) helmet.getItem();
-                    if (protectiveHelmet.isActive(player)) {
-                        poison = protectiveHelmet.getReducedPoison(player, poison);
+                if (!helmet.isEmpty()) {
+                    if (helmet.getItem() instanceof IProtectiveHelmet) {
+                        IProtectiveHelmet protectiveHelmet = (IProtectiveHelmet) helmet.getItem();
+                        if (protectiveHelmet.isActive(player)) {
+                            poison = protectiveHelmet.getReducedPoison(player, poison);
+                        }
+                    }
+                    if (helmet.getTagCompound() != null && helmet.getTagCompound().hasKey("ntbProtectiveFactor")) {
+                        float factor = helmet.getTagCompound().getFloat("ntbProtectiveFactor");
+                        poison = (int) (poison * factor);
                     }
                 }
             } else if (entity instanceof IMob) {
