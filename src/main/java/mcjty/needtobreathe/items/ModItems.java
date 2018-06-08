@@ -10,6 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModItems {
 
+    public static final String NTB_PROTECTIVE_TAG = "ntbProtectiveFactor";
+
     public static ProtectiveHelmet protectiveHelmet;
     public static ProtectiveHelmet2 protectiveHelmet2;
     public static InformationGlasses informationGlasses;

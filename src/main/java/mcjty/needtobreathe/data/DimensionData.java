@@ -5,6 +5,7 @@ import mcjty.needtobreathe.compat.LCSphere;
 import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.items.InformationGlasses;
+import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.network.NTBMessages;
 import mcjty.needtobreathe.network.PacketSendCleanAirToClient;
 import net.minecraft.block.Block;
@@ -358,8 +359,8 @@ public class DimensionData {
                             poison = protectiveHelmet.getReducedPoison(player, poison);
                         }
                     }
-                    if (helmet.getTagCompound() != null && helmet.getTagCompound().hasKey("ntbProtectiveFactor")) {
-                        float factor = helmet.getTagCompound().getFloat("ntbProtectiveFactor");
+                    if (helmet.getTagCompound() != null && helmet.getTagCompound().hasKey(ModItems.NTB_PROTECTIVE_TAG)) {
+                        float factor = helmet.getTagCompound().getFloat(ModItems.NTB_PROTECTIVE_TAG);
                         poison = (int) (poison * factor);
                     }
                     Float factor = Config.getHelmetsWithProtection().get(helmet.getItem().getRegistryName());
