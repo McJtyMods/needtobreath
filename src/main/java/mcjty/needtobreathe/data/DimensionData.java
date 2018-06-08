@@ -362,6 +362,10 @@ public class DimensionData {
                         float factor = helmet.getTagCompound().getFloat("ntbProtectiveFactor");
                         poison = (int) (poison * factor);
                     }
+                    Float factor = Config.getHelmetsWithProtection().get(helmet.getItem().getRegistryName());
+                    if (factor != null) {
+                        poison = (int) (poison * factor);
+                    }
                 }
             } else if (entity instanceof IMob) {
                 potionConfigs = Config.getHostileEffects();

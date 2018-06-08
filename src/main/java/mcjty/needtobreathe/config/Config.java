@@ -1,17 +1,20 @@
 package mcjty.needtobreathe.config;
 
-import mcjty.lib.McJtyLib;
 import mcjty.lib.varia.Logging;
 import mcjty.lib.varia.WorldTools;
 import mcjty.needtobreathe.NeedToBreathe;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Config {
@@ -79,6 +82,9 @@ public class Config {
             "minecraft:leaves",
             "minecraft:leaves2"
     };
+    private static String[] HELMETS_WITH_PROTECTION = {
+
+    };
 
     private static String[] DIMENSIONS_WITH_POISON = { "-1" };
     private static String[] DIMENSIONS_WITHOUT_POISON = { };
@@ -101,6 +107,25 @@ public class Config {
     private static boolean useBiomeCheck = false;
     private static Set<String> biomesWithPoison = null;
     private static Set<String> biomesWithoutPoison = null;
+
+    private static Map<ResourceLocation, Float> helmetsWithProtection = null;
+
+    public static Map<ResourceLocation, Float> getHelmetsWithProtection() {
+        if (helmetsWithProtection == null) {
+            helmetsWithProtection = new HashMap<>();
+            for (String s : HELMETS_WITH_PROTECTION) {
+                String[] split = StringUtils.split(s, "=");
+                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(split[0]));
+                if (item == null) {
+                    NeedToBreathe.logger.warn("Could not find item '" + s + "'!");
+                } else {
+                    float factor = Float.parseFloat(split[1]);
+                    helmetsWithProtection.put(new ResourceLocation(split[0]), factor);
+                }
+            }
+        }
+        return helmetsWithProtection;
+    }
 
     public static Set<String> getBiomesWithPoison() {
         if (biomesWithPoison == null) {
@@ -269,6 +294,7 @@ public class Config {
         PROTECTIVE_HELMET_FACTOR = cfg.getFloat("protectiveHelmetFactor", CATEGORY_EFFECTS, PROTECTIVE_HELMET_FACTOR, 0, 1, "How much the protective helmet reduces the poison. 0 means full poison reduction, 1 means no effect");
         DIMENSIONS_WITH_POISON = cfg.getStringList("dimensionsWithPoison", CATEGORY_EFFECTS, DIMENSIONS_WITH_POISON, "List of dimensions where the air is poisonous. Use 'all' if you want all of them");
         DIMENSIONS_WITHOUT_POISON = cfg.getStringList("dimensionsWithoutPoison", CATEGORY_EFFECTS, DIMENSIONS_WITHOUT_POISON, "List of dimensions where the air is not poisonous. Used when 'dimensionsWithPoison' is equal to 'all'");
+        HELMETS_WITH_PROTECTION = cfg.getStringList("helmetsWithProtection", CATEGORY_EFFECTS, HELMETS_WITH_PROTECTION, "List of helmets that give some kind of protection. Format: 'modid:helmet=<factor>'. If <factor> is 0 the helmet gives full protection. If <factor> is 1 then no protection");
 
         PLANT_GROWTH_POISON_DENY = cfg.getInt("plantGrowthPoisonDeny", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_DENY, 0, 256, "If poison is above this level plants cannot grow (256 to disable)");
         PLANT_GROWTH_POISON_SLOW = cfg.getInt("plantGrowthPoisonSlow", CATEGORY_EFFECTS, PLANT_GROWTH_POISON_SLOW, 0, 256, "If poison is above this level plants grow slower (256 to disable)");
