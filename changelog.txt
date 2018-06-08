@@ -1,3 +1,9 @@
+0.3.0:
+- Using the floating point 'ntbProtectiveFactor' tag in a helmet other helmets can make sure they provide air protection. A factor of 0 means full protection. A factor of 1 means no protection
+- New 'helmetsWithProtection' config which gives modpack makers the option to give some poison protection to other mods helmets. This is a stringlist with the format: <modid>:<helmet>=<factor>.  For example, an entry of 'armormod:superhelmet=.3' would reduce poison to 30%
+- New 'protective_helmet' recipe factory that can be used to attach the NBT tag to helmets. Recipes using this type can also use the 'factor' floating point NBT tag to indicate the poison reduction factor
+- New protection bauble
+
 0.2.0:
 - Made compatible with the latest McJtyLib (3.0.0)
 - Support for per-biome poison

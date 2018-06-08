@@ -230,6 +230,7 @@ curseforge {
             requiredLibrary 'mcjtylib'
             optionalLibrary 'the-one-probe'
             optionalLibrary 'the-lost-cities'
+            optionalLibrary 'baubles'
         }
     }
 }
