@@ -26,8 +26,8 @@ import org.apache.logging.log4j.Logger;
         acceptedMinecraftVersions = "[1.12,1.13)")
 public class NeedToBreathe implements ModBase {
     public static final String MODID = "needtobreathe";
-    public static final String MIN_MCJTYLIB_VER = "3.0.0";
-    public static final String VERSION = "0.3.0";
+    public static final String MIN_MCJTYLIB_VER = "3.1.0";
+    public static final String VERSION = "0.3.1";
     public static final String MIN_FORGE_VER = "14.22.0.2464";
 
     @SidedProxy(clientSide = "mcjty.needtobreathe.proxy.ClientProxy", serverSide = "mcjty.needtobreathe.proxy.ServerProxy")

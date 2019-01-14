@@ -1,3 +1,7 @@
+0.3.1:
+- Needs McJtyLib 3.1.0
+- Support for COFH RF API is removed. Only Forge Energy is supported now
+
 0.3.0:
 - Using the floating point 'ntbProtectiveFactor' tag in a helmet other helmets can make sure they provide air protection. A factor of 0 means full protection. A factor of 1 means no protection
 - New 'helmetsWithProtection' config which gives modpack makers the option to give some poison protection to other mods helmets. This is a stringlist with the format: <modid>:<helmet>=<factor>.  For example, an entry of 'armormod:superhelmet=.3' would reduce poison to 30%
