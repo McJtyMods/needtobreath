@@ -21,7 +21,7 @@ public class InformationGlasses extends ItemArmor {
         super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
         setRegistryName("informationglasses");
         setUnlocalizedName(NeedToBreathe.MODID + ".informationglasses");
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @Override

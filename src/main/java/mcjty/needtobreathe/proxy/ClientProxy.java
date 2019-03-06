@@ -1,12 +1,9 @@
 package mcjty.needtobreathe.proxy;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import mcjty.lib.setup.DefaultClientProxy;
 import mcjty.needtobreathe.blocks.ModBlocks;
 import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.rendering.NTBOverlayRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -16,9 +13,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.concurrent.Callable;
-
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends DefaultClientProxy {
     @Override
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
@@ -58,26 +53,4 @@ public class ClientProxy extends CommonProxy {
         ModItems.initModels();
         ModBlocks.initModels();
     }
-
-
-    @Override
-    public World getClientWorld() {
-        return Minecraft.getMinecraft().world;
-    }
-
-    @Override
-    public EntityPlayer getClientPlayer() {
-        return Minecraft.getMinecraft().player;
-    }
-
-    @Override
-    public <V> ListenableFuture<V> addScheduledTaskClient(Callable<V> callableToSchedule) {
-        return Minecraft.getMinecraft().addScheduledTask(callableToSchedule);
-    }
-
-    @Override
-    public ListenableFuture<Object> addScheduledTaskClient(Runnable runnableToSchedule) {
-        return Minecraft.getMinecraft().addScheduledTask(runnableToSchedule);
-    }
-
 }

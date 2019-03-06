@@ -118,7 +118,7 @@ public class Config {
                 String[] split = StringUtils.split(s, "=");
                 Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(split[0]));
                 if (item == null) {
-                    NeedToBreathe.logger.warn("Could not find item '" + s + "'!");
+                    NeedToBreathe.setup.getLogger().warn("Could not find item '" + s + "'!");
                 } else {
                     float factor = Float.parseFloat(split[1]);
                     helmetsWithProtection.put(new ResourceLocation(split[0]), factor);
@@ -136,7 +136,7 @@ public class Config {
                 if (biome != null) {
                     biomesWithPoison.add(biome.biomeName);
                 } else {
-                    NeedToBreathe.logger.warn("Could not find biome '" + s + "'!");
+                    NeedToBreathe.setup.getLogger().warn("Could not find biome '" + s + "'!");
                 }
             }
         }
@@ -151,7 +151,7 @@ public class Config {
                 if (biome != null) {
                     biomesWithoutPoison.add(biome.biomeName);
                 } else {
-                    NeedToBreathe.logger.warn("Could not find biome '" + s + "'!");
+                    NeedToBreathe.setup.getLogger().warn("Could not find biome '" + s + "'!");
                 }
             }
         }
@@ -191,7 +191,7 @@ public class Config {
             for (String s : IMMUNE_ENTITIES) {
                 EntityEntry entity = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(s));
                 if (entity == null) {
-                    NeedToBreathe.logger.warn("Could not find entity '" + s + "' for the immunity list!");
+                    NeedToBreathe.setup.getLogger().warn("Could not find entity '" + s + "' for the immunity list!");
                 } else {
                     immuneEntities.add(new ResourceLocation(s));
                 }

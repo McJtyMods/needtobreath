@@ -5,6 +5,7 @@ import mcjty.needtobreathe.config.Config;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.items.ModItems;
+import mcjty.needtobreathe.proxy.CommonSetup;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +35,7 @@ public class ForgeEventHandlers {
         event.getRegistry().register(ModItems.hazmatSuitLegs);
         event.getRegistry().register(ModItems.insulatedLeather);
 
-        if (NeedToBreathe.baubles) {
+        if (CommonSetup.baubles) {
             event.getRegistry().register(ModItems.protectiveBauble);
         }
     }

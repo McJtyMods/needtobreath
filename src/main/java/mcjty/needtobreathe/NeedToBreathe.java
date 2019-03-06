@@ -1,22 +1,16 @@
 package mcjty.needtobreathe;
 
 import mcjty.lib.base.ModBase;
+import mcjty.lib.proxy.IProxy;
 import mcjty.needtobreathe.commands.CommandTest;
-import mcjty.needtobreathe.compat.LostCitySupport;
-import mcjty.needtobreathe.proxy.CommonProxy;
-import net.minecraft.creativetab.CreativeTabs;
+import mcjty.needtobreathe.proxy.CommonSetup;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 
 @Mod(modid = NeedToBreathe.MODID, name = "NeedToBreathe",
         dependencies =
@@ -31,25 +25,13 @@ public class NeedToBreathe implements ModBase {
     public static final String MIN_FORGE_VER = "14.22.0.2464";
 
     @SidedProxy(clientSide = "mcjty.needtobreathe.proxy.ClientProxy", serverSide = "mcjty.needtobreathe.proxy.ServerProxy")
-    public static CommonProxy proxy;
+    public static IProxy proxy;
+    public static CommonSetup setup = new CommonSetup();
 
     @Mod.Instance(MODID)
     public static NeedToBreathe instance;
 
-    public static Logger logger;
-
-    public static boolean baubles = false;
-    public static boolean lostcities = false;
-
     public static final String SHIFT_MESSAGE = "<Press Shift>";
-
-
-    public static CreativeTabs creativeTab = new CreativeTabs("needtobreathe") {
-        @Override
-        public ItemStack getTabIconItem() {
-            return new ItemStack(Blocks.DIAMOND_BLOCK);
-        }
-    };
 
 
     /**
@@ -58,19 +40,8 @@ public class NeedToBreathe implements ModBase {
      */
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
-        logger = e.getModLog();
-
-        baubles = Loader.isModLoaded("Baubles") || Loader.isModLoaded("baubles");
-        if (baubles) {
-            logger.log(Level.INFO, "NeedToBreathe Detected Baubles: enabling support");
-        }
-
-        lostcities = Loader.isModLoaded("lostcities");
-        if (lostcities) {
-            LostCitySupport.register();
-        }
-
-        this.proxy.preInit(e);
+        setup.preInit(e);
+        proxy.preInit(e);
     }
 
     /**
@@ -78,7 +49,8 @@ public class NeedToBreathe implements ModBase {
      */
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
-        this.proxy.init(e);
+        setup.init(e);
+        proxy.init(e);
     }
 
     /**
@@ -86,7 +58,8 @@ public class NeedToBreathe implements ModBase {
      */
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
-        this.proxy.postInit(e);
+        setup.postInit(e);
+        proxy.postInit(e);
     }
 
     @Mod.EventHandler

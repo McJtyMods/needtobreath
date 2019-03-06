@@ -25,7 +25,7 @@ public class ProtectiveHelmet extends ItemArmor implements IProtectiveHelmet {
         super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
         setRegistryName("protectivehelmet");
         setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet");
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @Override

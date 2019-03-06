@@ -26,7 +26,7 @@ public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCani
         super(ArmorMaterial.LEATHER, 0, slot);
         setRegistryName("hazmatsuit_" + slot.getName());
         setUnlocalizedName(NeedToBreathe.MODID + ".hazmatsuit_" + slot.getName());
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @Nullable

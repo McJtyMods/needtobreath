@@ -33,7 +33,7 @@ public class CommonPurifierBlock<T extends CommonPurifierTileEntity> extends Gen
 
     public CommonPurifierBlock(String name, Class<T> clazz) {
         super(NeedToBreathe.instance, Material.IRON, clazz, PurifierContainer::new, name, true);
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @SideOnly(Side.CLIENT)

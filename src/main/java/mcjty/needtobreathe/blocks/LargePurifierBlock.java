@@ -23,7 +23,7 @@ public class LargePurifierBlock extends GenericBlock<LargePurifierTileEntity, Em
 
     public LargePurifierBlock() {
         super(NeedToBreathe.instance, Material.IRON, LargePurifierTileEntity.class, EmptyContainer::new, "large_purifier", true);
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @Override

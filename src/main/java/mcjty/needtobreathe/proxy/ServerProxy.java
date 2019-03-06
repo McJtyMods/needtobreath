@@ -1,5 +1,7 @@
 package mcjty.needtobreathe.proxy;
 
-public class ServerProxy extends CommonProxy {
+import mcjty.lib.setup.DefaultServerProxy;
+
+public class ServerProxy extends DefaultServerProxy {
 
 }

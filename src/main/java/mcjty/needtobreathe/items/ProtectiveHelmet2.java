@@ -20,7 +20,7 @@ public class ProtectiveHelmet2 extends ItemArmor {
         super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
         setRegistryName("protectivehelmet2");
         setUnlocalizedName(NeedToBreathe.MODID + ".protectivehelmet2");
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @Override

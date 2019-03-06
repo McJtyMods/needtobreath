@@ -23,7 +23,7 @@ public class ProtectionBauble extends Item implements IBauble {
     public ProtectionBauble() {
         setUnlocalizedName(NeedToBreathe.MODID + ".protection_bauble");
         setRegistryName("protection_bauble");
-        setCreativeTab(NeedToBreathe.creativeTab);
+        setCreativeTab(NeedToBreathe.setup.getTab());
     }
 
     @SideOnly(Side.CLIENT)
