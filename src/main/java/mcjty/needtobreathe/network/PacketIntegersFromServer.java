@@ -2,12 +2,13 @@ package mcjty.needtobreathe.network;
 
 import io.netty.buffer.ByteBuf;
 import mcjty.lib.network.NetworkTools;
-import net.minecraft.client.Minecraft;
+import mcjty.lib.thirteen.Context;
+import mcjty.needtobreathe.NeedToBreathe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketIntegersFromServer implements IMessage {
     private BlockPos pos;
@@ -35,24 +36,23 @@ public class PacketIntegersFromServer implements IMessage {
     public PacketIntegersFromServer() {
     }
 
+    public PacketIntegersFromServer(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketIntegersFromServer(BlockPos pos, int[] integers) {
         this.pos = pos;
         this.integers = integers;
     }
 
-    public static class Handler implements IMessageHandler<PacketIntegersFromServer, IMessage> {
-        @Override
-        public IMessage onMessage(PacketIntegersFromServer message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketIntegersFromServer message, MessageContext ctx) {
-            TileEntity te = Minecraft.getMinecraft().world.getTileEntity(message.pos);
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            TileEntity te = NeedToBreathe.proxy.getClientWorld().getTileEntity(pos);
             if (te instanceof IIntegerRequester) {
-                ((IIntegerRequester) te).set(message.integers);
+                ((IIntegerRequester) te).set(integers);
             }
-        }
-
+        });
+        ctx.setPacketHandled(true);
     }
 }

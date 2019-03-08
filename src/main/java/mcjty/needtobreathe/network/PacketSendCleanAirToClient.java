@@ -1,15 +1,14 @@
 package mcjty.needtobreathe.network;
 
 import io.netty.buffer.ByteBuf;
-import mcjty.needtobreathe.NeedToBreathe;
+import mcjty.lib.thirteen.Context;
 import mcjty.needtobreathe.data.ChunkData;
 import mcjty.needtobreathe.rendering.NTBOverlayRenderer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class PacketSendCleanAirToClient implements IMessage {
     private Map<Long, ChunkData> cleanAir;
@@ -49,21 +48,20 @@ public class PacketSendCleanAirToClient implements IMessage {
     public PacketSendCleanAirToClient() {
     }
 
+    public PacketSendCleanAirToClient(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketSendCleanAirToClient(Map<Long, ChunkData> cleanAir) {
         // No copy because cleanAir is computed for the player already
         this.cleanAir = cleanAir;
     }
 
-    public static class Handler implements IMessageHandler<PacketSendCleanAirToClient, IMessage> {
-        @Override
-        public IMessage onMessage(PacketSendCleanAirToClient message, MessageContext ctx) {
-            NeedToBreathe.proxy.addScheduledTaskClient(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketSendCleanAirToClient message, MessageContext ctx) {
-            NTBOverlayRenderer.setCleanAir(message.cleanAir);
-        }
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            NTBOverlayRenderer.setCleanAir(cleanAir);
+        });
+        ctx.setPacketHandled(true);
     }
-
 }

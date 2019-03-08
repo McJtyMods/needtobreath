@@ -1,13 +1,11 @@
 package mcjty.needtobreathe.network;
 
 import io.netty.buffer.ByteBuf;
-import mcjty.lib.network.NetworkTools;
+import mcjty.lib.thirteen.Context;
 import mcjty.needtobreathe.rendering.NTBOverlayRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.function.Supplier;
 
 public class PacketPoisonFromServer implements IMessage {
     private int poison;
@@ -25,20 +23,19 @@ public class PacketPoisonFromServer implements IMessage {
     public PacketPoisonFromServer() {
     }
 
+    public PacketPoisonFromServer(ByteBuf buf) {
+        fromBytes(buf);
+    }
+
     public PacketPoisonFromServer(int poison) {
         this.poison = poison;
     }
 
-    public static class Handler implements IMessageHandler<PacketPoisonFromServer, IMessage> {
-        @Override
-        public IMessage onMessage(PacketPoisonFromServer message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketPoisonFromServer message, MessageContext ctx) {
-            NTBOverlayRenderer.setPoison(message.poison);
-        }
-
+    public void handle(Supplier<Context> supplier) {
+        Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            NTBOverlayRenderer.setPoison(poison);
+        });
+        ctx.setPacketHandled(true);
     }
 }

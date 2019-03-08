@@ -1,6 +1,5 @@
 package mcjty.needtobreathe.proxy;
 
-import mcjty.lib.network.PacketHandler;
 import mcjty.lib.setup.DefaultCommonSetup;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.ForgeEventHandlers;
@@ -19,7 +18,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.apache.logging.log4j.Level;
 
 import java.io.File;
@@ -50,9 +48,7 @@ public class CommonSetup extends DefaultCommonSetup {
         mainConfig = new Configuration(new File(modConfigDir.getPath(), "needtobreathe.cfg"));
         Config.readConfig(mainConfig);
 
-//        PacketHandler.registerMessages("meecreeps");
-        SimpleNetworkWrapper network = PacketHandler.registerMessages(NeedToBreathe.MODID, "needtobreathe");
-        NTBMessages.registerNetworkMessages(network);
+        NTBMessages.registerMessages("needtobreathe");
 
         // Initialization of blocks and items typically goes here:
 //        ModEntities.init();
