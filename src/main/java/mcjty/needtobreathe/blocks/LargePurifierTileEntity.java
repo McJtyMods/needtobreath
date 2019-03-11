@@ -3,7 +3,7 @@ package mcjty.needtobreathe.blocks;
 import mcjty.lib.tileentity.GenericTileEntity;
 import mcjty.needtobreathe.compat.LCSphere;
 import mcjty.needtobreathe.compat.LostCitySupport;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.block.state.IBlockState;
@@ -32,7 +32,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         System.out.println("Cleaning up");
         BlockPos center = getPurifyingSpot();
 
-        if (Config.CREATIVE_PURIFIER_FAKE) {
+        if (ConfigSetup.CREATIVE_PURIFIER_FAKE) {
             float radius = getPurifyingRadius();
             if (radius < 0.001) {
                 return;
@@ -94,7 +94,7 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
 
             BlockPos center = getPurifyingSpot();
 
-            if (Config.CREATIVE_PURIFIER_FAKE) {
+            if (ConfigSetup.CREATIVE_PURIFIER_FAKE) {
                 float radius = getPurifyingRadius();
                 if (radius < 0.001) {
                     return;
@@ -183,14 +183,14 @@ public class LargePurifierTileEntity extends GenericTileEntity implements ITicka
         if (center != null) {
             return center;
         }
-        LCSphere sphere = Config.CREATIVE_PURIFIER_LOSTCITIES ? LostCitySupport.isInSphere(world, pos) : null;
+        LCSphere sphere = ConfigSetup.CREATIVE_PURIFIER_LOSTCITIES ? LostCitySupport.isInSphere(world, pos) : null;
         if (sphere != null) {
             center = sphere.getCenter();
             radius = sphere.getRadius();
 
         } else {
             center = pos.up();
-            radius = Config.CREATIVE_PURIFIER_RADIUS;
+            radius = ConfigSetup.CREATIVE_PURIFIER_RADIUS;
         }
         return center;
     }

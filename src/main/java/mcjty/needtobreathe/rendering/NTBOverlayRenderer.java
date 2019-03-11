@@ -4,7 +4,7 @@ import mcjty.lib.network.PacketSendServerCommand;
 import mcjty.lib.typed.TypedMap;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.NeedToBreathe;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.ChunkData;
 import mcjty.needtobreathe.data.SubChunkPosIndexed;
 import mcjty.needtobreathe.items.HazmatSuit;
@@ -134,7 +134,7 @@ public class NTBOverlayRenderer {
 
         if (p > 0) {
             x = fontRenderer.drawString("avg ", x, 10, 0xffffffff);
-            int maxpoison = 255 - Config.POISON_THRESSHOLD;
+            int maxpoison = 255 - ConfigSetup.POISON_THRESSHOLD;
             x = fontRenderer.drawString("" + (p * 100 / maxpoison) + "%", x, 10, 0xffff0000);
             x = fontRenderer.drawString("  max ", x, 10, 0xffffffff);
             x = fontRenderer.drawString("" + (maxp * 100 / maxpoison) + "%", x, 10, 0xffff0000);
@@ -149,7 +149,7 @@ public class NTBOverlayRenderer {
             } else {
                 int a = ModItems.hazmatSuitChest.getAir(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.CHEST));
                 x = fontRenderer.drawString("Status ", 200, 20, 0xffffffff);
-                int pct = a * 100 / Config.HAZMATSUIT_MAXAIR;
+                int pct = a * 100 / ConfigSetup.HAZMATSUIT_MAXAIR;
                 x = fontRenderer.drawString("" + pct + "%", x, 20, pct < 10 ? 0xffff0000 : 0xffffff00);
             }
         }

@@ -6,21 +6,17 @@ import mcjty.needtobreathe.ForgeEventHandlers;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.blocks.ModBlocks;
 import mcjty.needtobreathe.compat.LostCitySupport;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.network.NTBMessages;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.Level;
-
-import java.io.File;
 
 public class CommonSetup extends DefaultCommonSetup {
 
@@ -31,6 +27,21 @@ public class CommonSetup extends DefaultCommonSetup {
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
 
+        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
+        NetworkRegistry.INSTANCE.registerGuiHandler(NeedToBreathe.instance, new GuiProxy());
+
+        setupModCompat();
+
+        CommandHandler.registerCommands();
+
+        NTBMessages.registerMessages("needtobreathe");
+
+        ConfigSetup.init();
+        ModItems.init();
+        ModBlocks.init();
+    }
+
+    private void setupModCompat() {
         baubles = Loader.isModLoaded("Baubles") || Loader.isModLoaded("baubles");
         if (baubles) {
             getLogger().log(Level.INFO, "NeedToBreathe Detected Baubles: enabling support");
@@ -41,18 +52,6 @@ public class CommonSetup extends DefaultCommonSetup {
             getLogger().log(Level.INFO, "NeedToBreathe Detected Lost Cities: enabling support");
             LostCitySupport.register();
         }
-
-        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
-        CommandHandler.registerCommands();
-
-        Config.readConfig();
-
-        NTBMessages.registerMessages("needtobreathe");
-
-        // Initialization of blocks and items typically goes here:
-//        ModEntities.init();
-        ModItems.init();
-        ModBlocks.init();
     }
 
     @Override
@@ -61,17 +60,8 @@ public class CommonSetup extends DefaultCommonSetup {
     }
 
     @Override
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-        NetworkRegistry.INSTANCE.registerGuiHandler(NeedToBreathe.instance, new GuiProxy());
-    }
-
-    @Override
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
-        if (Config.mainConfig.hasChanged()) {
-            Config.mainConfig.save();
-        }
-        Config.mainConfig = null;
+        ConfigSetup.postInit();
     }
 }

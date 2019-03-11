@@ -1,7 +1,7 @@
 package mcjty.needtobreathe.data;
 
 import mcjty.lib.worlddata.AbstractWorldData;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
@@ -27,7 +27,7 @@ public class CleanAirManager extends AbstractWorldData<CleanAirManager> {
 
     @Nullable
     public DimensionData getDimensionData(int dimension) {
-        if (Config.hasPoison(dimension)) {
+        if (ConfigSetup.hasPoison(dimension)) {
             if (!dimensionDataMap.containsKey(dimension)) {
                 dimensionDataMap.put(dimension, new DimensionData());
             }

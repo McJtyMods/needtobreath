@@ -1,11 +1,11 @@
 package mcjty.needtobreathe.blocks;
 
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 
 public class PurifierTileEntity extends CommonPurifierTileEntity {
 
     public PurifierTileEntity() {
-        super(Config.PURIFIER_MAXRF, Config.PURIFIER_RFINPUTPERTICK);
+        super(ConfigSetup.PURIFIER_MAXRF, ConfigSetup.PURIFIER_RFINPUTPERTICK);
     }
 
 }

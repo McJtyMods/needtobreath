@@ -3,7 +3,7 @@ package mcjty.needtobreathe.items;
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.api.IAirCanister;
 import mcjty.needtobreathe.api.IProtectiveHelmet;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
@@ -54,7 +54,7 @@ public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCani
             if (DimensionData.fastrand128() < poison) {
                 ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
             }
-            return (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+            return (int) (poison * ConfigSetup.PROTECTIVE_HELMET_FACTOR);
         } else if (air > 0) {
             if (DimensionData.fastrand128() < poison) {
                 ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
@@ -98,7 +98,7 @@ public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCani
 
     @Override
     public int getMaxAir(ItemStack stack) {
-        return Config.HAZMATSUIT_MAXAIR;
+        return ConfigSetup.HAZMATSUIT_MAXAIR;
     }
 
     @Override

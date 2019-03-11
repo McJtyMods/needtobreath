@@ -2,7 +2,7 @@ package mcjty.needtobreathe.data;
 
 import mcjty.needtobreathe.api.IProtectiveHelmet;
 import mcjty.needtobreathe.compat.LCSphere;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.config.PotionEffectConfig;
 import mcjty.needtobreathe.items.InformationGlasses;
 import mcjty.needtobreathe.items.ModItems;
@@ -66,26 +66,26 @@ public class DimensionData {
             return poison;
         }
 
-        if (Config.isUseBiomeCheck()) {
+        if (ConfigSetup.isUseBiomeCheck()) {
             Biome biome = world.getBiome(pos);
-            if (Config.getBiomesWithoutPoison().contains(biome.biomeName)) {
+            if (ConfigSetup.getBiomesWithoutPoison().contains(biome.biomeName)) {
                 return 0;
             }
-            if (!Config.getBiomesWithPoison().isEmpty()) {
-                if (!Config.getBiomesWithPoison().contains(biome.biomeName)) {
+            if (!ConfigSetup.getBiomesWithPoison().isEmpty()) {
+                if (!ConfigSetup.getBiomesWithPoison().contains(biome.biomeName)) {
                     return 0;
                 }
             }
         }
 
-        if (Config.CREATIVE_PURIFIER_FAKE) {
+        if (ConfigSetup.CREATIVE_PURIFIER_FAKE) {
             Integer p = getPoisonWithSphere(world, pos);
             if (p != null) {
                 poison = p;
             }
         }
 
-        if (poison > 0 && Config.OUTSIDE_HAS_POISON) {
+        if (poison > 0 && ConfigSetup.OUTSIDE_HAS_POISON) {
             if (!world.canSeeSky(pos)) {
                 return 0;
             }
@@ -147,13 +147,13 @@ public class DimensionData {
                     if (poison > maxPoison) {
                         maxPoison = poison;
                         if (maxPoison >= 255) {
-                            return 255 - Config.POISON_THRESSHOLD;
+                            return 255 - ConfigSetup.POISON_THRESSHOLD;
                         }
                     }
                 }
             }
         }
-        return Math.max(maxPoison - Config.POISON_THRESSHOLD, 0);
+        return Math.max(maxPoison - ConfigSetup.POISON_THRESSHOLD, 0);
     }
 
     private int getMinPoisonData(BlockPos p) {
@@ -171,7 +171,7 @@ public class DimensionData {
                 }
             }
         }
-        return Math.max(minPoison - Config.POISON_THRESSHOLD, 0);
+        return Math.max(minPoison - ConfigSetup.POISON_THRESSHOLD, 0);
     }
 
     private int getPoisonInternal(int x, int y, int z) {
@@ -194,7 +194,7 @@ public class DimensionData {
             return true;
         }
 
-        if (Config.getBlocksBlocking().contains(block)) {
+        if (ConfigSetup.getBlocksBlocking().contains(block)) {
             // Special case for doors
             if (block instanceof BlockDoor) {
                 return state.getValue(BlockDoor.OPEN);
@@ -205,7 +205,7 @@ public class DimensionData {
 
             return false;
         }
-        if (Config.getBlocksNonBlocking().contains(block)) {
+        if (ConfigSetup.getBlocksNonBlocking().contains(block)) {
             return true;
         }
 
@@ -282,7 +282,7 @@ public class DimensionData {
     public void worldTick(World world) {
         counter--;
         if (counter <= 0) {
-            counter = Config.SUBCHUNK_TICKS;
+            counter = ConfigSetup.SUBCHUNK_TICKS;
 
             effectCounter--;
             if (effectCounter <= 0) {
@@ -333,7 +333,7 @@ public class DimensionData {
                 int poison = getPoison(world, entity.getPosition().up());
                 if (poison > 20) {
                     ResourceLocation key = EntityList.getKey(entity);
-                    if (!Config.getImmuneEntities().contains(key)) {
+                    if (!ConfigSetup.getImmuneEntities().contains(key)) {
                         affectedEntities.add(Pair.of(poison, entity));
                     }
                 }
@@ -348,7 +348,7 @@ public class DimensionData {
             PotionEffectConfig[] potionConfigs;
 
             if (entity instanceof EntityPlayer) {
-                potionConfigs = Config.getPlayerEffects();
+                potionConfigs = ConfigSetup.getPlayerEffects();
                 EntityPlayer player = (EntityPlayer) entity;
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
@@ -363,25 +363,25 @@ public class DimensionData {
                         float factor = helmet.getTagCompound().getFloat(ModItems.NTB_PROTECTIVE_TAG);
                         poison = (int) (poison * factor);
                     }
-                    Float factor = Config.getHelmetsWithProtection().get(helmet.getItem().getRegistryName());
+                    Float factor = ConfigSetup.getHelmetsWithProtection().get(helmet.getItem().getRegistryName());
                     if (factor != null) {
                         poison = (int) (poison * factor);
                     }
                     if (ModItems.hasProbeInBauble(player)) {
-                        poison = (int) (poison * Config.PROTECTIVE_BAUBLE_FACTOR);
+                        poison = (int) (poison * ConfigSetup.PROTECTIVE_BAUBLE_FACTOR);
                     }
                 }
             } else if (entity instanceof IMob) {
-                potionConfigs = Config.getHostileEffects();
+                potionConfigs = ConfigSetup.getHostileEffects();
             } else {
-                potionConfigs = Config.getPassiveEffects();
+                potionConfigs = ConfigSetup.getPassiveEffects();
             }
 
             if (potionConfigs.length > 0) {
                 for (PotionEffectConfig config : potionConfigs) {
                     if (poison >= config.getPoisonThresshold()) {
                         ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(config.getPotion(),
-                                Config.SUBCHUNK_TICKS * MAXEFFECTSTICKS * 2, config.getAmplitude()));
+                                ConfigSetup.SUBCHUNK_TICKS * MAXEFFECTSTICKS * 2, config.getAmplitude()));
                     }
                 }
             }
@@ -399,7 +399,7 @@ public class DimensionData {
                 for (int dz = 0; dz < CHUNK_DIM; dz++) {
                     int idx = ChunkData.index(dx, dy, dz);
                     int air = a[idx] & 0xff;
-                    if (fastrand128() < Config.CLEANAIR_DECAY_CHANCE) {
+                    if (fastrand128() < ConfigSetup.CLEANAIR_DECAY_CHANCE) {
                         air--;
                     }
 
@@ -514,7 +514,7 @@ public class DimensionData {
                     case DOWN:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(x, CHUNK_DIM - 1, z);     // Up side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }
@@ -524,7 +524,7 @@ public class DimensionData {
                     case UP:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(x, 0, z);     // Down side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }
@@ -534,7 +534,7 @@ public class DimensionData {
                     case NORTH:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int y = 0; y < CHUNK_DIM; y++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(x, y, CHUNK_DIM - 1);     // South side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }
@@ -544,7 +544,7 @@ public class DimensionData {
                     case SOUTH:
                         for (int x = 0; x < CHUNK_DIM; x++) {
                             for (int y = 0; y < CHUNK_DIM; y++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(x, y, 0);     // North side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }
@@ -554,7 +554,7 @@ public class DimensionData {
                     case WEST:
                         for (int y = 0; y < CHUNK_DIM; y++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(CHUNK_DIM - 1, y, z);     // Right side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }
@@ -564,7 +564,7 @@ public class DimensionData {
                     case EAST:
                         for (int y = 0; y < CHUNK_DIM; y++) {
                             for (int z = 0; z < CHUNK_DIM; z++) {
-                                if (fastrand128() < Config.STRONGAIR_PROPAGATE_CHANCE) {
+                                if (fastrand128() < ConfigSetup.STRONGAIR_PROPAGATE_CHANCE) {
                                     int idx = ChunkData.index(0, y, z);     // Left side of adjacent chunk
                                     b[idx] = (byte) 255;
                                 }

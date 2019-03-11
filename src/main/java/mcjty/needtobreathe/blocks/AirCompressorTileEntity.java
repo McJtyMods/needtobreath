@@ -4,7 +4,7 @@ import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.tileentity.GenericEnergyReceiverTileEntity;
 import mcjty.needtobreathe.api.IAirCanister;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,7 +20,7 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
     private boolean blocked;
 
     public AirCompressorTileEntity() {
-        super(Config.AIRCOMPRESSOR_MAXRF, Config.AIRCOMPRESSOR_RFINPUTPERTICK);
+        super(ConfigSetup.AIRCOMPRESSOR_MAXRF, ConfigSetup.AIRCOMPRESSOR_RFINPUTPERTICK);
     }
 
     @Override
@@ -80,10 +80,10 @@ public class AirCompressorTileEntity extends GenericEnergyReceiverTileEntity imp
                 if (air >= canister.getMaxAir(itemToCharge)) {
                     return;
                 }
-                if (getStoredPower() < Config.AIRCOMPRESSOR_RFPERTICK) {
+                if (getStoredPower() < ConfigSetup.AIRCOMPRESSOR_RFPERTICK) {
                     return;
                 }
-                consumeEnergy(Config.AIRCOMPRESSOR_RFPERTICK);
+                consumeEnergy(ConfigSetup.AIRCOMPRESSOR_RFPERTICK);
                 DimensionData data = CleanAirManager.getManager().getDimensionData(world.provider.getDimension());
                 if (data == null) {
                     // No poison in this dimension so the machine works ideally

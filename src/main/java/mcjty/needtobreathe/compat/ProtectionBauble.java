@@ -3,7 +3,7 @@ package mcjty.needtobreathe.compat;
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
 import mcjty.needtobreathe.NeedToBreathe;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,7 +35,7 @@ public class ProtectionBauble extends Item implements IBauble {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(TextFormatting.YELLOW + "This bauble reduces poison with " + TextFormatting.BLUE + (int) (100 - (Config.PROTECTIVE_BAUBLE_FACTOR * 100)) + "%");
+        tooltip.add(TextFormatting.YELLOW + "This bauble reduces poison with " + TextFormatting.BLUE + (int) (100 - (ConfigSetup.PROTECTIVE_BAUBLE_FACTOR * 100)) + "%");
     }
 
     @Override

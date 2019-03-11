@@ -1,7 +1,7 @@
 package mcjty.needtobreathe;
 
 import mcjty.lib.McJtyRegister;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.items.ModItems;
@@ -103,10 +103,10 @@ public class ForgeEventHandlers {
 
     private boolean preventPlantGrowth(World world, DimensionData data, BlockPos pos) {
         int poison = data.getPoison(world, pos);
-        if (poison > Config.PLANT_GROWTH_POISON_DENY) {
+        if (poison > ConfigSetup.PLANT_GROWTH_POISON_DENY) {
             return true;
-        } else if (poison > Config.PLANT_GROWTH_POISON_SLOW) {
-            if (world.rand.nextFloat() < Config.PLANT_GROWTH_SLOWDOWN_FACTOR) {
+        } else if (poison > ConfigSetup.PLANT_GROWTH_POISON_SLOW) {
+            if (world.rand.nextFloat() < ConfigSetup.PLANT_GROWTH_SLOWDOWN_FACTOR) {
                 return true;
             }
         }
@@ -114,7 +114,7 @@ public class ForgeEventHandlers {
     }
 
     private DimensionData getDimensionData(World world) {
-        if (!Config.hasPoison(world.provider.getDimension())) {
+        if (!ConfigSetup.hasPoison(world.provider.getDimension())) {
             return null;
         }
         CleanAirManager manager = CleanAirManager.getManager();

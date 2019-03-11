@@ -4,7 +4,7 @@ import mcjty.lib.container.DefaultSidedInventory;
 import mcjty.lib.container.InventoryHelper;
 import mcjty.lib.tileentity.GenericEnergyReceiverTileEntity;
 import mcjty.lib.varia.OrientationTools;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.network.IIntegerRequester;
@@ -71,7 +71,7 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
     }
 
     protected int getRfPerTick() {
-        return Config.PURIFIER_RFPERTICK;
+        return ConfigSetup.PURIFIER_RFPERTICK;
     }
 
     protected int purifyAir(DimensionData data, BlockPos pp) {
@@ -145,13 +145,13 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
             return;
         }
         if (stack.getItem() == Items.COAL) {
-            if (coalticks + Config.PURIFIER_TICKSPERCOAL <= Config.PURIFIER_MAXCOALTICKS) {
-                coalticks += Config.PURIFIER_TICKSPERCOAL;
+            if (coalticks + ConfigSetup.PURIFIER_TICKSPERCOAL <= ConfigSetup.PURIFIER_MAXCOALTICKS) {
+                coalticks += ConfigSetup.PURIFIER_TICKSPERCOAL;
                 decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
             }
         } else if (stack.getItem() == Item.getItemFromBlock(Blocks.COAL_BLOCK)) {
-            if (coalticks + (Config.PURIFIER_TICKSPERCOAL * 9) <= Config.PURIFIER_MAXCOALTICKS) {
-                coalticks += Config.PURIFIER_TICKSPERCOAL * 9;
+            if (coalticks + (ConfigSetup.PURIFIER_TICKSPERCOAL * 9) <= ConfigSetup.PURIFIER_MAXCOALTICKS) {
+                coalticks += ConfigSetup.PURIFIER_TICKSPERCOAL * 9;
                 decrStackSize(PurifierContainer.SLOT_COALINPUT, 1);
             }
         }
@@ -178,7 +178,7 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
     @Override
     public int[] get() {
         long storedPower = getStoredPower();
-        return new int[] { (int)(storedPower >> 32), (int)storedPower, coalticks, Config.PURIFIER_MAXCOALTICKS };
+        return new int[] { (int)(storedPower >> 32), (int)storedPower, coalticks, ConfigSetup.PURIFIER_MAXCOALTICKS };
     }
 
     @Override
@@ -207,7 +207,7 @@ public class CommonPurifierTileEntity extends GenericEnergyReceiverTileEntity im
         if (world.isRemote) {
             return maxCoalTicks;
         } else {
-            return Config.PURIFIER_MAXCOALTICKS;
+            return ConfigSetup.PURIFIER_MAXCOALTICKS;
         }
     }
 

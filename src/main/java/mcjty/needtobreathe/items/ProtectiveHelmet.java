@@ -2,7 +2,7 @@ package mcjty.needtobreathe.items;
 
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.api.IProtectiveHelmet;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -34,7 +34,7 @@ public class ProtectiveHelmet extends ItemArmor implements IProtectiveHelmet {
         list.add("If you wear this helmet you will get,");
         list.add("some protection against the poisonous");
         list.add("atmosphere");
-        list.add(TextFormatting.YELLOW + "Poison reduction: " + TextFormatting.BLUE + (int) (100 - (Config.PROTECTIVE_BAUBLE_FACTOR * 100)) + "%");
+        list.add(TextFormatting.YELLOW + "Poison reduction: " + TextFormatting.BLUE + (int) (100 - (ConfigSetup.PROTECTIVE_BAUBLE_FACTOR * 100)) + "%");
     }
     
     @Nullable
@@ -56,6 +56,6 @@ public class ProtectiveHelmet extends ItemArmor implements IProtectiveHelmet {
 
     @Override
     public int getReducedPoison(EntityPlayer player, int poison) {
-        return (int) (poison * Config.PROTECTIVE_HELMET_FACTOR);
+        return (int) (poison * ConfigSetup.PROTECTIVE_HELMET_FACTOR);
     }
 }

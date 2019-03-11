@@ -5,7 +5,7 @@ import mcjty.lostcities.api.ILostChunkInfo;
 import mcjty.lostcities.api.ILostCities;
 import mcjty.lostcities.api.ILostSphere;
 import mcjty.needtobreathe.blocks.ModBlocks;
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -53,10 +53,10 @@ public class LostCitySupport {
             ILostSphere sphere = info.getSphere();
             if (sphere != null && sphere.isEnabled() && sphere.getCenter().getChunkX() == chunkX && sphere.getCenter().getChunkZ() == chunkZ) {
                 int y;
-                if (Config.CREATIVE_PURIFIER_GENERATE_HEIGHT == -1) {
+                if (ConfigSetup.CREATIVE_PURIFIER_GENERATE_HEIGHT == -1) {
                     y = generator.getRealHeight(0);
                 } else {
-                    y = Config.CREATIVE_PURIFIER_GENERATE_HEIGHT;
+                    y = ConfigSetup.CREATIVE_PURIFIER_GENERATE_HEIGHT;
                 }
                 event.getWorld().setBlockState(new BlockPos(sphere.getCenterPos().getX(), y, sphere.getCenterPos().getZ()), ModBlocks.largePurifierBlock.getDefaultState());
             }

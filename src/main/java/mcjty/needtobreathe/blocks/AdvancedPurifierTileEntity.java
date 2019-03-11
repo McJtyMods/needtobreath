@@ -1,6 +1,6 @@
 package mcjty.needtobreathe.blocks;
 
-import mcjty.needtobreathe.config.Config;
+import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.DimensionData;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -11,12 +11,12 @@ import javax.annotation.Nullable;
 public class AdvancedPurifierTileEntity extends CommonPurifierTileEntity {
 
     public AdvancedPurifierTileEntity() {
-        super(Config.ADVANCED_PURIFIER_MAXRF, Config.ADVANCED_PURIFIER_RFINPUTPERTICK);
+        super(ConfigSetup.ADVANCED_PURIFIER_MAXRF, ConfigSetup.ADVANCED_PURIFIER_RFINPUTPERTICK);
     }
 
     @Override
     protected int getRfPerTick() {
-        return Config.ADVANCED_PURIFIER_RFPERTICK;
+        return ConfigSetup.ADVANCED_PURIFIER_RFPERTICK;
     }
 
     @Override
