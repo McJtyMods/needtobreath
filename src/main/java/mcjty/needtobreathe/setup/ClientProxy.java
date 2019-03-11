@@ -1,10 +1,7 @@
 package mcjty.needtobreathe.setup;
 
 import mcjty.lib.setup.DefaultClientProxy;
-import mcjty.needtobreathe.blocks.ModBlocks;
-import mcjty.needtobreathe.items.ModItems;
 import mcjty.needtobreathe.rendering.NTBOverlayRenderer;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,12 +42,5 @@ public class ClientProxy extends DefaultClientProxy {
     @SubscribeEvent
     public void renderGameOverlayEvent(RenderGameOverlayEvent evt) {
         NTBOverlayRenderer.onRenderGame(evt);
-    }
-
-
-    @SubscribeEvent
-    public void registerModels(ModelRegistryEvent event) {
-        ModItems.initModels();
-        ModBlocks.initModels();
     }
 }
