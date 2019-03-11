@@ -1,16 +1,10 @@
 package mcjty.needtobreathe;
 
-import mcjty.lib.McJtyRegister;
 import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
-import mcjty.needtobreathe.items.ModItems;
-import mcjty.needtobreathe.setup.CommonSetup;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -18,27 +12,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ForgeEventHandlers {
-
-    @SubscribeEvent
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        McJtyRegister.registerBlocks(NeedToBreathe.instance, event.getRegistry());
-    }
-
-    @SubscribeEvent
-    public void registerItems(RegistryEvent.Register<Item> event) {
-        McJtyRegister.registerItems(NeedToBreathe.instance, event.getRegistry());
-        event.getRegistry().register(ModItems.protectiveHelmet);
-        event.getRegistry().register(ModItems.informationGlasses);
-        event.getRegistry().register(ModItems.hazmatSuitBoots);
-        event.getRegistry().register(ModItems.hazmatSuitChest);
-        event.getRegistry().register(ModItems.hazmatSuitHelmet);
-        event.getRegistry().register(ModItems.hazmatSuitLegs);
-        event.getRegistry().register(ModItems.insulatedLeather);
-
-        if (CommonSetup.baubles) {
-            event.getRegistry().register(ModItems.protectiveBauble);
-        }
-    }
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent evt) {
