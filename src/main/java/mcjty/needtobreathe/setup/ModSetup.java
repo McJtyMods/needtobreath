@@ -1,6 +1,6 @@
 package mcjty.needtobreathe.setup;
 
-import mcjty.lib.setup.DefaultCommonSetup;
+import mcjty.lib.setup.DefaultModSetup;
 import mcjty.needtobreathe.CommandHandler;
 import mcjty.needtobreathe.ForgeEventHandlers;
 import mcjty.needtobreathe.NeedToBreathe;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.Level;
 
-public class CommonSetup extends DefaultCommonSetup {
+public class ModSetup extends DefaultModSetup {
 
     public static boolean baubles = false;
     public static boolean lostcities = false;

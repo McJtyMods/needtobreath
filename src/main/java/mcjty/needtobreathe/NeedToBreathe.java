@@ -3,7 +3,7 @@ package mcjty.needtobreathe;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.proxy.IProxy;
 import mcjty.needtobreathe.commands.CommandTest;
-import mcjty.needtobreathe.setup.CommonSetup;
+import mcjty.needtobreathe.setup.ModSetup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -26,7 +26,7 @@ public class NeedToBreathe implements ModBase {
 
     @SidedProxy(clientSide = "mcjty.needtobreathe.setup.ClientProxy", serverSide = "mcjty.needtobreathe.setup.ServerProxy")
     public static IProxy proxy;
-    public static CommonSetup setup = new CommonSetup();
+    public static ModSetup setup = new ModSetup();
 
     @Mod.Instance(MODID)
     public static NeedToBreathe instance;

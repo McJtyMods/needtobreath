@@ -29,7 +29,7 @@ public class Registration {
         event.getRegistry().register(ModItems.hazmatSuitLegs);
         event.getRegistry().register(ModItems.insulatedLeather);
 
-        if (CommonSetup.baubles) {
+        if (ModSetup.baubles) {
             event.getRegistry().register(ModItems.protectiveBauble);
         }
     }

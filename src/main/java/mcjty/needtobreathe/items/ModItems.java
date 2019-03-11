@@ -2,7 +2,7 @@ package mcjty.needtobreathe.items;
 
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.compat.BaubleTools;
-import mcjty.needtobreathe.setup.CommonSetup;
+import mcjty.needtobreathe.setup.ModSetup;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -38,7 +38,7 @@ public class ModItems {
                 .setUnlocalizedName(NeedToBreathe.MODID + ".insulatedleather")
                 .setCreativeTab(NeedToBreathe.setup.getTab());
 
-        if (CommonSetup.baubles) {
+        if (ModSetup.baubles) {
             protectiveBauble = BaubleTools.initProtectionBauble();
         }
     }
@@ -54,13 +54,13 @@ public class ModItems {
         ModelLoader.setCustomModelResourceLocation(hazmatSuitLegs, 0, new ModelResourceLocation(hazmatSuitLegs.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(insulatedLeather, 0, new ModelResourceLocation(insulatedLeather.getRegistryName(), "inventory"));
 
-        if (CommonSetup.baubles) {
+        if (ModSetup.baubles) {
             BaubleTools.initBaubleModel(protectiveBauble);
         }
     }
 
     public static boolean hasProbeInBauble(EntityPlayer player) {
-        if (CommonSetup.baubles) {
+        if (ModSetup.baubles) {
             return BaubleTools.hasProtectiveBauble(player);
         } else {
             return false;
