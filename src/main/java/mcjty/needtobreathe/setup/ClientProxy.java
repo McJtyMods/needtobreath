@@ -5,8 +5,6 @@ import mcjty.needtobreathe.rendering.NTBOverlayRenderer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -21,17 +19,6 @@ public class ClientProxy extends DefaultClientProxy {
 
         // Typically initialization of models and such goes here:
 //        ModEntities.initModels();
-    }
-
-    @Override
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-    }
-
-    @Override
-    public void postInit(FMLPostInitializationEvent e) {
-        super.postInit(e);
-//        ModBlocks.initItemModels();
     }
 
     @SubscribeEvent
