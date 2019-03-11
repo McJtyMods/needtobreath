@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -260,13 +261,15 @@ public class Config {
         return hostileEffects;
     }
 
+    public static Configuration mainConfig;
 
-    public static void readConfig(Configuration cfg) {
-        cfg.load();
+    public static void readConfig() {
+        mainConfig = new Configuration(new File(NeedToBreathe.setup.getModConfigDir().getPath(), "needtobreathe.cfg"));
+        mainConfig.load();
 
-        initGeneralSettings(cfg);
-        initMachineSettings(cfg);
-        initEffectsSettings(cfg);
+        initGeneralSettings(mainConfig);
+        initMachineSettings(mainConfig);
+        initEffectsSettings(mainConfig);
     }
 
     private static void initGeneralSettings(Configuration cfg) {

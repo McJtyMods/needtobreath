@@ -45,8 +45,7 @@ public class CommonSetup extends DefaultCommonSetup {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         CommandHandler.registerCommands();
 
-        mainConfig = new Configuration(new File(modConfigDir.getPath(), "needtobreathe.cfg"));
-        Config.readConfig(mainConfig);
+        Config.readConfig();
 
         NTBMessages.registerMessages("needtobreathe");
 
@@ -70,9 +69,9 @@ public class CommonSetup extends DefaultCommonSetup {
     @Override
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
-        if (mainConfig.hasChanged()) {
-            mainConfig.save();
+        if (Config.mainConfig.hasChanged()) {
+            Config.mainConfig.save();
         }
-        mainConfig = null;
+        Config.mainConfig = null;
     }
 }
