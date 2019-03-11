@@ -30,8 +30,6 @@ public class CommonSetup extends DefaultCommonSetup {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(NeedToBreathe.instance, new GuiProxy());
 
-        setupModCompat();
-
         CommandHandler.registerCommands();
 
         NTBMessages.registerMessages("needtobreathe");
@@ -41,7 +39,8 @@ public class CommonSetup extends DefaultCommonSetup {
         ModBlocks.init();
     }
 
-    private void setupModCompat() {
+    @Override
+    protected void setupModCompat() {
         baubles = Loader.isModLoaded("Baubles") || Loader.isModLoaded("baubles");
         if (baubles) {
             getLogger().log(Level.INFO, "NeedToBreathe Detected Baubles: enabling support");
