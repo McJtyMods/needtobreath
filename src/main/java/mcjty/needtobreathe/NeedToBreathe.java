@@ -3,7 +3,7 @@ package mcjty.needtobreathe;
 import mcjty.lib.base.ModBase;
 import mcjty.lib.proxy.IProxy;
 import mcjty.needtobreathe.commands.CommandTest;
-import mcjty.needtobreathe.proxy.CommonSetup;
+import mcjty.needtobreathe.setup.CommonSetup;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;

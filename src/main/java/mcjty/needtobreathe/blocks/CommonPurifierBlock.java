@@ -3,7 +3,7 @@ package mcjty.needtobreathe.blocks;
 import mcjty.lib.blocks.GenericBlock;
 import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.needtobreathe.NeedToBreathe;
-import mcjty.needtobreathe.proxy.GuiProxy;
+import mcjty.needtobreathe.setup.GuiProxy;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;

@@ -2,7 +2,7 @@ package mcjty.needtobreathe.items;
 
 import mcjty.needtobreathe.NeedToBreathe;
 import mcjty.needtobreathe.compat.BaubleTools;
-import mcjty.needtobreathe.proxy.CommonSetup;
+import mcjty.needtobreathe.setup.CommonSetup;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;

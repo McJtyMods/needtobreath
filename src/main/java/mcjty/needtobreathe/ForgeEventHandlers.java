@@ -5,7 +5,7 @@ import mcjty.needtobreathe.config.ConfigSetup;
 import mcjty.needtobreathe.data.CleanAirManager;
 import mcjty.needtobreathe.data.DimensionData;
 import mcjty.needtobreathe.items.ModItems;
-import mcjty.needtobreathe.proxy.CommonSetup;
+import mcjty.needtobreathe.setup.CommonSetup;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;

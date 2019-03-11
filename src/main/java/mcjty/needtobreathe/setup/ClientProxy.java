@@ -1,4 +1,4 @@
-package mcjty.needtobreathe.proxy;
+package mcjty.needtobreathe.setup;
 
 import mcjty.lib.setup.DefaultClientProxy;
 import mcjty.needtobreathe.blocks.ModBlocks;

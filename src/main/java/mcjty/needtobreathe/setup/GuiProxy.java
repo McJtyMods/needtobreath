@@ -1,4 +1,4 @@
-package mcjty.needtobreathe.proxy;
+package mcjty.needtobreathe.setup;
 
 import mcjty.lib.blocks.GenericBlock;
 import net.minecraft.block.Block;
