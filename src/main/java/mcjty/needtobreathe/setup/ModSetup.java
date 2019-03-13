@@ -30,8 +30,6 @@ public class ModSetup extends DefaultModSetup {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(NeedToBreathe.instance, new GuiProxy());
 
-        ConfigSetup.init();
-
         CommandHandler.registerCommands();
 
         NTBMessages.registerMessages("needtobreathe");
@@ -52,6 +50,11 @@ public class ModSetup extends DefaultModSetup {
             getLogger().log(Level.INFO, "NeedToBreathe Detected Lost Cities: enabling support");
             LostCitySupport.register();
         }
+    }
+
+    @Override
+    protected void setupConfig() {
+        ConfigSetup.init();
     }
 
     @Override
