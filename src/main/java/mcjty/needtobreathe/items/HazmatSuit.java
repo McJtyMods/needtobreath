@@ -50,18 +50,19 @@ public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCani
     public int getReducedPoison(EntityPlayer player, int poison) {
         ItemStack chestplate = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
         int air = ModItems.hazmatSuitChest.getAir(chestplate);
-        if (air < 50) {    // @todo config
+        if (air <= 0) {
+            return poison;
+        } else if (air < 50) {    // @todo config
             if (DimensionData.fastrand128() < poison) {
                 ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
             }
             return (int) (poison * ConfigSetup.PROTECTIVE_HELMET_FACTOR);
-        } else if (air > 0) {
+        } else {
             if (DimensionData.fastrand128() < poison) {
                 ModItems.hazmatSuitChest.setAir(chestplate, air - 1);
             }
             return 0;
         }
-        return poison;
     }
 
     public static boolean hasFullArmor(EntityPlayer player) {
@@ -105,6 +106,9 @@ public class HazmatSuit extends ItemArmor implements IProtectiveHelmet, IAirCani
     public void setAir(ItemStack stack, int air) {
         if (!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
+        }
+        if (air < 0) {
+            air = 0;
         }
         stack.getTagCompound().setInteger("air", air);
     }

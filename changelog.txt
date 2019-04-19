@@ -1,3 +1,6 @@
+Upcoming:
+- Fixed a bug with the hazmat suit where air level could get below zero
+
 0.3.1:
 - Needs McJtyLib 3.1.0
 - Support for COFH RF API is removed. Only Forge Energy is supported now
