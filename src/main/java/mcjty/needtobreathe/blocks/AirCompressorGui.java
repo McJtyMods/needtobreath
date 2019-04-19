@@ -56,7 +56,7 @@ public class AirCompressorGui extends GenericGuiContainer<AirCompressorTileEntit
     protected void drawGuiContainerBackgroundLayer(float v, int i, int i2) {
         drawWindow();
 
-        energyBar.setValue(tileEntity.getStoredPower());
+        energyBar.setValue(GenericEnergyStorageTileEntity.getCurrentRF());
         tileEntity.requestRfFromServer(NeedToBreathe.MODID);
     }
 }
