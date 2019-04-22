@@ -59,7 +59,7 @@ public class ModSetup extends DefaultModSetup {
 
     @Override
     public void createTabs() {
-        createTab("needtobreathe", new ItemStack(Blocks.DIAMOND_BLOCK));
+        createTab("needtobreathe", () -> new ItemStack(ModItems.hazmatSuitHelmet));
     }
 
     @Override
