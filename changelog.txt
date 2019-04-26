@@ -1,4 +1,5 @@
-Upcoming:
+0.4.0:
+- Depends on McJtyLib 3.5.0!
 - Fixed a bug with the hazmat suit where air level could get below zero
 - Fixed a bug with the air compressor GUI not correctly showing the amount of power
 
